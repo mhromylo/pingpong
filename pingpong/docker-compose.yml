@@ -1,0 +1,33 @@
+services:
+  web:
+    build: .
+    container_name: web
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=pingpong.settings
+    ports:
+      - "8000:8000"
+    networks:
+      - pingpong_network
+
+  db:
+    image: postgres:15
+    container_name: db
+    environment:
+      POSTGRES_USER: mhromylo
+      POSTGRES_PASSWORD: qwerty
+      POSTGRES_DB: table
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pingpong_network
+
+volumes:
+  postgres_data:
+
+networks:
+  pingpong_network:
+    driver: bridge
