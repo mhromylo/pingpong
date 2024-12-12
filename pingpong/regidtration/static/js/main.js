@@ -1,22 +1,50 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const  container = document.getElementById("content");
+
     function Navigate(page) {
-        let container = document.getElementById("content");
         fetch("/" + page + "/")
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Page not found: ${response.status}`);
                 }
-                return response.text();
+                return response.json();
             })
-            .then(html => {
-                container.innerHTML = html;
+            .then(data => {
+                if (data.success && data.html) {
+                    container.innerHTML = data.html;
+                }else {
+                       container.innerHTML = '<h2>Error loading page: ${page}</h2>';
+                }
             })
             .catch(error => {
                 console.error("Error fetching regidtration", error);
                 container.innerHTML = `<h2>Page not found: ${page}</h2>`;
             });
     }
+function handleFormSubmit(event) {
+        event.preventDefault(); // Prevent normal form submission
+        const form = event.target;
+        const formData = new FormData(form);
 
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                container.innerHTML = `<h2>${data.message}</h2>`;
+            } else if (data.errors) {
+                const errors = Object.entries(data.errors)
+                    .map(([field, msgs]) => `<p><strong>${field}:</strong> ${msgs.join(', ')}</p>`)
+                    .join('');
+                container.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
+            }
+        })
+        .catch(error => {
+            console.error("Error submitting form", error);
+        });
+    }
     document.querySelectorAll("nav a").forEach(link => {
         link.addEventListener("click", function (event){
             event.preventDefault();
@@ -26,13 +54,11 @@ document.addEventListener("DOMContentLoaded", function () {
             Navigate(page);
         });
     });
-    function injectCSRFToken(formElement) {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = 'csrfmiddlewaretoken';
-        csrfInput.value = csrfToken;
-        formElement.appendChild(csrfInput);
-    }
+
+    container.addEventListener("submit", function (event) {
+        if (event.target.tagName === 'FORM') {
+            handleFormSubmit(event);
+        }
+    })
     Navigate("");
 });

@@ -1,30 +1,58 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse, Http404, HttpResponseNotFound
+from django.http import JsonResponse, Http404, HttpResponseNotFound, HttpResponseRedirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 import json
 from django.contrib.auth.forms import *
-
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib import messages
-
+from django.template.loader import render_to_string
+from .forms import ProfileUpdateForm, UserUpdateForm
+from .models import Profile
 from regidtration.forms import RegistrationForm
 
 def index(request):
     return render(request, "regidtration/index.html")
+
+def register_done(request):
+    return render(request, "regidtration/register_done.html")
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            username = form.cleaned_data.get('username')
-            return JsonResponse({'user registered': True, 'message': 'User registered succesfully'})
+            return JsonResponse({'success': True, 'message': 'User registered successfully!'})
         else:
             return JsonResponse({'error': False, 'errors': form.errors}, status=400)
     else:
         form = RegistrationForm()
-        return render(request, 'regidtration/register.html', {'form': form})
+        html = render_to_string('regidtration/register.html', {'form': form}, request=request)
+        return JsonResponse({'success': True, 'html': html})
+
+def user_login(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return render(request, 'regidtration/profile.html', {'user': user})
+        else:
+            return JsonResponse({'success': False, 'errors': {'login': ['Invalid username or password.']}}, status=400)
+    else:
+        html = render_to_string('regidtration/login.html', {}, request=request)
+        return JsonResponse({'success': True, 'html': html})
+
+def user_logout(request):
+    logout(request)
+    return redirect("index")
+
+@login_required
+def profile(request):
+    return render(request, 'regidtration/profile.html')
+
 
 
 # def register_two(request):
@@ -48,19 +76,6 @@ def register(request):
 #
 #     return JsonResponse({"errors": "Invalid request method"}, status=405)
 
-# def user_login(request):
-#     if request.method == "POST":
-#         username = request.POST['username']
-#         password = request.POST['password']
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request, user)
-#             return redirect("index")
-#     return render(request, 'regidtration/index.html')
-#
-# def user_logout(request):
-#     logout(request)
-#     return redirect("index")
-#
+
 
 # Create your views here.
