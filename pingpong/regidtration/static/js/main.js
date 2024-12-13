@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch("/" + page + "/")
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`Page not found: ${response.status}`);
+                    throw new Error(`Responce wrong ${response.status}`);
                 }
                 return response.json();
             })
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.success && data.html) {
                     container.innerHTML = data.html;
                 }else {
-                       container.innerHTML = '<h2>Error loading page: ${page}</h2>';
+                     container.innerHTML = `<h2>Page not found: ${page}</h2>`;
                 }
             })
             .catch(error => {
@@ -21,10 +21,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 container.innerHTML = `<h2>Page not found: ${page}</h2>`;
             });
     }
-function handleFormSubmit(event) {
+
+    function handleFormSubmit(event) {
         event.preventDefault(); // Prevent normal form submission
         const form = event.target;
         const formData = new FormData(form);
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
 
         fetch(form.action, {
             method: 'POST',
@@ -45,6 +49,7 @@ function handleFormSubmit(event) {
             console.error("Error submitting form", error);
         });
     }
+
     document.querySelectorAll("nav a").forEach(link => {
         link.addEventListener("click", function (event){
             event.preventDefault();
@@ -59,6 +64,11 @@ function handleFormSubmit(event) {
         if (event.target.tagName === 'FORM') {
             handleFormSubmit(event);
         }
-    })
+    });
+
     Navigate("");
+
+
+
+
 });

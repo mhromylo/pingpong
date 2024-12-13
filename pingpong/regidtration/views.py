@@ -38,7 +38,7 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return render(request, 'regidtration/profile.html', {'user': user})
+            return JsonResponse({'success': True, 'message': 'User Login successfully!'})
         else:
             return JsonResponse({'success': False, 'errors': {'login': ['Invalid username or password.']}}, status=400)
     else:
@@ -49,7 +49,6 @@ def user_logout(request):
     logout(request)
     return redirect("index")
 
-@login_required
 def profile(request):
     return render(request, 'regidtration/profile.html')
 
