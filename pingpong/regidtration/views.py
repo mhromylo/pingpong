@@ -8,12 +8,16 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.template.loader import render_to_string
 from .forms import ProfileUpdateForm, UserUpdateForm
 from .models import Profile
 from regidtration.forms import RegistrationForm
 
 def index(request):
+    storage = get_messages(request)
+    for message in storage:
+        print(message)
     return render(request, "regidtration/index.html")
 
 def register_done(request):
@@ -38,7 +42,9 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return JsonResponse({'success': True, 'message': 'User Login successfully!'})
+            messages.success(request, 'You are now logged in!')
+            return redirect('index')
+
         else:
             return JsonResponse({'success': False, 'errors': {'login': ['Invalid username or password.']}}, status=400)
     else:
@@ -47,7 +53,9 @@ def user_login(request):
 
 def user_logout(request):
     logout(request)
-    return redirect("index")
+    messages.success(request, ("User logged out successfully!"))
+    return redirect('index')
+
 
 def profile(request):
     return render(request, 'regidtration/profile.html')
