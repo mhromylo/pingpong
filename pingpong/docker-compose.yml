@@ -10,6 +10,8 @@ services:
       - "8000:8000"
     networks:
       - pingpong_network
+    volumes:
+      - ./regidtration/media:/app/regidtration/media
 
   db:
     image: postgres:15

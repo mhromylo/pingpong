@@ -30,6 +30,7 @@ class SignUpForm(UserCreationForm):
         self.fields['password'].widget.attrs.update({'class': 'form-control'})
 
 class UserUpdateForm(UserChangeForm):
+    password = None
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
 
@@ -52,10 +53,11 @@ class ChangePasswordForm(forms.ModelForm):
 
 class ProfileUpdateForm(forms.ModelForm):
     display_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Profile
-        fields = ['display_name']
+        fields = ['display_name', 'avatar']
 
     def __init__(self, *args, **kwargs):
         super(ProfileUpdateForm, self).__init__(*args, **kwargs)

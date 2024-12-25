@@ -61,7 +61,7 @@ def update_profile(request):
     profile = Profile.objects.get(user=request.user)
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=user)
-        p_form = ProfileUpdateForm(request.POST, instance=profile)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()

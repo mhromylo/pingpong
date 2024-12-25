@@ -42,6 +42,7 @@
         {% if user.is_authenticated %}
             <div id="profile">
     <h2>Welcome, {{ user.username }}</h2>
+                <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar">
     <p>Display Name: {{ user.profile.display_name }}</p>
     <p>Email: {{ user.email }}</p>
     <p>Wins: {{ user.profile.wins }}</p>
