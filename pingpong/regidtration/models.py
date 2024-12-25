@@ -22,7 +22,10 @@ class Meta:
 
 
 def update_ranking(self):
-    self.ranking = (self.ranking * 100) / (self.wins + self.losses)
+    if self.wins + self.losses > 0:
+        self.ranking = (self.wins / (self.wins + self.losses)) * 100
+    else:
+        self.ranking = 0.0
 
 class Tournament(models.Model):
     name = models.CharField(max_length=100)

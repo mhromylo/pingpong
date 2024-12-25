@@ -8,16 +8,12 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.messages import get_messages
 from django.template.loader import render_to_string
-from .forms import ProfileUpdateForm, UserUpdateForm
+from .forms import UserUpdateForm, ProfileUpdateForm
 from .models import Profile
-from regidtration.forms import RegistrationForm
+from regidtration.forms import RegistrationForm, UserUpdateForm, SignUpForm, ProfileUpdateForm
 
 def index(request):
-    storage = get_messages(request)
-    for message in storage:
-        print(message)
     return render(request, "regidtration/index.html")
 
 def register_done(request):
@@ -42,7 +38,7 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, 'You are now logged in!')
+            JsonResponse({'success': True, 'message': 'User logged in!'})
             return redirect('index')
 
         else:
@@ -60,6 +56,44 @@ def user_logout(request):
 def profile(request):
     return render(request, 'regidtration/profile.html')
 
+def update_profile(request):
+    user = request.user
+    profile = Profile.objects.get(user=request.user)
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=user)
+        p_form = ProfileUpdateForm(request.POST, instance=profile)
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, ('Your account has been updated!'))
+            return redirect('index')
+        else:
+           return JsonResponse({'success': False, 'errors': u_form.errors})
+    else:
+        u_form = UserUpdateForm(instance=user)
+        p_form = ProfileUpdateForm(instance=profile)
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form,
+    }
+    html = render_to_string('regidtration/update_profile.html', context, request=request)
+    return JsonResponse({'success': True, 'html': html})
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            JsonResponse({'success': True, 'message': 'Your password was successfully updated!'})
+            return redirect('index')
+        else:
+            messages.error(request, 'Please correct the error below.')
+
+    else:
+        form = PasswordChangeForm(user=request.user)
+        html = render_to_string('regidtration/change_password.html', {'form': form}, request=request)
+        return JsonResponse({'success': True, 'html': html})
 
 
 # def register_two(request):
