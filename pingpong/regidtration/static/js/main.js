@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const  container = document.getElementById("content");
+    const container = document.getElementById("content");
 
     function Navigate(page) {
         fetch("/" + page + "/")
@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data.success && data.html) {
                     container.innerHTML = data.html;
-                }else {
-                     container.innerHTML = `<h2>Page not found: ${page}</h2>`;
+                } else {
+                    container.innerHTML = `<h2>Page not found: ${page}</h2>`;
                 }
             })
             .catch(error => {
@@ -34,24 +34,24 @@ document.addEventListener("DOMContentLoaded", function () {
             method: 'POST',
             body: formData,
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                container.innerHTML = `<h2>${data.message}</h2>`;
-            } else if (data.errors) {
-                const errors = Object.entries(data.errors)
-                    .map(([field, msgs]) => `<p><strong>${field}:</strong> ${msgs.join(', ')}</p>`)
-                    .join('');
-                container.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
-            }
-        })
-        .catch(error => {
-            console.error("Error submitting form", error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    container.innerHTML = `<h2>${data.message}</h2>`;
+                } else if (data.errors) {
+                    const errors = Object.entries(data.errors)
+                        .map(([field, msgs]) => `<p><strong>${field}:</strong> ${msgs.join(', ')}</p>`)
+                        .join('');
+                    container.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error submitting form", error);
+            });
     }
 
     document.querySelectorAll("nav a").forEach(link => {
-        link.addEventListener("click", function (event){
+        link.addEventListener("click", function (event) {
             event.preventDefault();
 
             let page = this.getAttribute("href").substring(1);

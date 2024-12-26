@@ -62,3 +62,6 @@ class ProfileUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProfileUpdateForm, self).__init__(*args, **kwargs)
         self.fields['display_name'].widget.attrs.update({'class': 'form-control'})
+
+class AddFriendsForm(forms.Form):
+    friend_name = forms.CharField(label='Friend Name', max_length=150)

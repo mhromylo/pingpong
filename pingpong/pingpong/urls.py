@@ -40,6 +40,10 @@ path('logout/', views.user_logout, name='logout'),
     path('update_profile/', views.update_profile, name='update_profile'),
 
     path('change_password/', views.change_password, name='change_password'),
+
+    path('add_friend/', views.add_friend, name='add_friend'),
+    path('friends/', views.list_friends, name='list_friends'),
+
 ]
 
 if settings.DEBUG:

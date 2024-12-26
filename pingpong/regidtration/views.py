@@ -11,7 +11,8 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from .forms import UserUpdateForm, ProfileUpdateForm
 from .models import Profile
-from regidtration.forms import RegistrationForm, UserUpdateForm, SignUpForm, ProfileUpdateForm
+from regidtration.forms import RegistrationForm, UserUpdateForm, SignUpForm, ProfileUpdateForm, AddFriendsForm
+from django.shortcuts import get_object_or_404
 
 def index(request):
     return render(request, "regidtration/index.html")
@@ -96,27 +97,34 @@ def change_password(request):
         return JsonResponse({'success': True, 'html': html})
 
 
-# def register_two(request):
-#     if request.method == "POST":
-#         data = json.loads(request.body.decode('utf-8'))
-#         username = data.get('username')
-#         password1 = data.get('password1')
-#         password2 = data.get('password2')
-#
-#         if not username or not password1 and password2:
-#             return JsonResponse({'errors': 'All fields are required.'}, status=400)
-#
-#         if password1 != password2:
-#             return JsonResponse({'errors': 'Passwords do not match.'}, status=400)
-#
-#         if User.objects.filter(username=username).exists():
-#             return JsonResponse({'errors': 'Username already exists.'}, status=400)
-#
-#         User.objects.create_user(username=username, password=password1)
-#         return JsonResponse({'message': 'User registered succesfully'}, status=201)
-#
-#     return JsonResponse({"errors": "Invalid request method"}, status=405)
+def add_friend(request):
+    if request.method == 'POST':
+        user_profile = Profile.objects.get(user=request.user)
+        form = AddFriendsForm(request.POST)
+        if form.is_valid():
+            friend_name = form.cleaned_data['friend_name']
+            try:
+                friend_profile = get_object_or_404(Profile, display_name=friend_name)
+                if user_profile == friend_profile:
+                    return JsonResponse({'success': False, 'message': 'You cannot add yourself!'})
+                elif friend_profile in user_profile.friends.all():
+                    return JsonResponse({'success': False, 'message': 'You already have your friend!'})
+                else:
+                    user_profile.friends.add(friend_profile)
+                    user_profile.save()
+                    return JsonResponse({'success': True, 'message': 'You added your friend!'})
+            except Exception as e:
+                return JsonResponse({'success': False, 'Exception': str(e)})
+        else:
+            return JsonResponse({'success': False, 'Form not valid': form.errors})
+    else:
+        form = AddFriendsForm()
+        html = render_to_string('regidtration/add_friend.html', {'form': form}, request=request)
+        return JsonResponse({'success': True, 'html': html})
 
-
-
+def list_friends(request):
+    user_profile = Profile.objects.get(user=request.user)
+    friends = user_profile.friends.all()
+    friends_list = [{'display_name': f.display_name, 'is_online': f.is_online} for f in friends]
+    return JsonResponse({'success': True, 'friends': friends_list})
 # Create your views here.

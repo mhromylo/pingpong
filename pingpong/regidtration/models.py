@@ -9,10 +9,21 @@ class Profile(models.Model):
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png')
     wins = models.PositiveIntegerField(default=0)
     losses = models.PositiveIntegerField(default=0)
-    friends = models.ManyToManyField('self', blank=True, symmetrical=True)
+    friends = models.ManyToManyField('self', blank=True)
 
     def __str__(self):
         return self.display_name
+
+    @property
+    def is_online(self):
+        if self.user.is_authenticated:
+            return self.user.is_authenticated
+
+    def update_ranking(self):
+        if self.wins + self.losses > 0:
+            self.ranking = (self.wins / (self.wins + self.losses)) * 100
+        else:
+            self.ranking = 0.0
 
 class Meta:
     db_table = 'regidtration_profile'
@@ -21,11 +32,6 @@ class Meta:
 
 
 
-def update_ranking(self):
-    if self.wins + self.losses > 0:
-        self.ranking = (self.wins / (self.wins + self.losses)) * 100
-    else:
-        self.ranking = 0.0
 
 class Tournament(models.Model):
     name = models.CharField(max_length=100)

@@ -25,6 +25,7 @@
                     <li> <a href="#profile" > Profile </a> </li>
                     <li> <a href="#update_profile" > Update Profile </a> </li>
                     <li> <a href="#change_password" > Change Password </a> </li>
+                     <li> <a href="#add_friend" > Add Friend </a> </li>
                     {% else %}
                 <li> <a href="#login" > LOGIN </a> </li>
                   {% endif %}
@@ -47,6 +48,15 @@
     <p>Email: {{ user.email }}</p>
     <p>Wins: {{ user.profile.wins }}</p>
     <p>Losses: {{ user.profile.losses }}</p>
+             <p>Friends: {% for f in user.profile.friends.all %}
+             {{ f.display_name }}{% if not forloop.last %}, {% endif %}
+                  {% empty %}
+        No friends added yet.
+             {% endfor %}
+             </p>
+
+
+
 
 </div>
         {% endif %}

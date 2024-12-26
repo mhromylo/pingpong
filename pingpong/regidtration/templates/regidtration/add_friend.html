@@ -1,0 +1,13 @@
+<p>Friends:
+    {% for f in user.profile.friends.all %}
+        {{ f.display_name }}{% if not forloop.last %}, {% endif %}
+    {% empty %}
+        No friends added yet.
+    {% endfor %}
+</p>
+<h2>Add Friend</h2>
+<form method="post" action="{% url 'add_friend' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add Friend</button>
+</form>

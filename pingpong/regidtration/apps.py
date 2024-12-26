@@ -7,4 +7,4 @@ class RegidtrationConfig(AppConfig):
     name = 'regidtration'
 
     def ready(self):
-        from . import signals
+        import regidtration.signals
