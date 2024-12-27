@@ -39,9 +39,7 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            JsonResponse({'success': True, 'message': 'User logged in!'})
-            return redirect('index')
-
+            return JsonResponse({'success': True, 'message': 'User logged in!'})
         else:
             return JsonResponse({'success': False, 'errors': {'login': ['Invalid username or password.']}}, status=400)
     else:
@@ -50,12 +48,7 @@ def user_login(request):
 
 def user_logout(request):
     logout(request)
-    messages.success(request, ("User logged out successfully!"))
-    return redirect('index')
-
-
-def profile(request):
-    return render(request, 'regidtration/profile.html')
+    return JsonResponse({'success': True})
 
 def update_profile(request):
     user = request.user
@@ -66,10 +59,10 @@ def update_profile(request):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
-            messages.success(request, ('Your account has been updated!'))
-            return redirect('index')
+            return JsonResponse({'success': True, 'message': 'Your account has been updated!'})
         else:
-           return JsonResponse({'success': False, 'errors': u_form.errors})
+            errors = u_form.errors, p_form.errors
+            return JsonResponse({'success': False, 'errors': errors})
     else:
         u_form = UserUpdateForm(instance=user)
         p_form = ProfileUpdateForm(instance=profile)
@@ -86,11 +79,10 @@ def change_password(request):
         form = PasswordChangeForm(data=request.POST, user=request.user)
         if form.is_valid():
             form.save()
-            JsonResponse({'success': True, 'message': 'Your password was successfully updated!'})
-            return redirect('index')
+            login(request, form.user)
+            return JsonResponse({'success': True, 'message': 'Your password was successfully updated!'})
         else:
-            messages.error(request, 'Please correct the error below.')
-
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
     else:
         form = PasswordChangeForm(user=request.user)
         html = render_to_string('regidtration/change_password.html', {'form': form}, request=request)

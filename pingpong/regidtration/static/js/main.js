@@ -26,12 +26,12 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault(); // Prevent normal form submission
         const form = event.target;
         const formData = new FormData(form);
-
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
 
         fetch(form.action, {
             method: 'POST',
+            headers: {'X-CSRFToken': csrftoken},
             body: formData,
         })
             .then(response => response.json())
@@ -60,13 +60,15 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    container.addEventListener("submit", function (event) {
-        if (event.target.tagName === 'FORM') {
-            handleFormSubmit(event);
-        }
+    const forms = document.querySelectorAll('form');
+
+    // Attach the handler to each form
+    forms.forEach(form => {
+        form.addEventListener('submit', handleFormSubmit);
     });
 
-    Navigate("");
+
+    Navigate("index");
 
 
 
