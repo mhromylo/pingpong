@@ -24,9 +24,13 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return JsonResponse({'success': True, 'message': 'User registered successfully!'})
+            messages.success(request, "Account created, you can now login")
+            return redirect("index")
         else:
-            return JsonResponse({'error': False, 'errors': form.errors}, status=400)
+            messages.error(request, "There was an error, please try again later")
+            form = RegistrationForm()
+            html = render_to_string('regidtration/login.html', {}, request=request)
+            return JsonResponse({'success': True, 'html': html})
     else:
         form = RegistrationForm()
         html = render_to_string('regidtration/register.html', {'form': form}, request=request)
@@ -39,16 +43,19 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return JsonResponse({'success': True, 'message': 'User logged in!'})
+            messages.success(request, "You are now logged in")
+            return redirect("index")
         else:
-            return JsonResponse({'success': False, 'errors': {'login': ['Invalid username or password.']}}, status=400)
+            messages.error(request, "Invalid username or password")
+            return redirect("index")
     else:
         html = render_to_string('regidtration/login.html', {}, request=request)
         return JsonResponse({'success': True, 'html': html})
 
+@login_required()
 def user_logout(request):
     logout(request)
-    return JsonResponse({'success': True})
+    return redirect("index")
 
 def update_profile(request):
     user = request.user
@@ -59,10 +66,12 @@ def update_profile(request):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
-            return JsonResponse({'success': True, 'message': 'Your account has been updated!'})
+            messages.success(request, 'Your account has been updated!')
+            return redirect('index')
         else:
             errors = u_form.errors, p_form.errors
-            return JsonResponse({'success': False, 'errors': errors})
+            messages.error(request, 'There are errors updating your profile, please try again with another one')
+            return redirect('index')
     else:
         u_form = UserUpdateForm(instance=user)
         p_form = ProfileUpdateForm(instance=profile)
@@ -80,9 +89,11 @@ def change_password(request):
         if form.is_valid():
             form.save()
             login(request, form.user)
-            return JsonResponse({'success': True, 'message': 'Your password was successfully updated!'})
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('index')
         else:
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+            messages.error(request, 'Please correct the error in form.')
+            return redirect('index')
     else:
         form = PasswordChangeForm(user=request.user)
         html = render_to_string('regidtration/change_password.html', {'form': form}, request=request)
@@ -98,25 +109,30 @@ def add_friend(request):
             try:
                 friend_profile = get_object_or_404(Profile, display_name=friend_name)
                 if user_profile == friend_profile:
-                    return JsonResponse({'success': False, 'message': 'You cannot add yourself!'})
+                    messages.error(request, 'You are cannot add yourself')
+                    return redirect('index')
                 elif friend_profile in user_profile.friends.all():
-                    return JsonResponse({'success': False, 'message': 'You already have your friend!'})
+                    messages.error(request, 'You are already friend')
+                    return redirect('index')
                 else:
                     user_profile.friends.add(friend_profile)
                     user_profile.save()
-                    return JsonResponse({'success': True, 'message': 'You added your friend!'})
+                    messages.success(request, 'You are now friend')
+                    return redirect('index')
             except Exception as e:
-                return JsonResponse({'success': False, 'Exception': str(e)})
+                messages.error(request, 'Something went wrong')
+                return redirect('index')
         else:
-            return JsonResponse({'success': False, 'Form not valid': form.errors})
+            messages.error(request, 'Please correct the error in form.')
+            return redirect('index')
     else:
         form = AddFriendsForm()
         html = render_to_string('regidtration/add_friend.html', {'form': form}, request=request)
         return JsonResponse({'success': True, 'html': html})
 
-def list_friends(request):
+@login_required
+def get_friend_statuses(request):
     user_profile = Profile.objects.get(user=request.user)
     friends = user_profile.friends.all()
-    friends_list = [{'display_name': f.display_name, 'is_online': f.is_online} for f in friends]
-    return JsonResponse({'success': True, 'friends': friends_list})
-# Create your views here.
+    statuses = {friend.display_name: friend.is_online for friend in friends}
+    return JsonResponse({'statuses': statuses})

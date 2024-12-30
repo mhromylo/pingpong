@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -33,8 +34,6 @@ urlpatterns = [
 
     path('login/', views.user_login, name='login'),
 
-    path('profile/', views.profile, name='profile'),
-
 path('logout/', views.user_logout, name='logout'),
 
     path('update_profile/', views.update_profile, name='update_profile'),
@@ -42,7 +41,6 @@ path('logout/', views.user_logout, name='logout'),
     path('change_password/', views.change_password, name='change_password'),
 
     path('add_friend/', views.add_friend, name='add_friend'),
-    path('friends/', views.list_friends, name='list_friends'),
 
 ]
 

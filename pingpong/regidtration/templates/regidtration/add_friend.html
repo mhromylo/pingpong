@@ -1,11 +1,16 @@
 <div id="content">
-<p>Friends:
-    {% for f in user.profile.friends.all %}
-        {{ f.display_name }}{% if not forloop.last %}, {% endif %}
-    {% empty %}
+<p>Friends:</p>
+<ul id="friend-list">
+   {% for f in user.profile.friends.all %}
+    <li>
+        <span class="friend-name"> {{ f.display_name }}</span>
+        <span class="status-indicator" data-status="offline"></span>
+        {% if not forloop.last %}, {% endif %}
+     {% empty %}
         No friends added yet.
     {% endfor %}
-</p>
+    </li>
+</ul>
 <h2>Add Friend</h2>
 <form method="post" action="{% url 'add_friend' %}">
     {% csrf_token %}

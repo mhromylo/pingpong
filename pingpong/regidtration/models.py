@@ -10,14 +10,11 @@ class Profile(models.Model):
     wins = models.PositiveIntegerField(default=0)
     losses = models.PositiveIntegerField(default=0)
     friends = models.ManyToManyField('self', blank=True)
+    is_online = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.display_name
-
-    @property
-    def is_online(self):
-        if self.user.is_authenticated:
-            return self.user.is_authenticated
 
     def update_ranking(self):
         if self.wins + self.losses > 0:
@@ -25,8 +22,8 @@ class Profile(models.Model):
         else:
             self.ranking = 0.0
 
-class Meta:
-    db_table = 'regidtration_profile'
+    class Meta:
+        db_table = 'regidtration_profile'
 
 
 
