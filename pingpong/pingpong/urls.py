@@ -24,6 +24,8 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
+
+    path('index/', views.index, name='index'),
     path('admin/', admin.site.urls),
 
     path('', views.index, name='index'),
@@ -43,6 +45,8 @@ path('logout/', views.user_logout, name='logout'),
     path('add_friend/', views.add_friend, name='add_friend'),
 
 ]
+
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

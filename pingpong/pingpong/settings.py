@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-6_xyo=s6(3ia4*a-@g7ihioryb*p2fi9*6eo1c6=j0n9b-^z)=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'regidtration.apps.RegidtrationConfig',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,13 @@ CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'regidtration/media')
+
+ASGI_APP = 'pingpong.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

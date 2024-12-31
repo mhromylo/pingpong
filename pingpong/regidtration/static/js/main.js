@@ -68,8 +68,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    Navigate("index");
+    const ws = new WebSocket('wss://127.0.0.1:8000/ws/status/');
 
+    ws.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        const friendItem = document.querySelector(`.friend-name[data-username="${data.username}"]`);
+        if (friendItem) {
+            const statusIndicator = friendItem.nextElementSibling;
+            statusIndicator.dataset.status = data.is_online ? "online" : "offline";
+        }
+    };
 
 
 });
