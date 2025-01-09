@@ -68,16 +68,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    const ws = new WebSocket('wss://localhost/ws/status/');
+    // const ws = new WebSocket('wss://localhost/ws/status/');
 
-    ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        if (data.type === "friend_status") {
-            const friendId = data.user_id;
-            const status = data.status;
-            updateFriendStatus(friendId, status); // Update the UI for the friend
-        }
-    };
+    // ws.onmessage = function(event) {
+    //     const data = JSON.parse(event.data);
+    //     if (data.type === "friend_status") {
+    //         const friendId = data.user_id;
+    //         const status = data.status;
+    //         updateFriendStatus(friendId, status); // Update the UI for the friend
+    //     }
+    // };
 
     function updateFriendStatus(friendId, status) {
         const statusElement = document.getElementById(`status-${friendId}`);
