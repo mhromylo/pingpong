@@ -13,7 +13,7 @@ services:
     volumes:
       - ./media:/app/media
       - ./static:/app/static
-    command: gunicorn --workers 3 pingpong.wsgi:application --bind 0.0.0.0:8000
+    command: ["./start.sh"]
 
   nginx:
     image: nginx:alpine
