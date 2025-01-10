@@ -28,6 +28,7 @@
                     <li> <a href="#update_profile" > Update Profile </a> </li>
                     <li> <a href="#change_password" > Change Password </a> </li>
                      <li> <a href="#add_friend" > Add Friend </a> </li>
+					 <li> <a href="#game_setup" > Game Setup </a> </li>
                     {% else %}
                 <li> <a href="#login" > LOGIN </a> </li>
                   {% endif %}
@@ -62,6 +63,14 @@
 
 </div>
         {% endif %}
+		{% if player2 %}
+		<h2>Welcome, {{ player2.username }}</h2>
+		<img src="{{ player2.profile.avatar.url }}" alt="Player 2 Avatar" class="avatar">
+        <h2>Player 2 Profile</h2>
+        <p>Display Name: {{ player2.display_name }}</p>
+        <p>Wins: {{ player2.wins }}</p>
+        <p>Losses: {{ player2.losses }}</p>
+    {% endif %}
     </main>
    <script src ="/static/js/main.js" > </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>

@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.template.loader import render_to_string
 from .forms import UserUpdateForm, ProfileUpdateForm
-from .models import Profile
+from .models import Profile, Game
 from regidtration.forms import RegistrationForm, UserUpdateForm, SignUpForm, ProfileUpdateForm, AddFriendsForm
 from django.shortcuts import get_object_or_404
 
@@ -146,3 +146,24 @@ def friend_list(request):
     friends = user_profile.friends.all()
     statuses = {friend.display_name: friend.is_online for friend in friends}
     return JsonResponse({'statuses': statuses})
+
+@login_required
+def game_setup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user2 = authenticate(request, username=username, password=password)
+        if user2:
+            player1 = Profile.objects.get(user=request.user)
+            player2 = Profile.objects.get(user=user2)
+            if player1 == player2:
+                messages.error(request, "You cannot play against yourself.")
+                return redirect('index')
+            messages.success(request, 'Press Play Game')
+            return render(request, 'regidtration/index.html', {'player2': player2})
+        else:
+            messages.error(request, "Wrong credential for Player 2")
+            return redirect('index')
+    html = render_to_string('regidtration/game_setup.html', {}, request=request)
+    return JsonResponse({'success': True, 'html': html})
+

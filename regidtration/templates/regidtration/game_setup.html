@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Setup</title>
+</head>
+<body>
+    <h1>Set Up Your Game</h1>
+    <form method="POST" action="{% url 'game_setup' %}" >
+        {% csrf_token %}
+        <label for="username">Player 2 Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Player 2 Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Log in second Player</button>
+    </form>
+	{% if player2 %}
+        <h2>Player 2 Profile</h2>
+        <p>Display Name: {{ player2.display_name }}</p>
+        <p>Wins: {{ player2.wins }}</p>
+        <p>Losses: {{ player2.losses }}</p>
+    {% endif %}
+</body>
+</html>

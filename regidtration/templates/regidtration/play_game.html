@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Play Game</title>
+</head>
+<body>
+    <h1>Game Between {{ game.player1.user.username }} and {{ game.player2.user.username }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="player1_score">{{ game.player1.user.username }} Score:</label>
+        <input type="number" id="player1_score" name="player1_score" required>
+        <label for="player2_score">{{ game.player2.user.username }} Score:</label>
+        <input type="number" id="player2_score" name="player2_score" required>
+        <button type="submit">Submit Scores</button>
+    </form>
+</body>
+</html>

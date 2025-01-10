@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Result</title>
+</head>
+<body>
+    <h1>Game Result</h1>
+    <p>{{ game.player1.user.username }}: {{ game.player1_score }}</p>
+    <p>{{ game.player2.user.username }}: {{ game.player2_score }}</p>
+    <h2>Winner: {{ game.winner.user.username }}</h2>
+    <a href="{% url 'game_setup' %}">Start a New Game</a>
+</body>
+</html>
