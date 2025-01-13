@@ -17,6 +17,9 @@ from django.shortcuts import get_object_or_404
 def index(request):
     return render(request, "regidtration/index.html")
 
+def pvp(request, Profile):
+    return render(request, "regidtration/index.html", Profile)
+
 def register_done(request):
     return render(request, "regidtration/register_done.html")
 def register(request):
@@ -157,13 +160,25 @@ def game_setup(request):
             player1 = Profile.objects.get(user=request.user)
             player2 = Profile.objects.get(user=user2)
             if player1 == player2:
-                messages.error(request, "You cannot play against yourself.")
-                return redirect('index')
-            messages.success(request, 'Press Play Game')
-            return render(request, 'regidtration/index.html', {'player2': player2})
+                return JsonResponse({'success': False, 'message': "You cannot play against yourself."})
+            request.session['player2'] = {
+                'display_name': player2.display_name,
+                'avatar_url': player2.avatar.url if player2.avatar else '',
+                'wins': player2.wins,
+                'losses': player2.losses,
+            }
+            return redirect('index')
         else:
             messages.error(request, "Wrong credential for Player 2")
             return redirect('index')
     html = render_to_string('regidtration/game_setup.html', {}, request=request)
     return JsonResponse({'success': True, 'html': html})
+
+def logout_player2(request):
+    if 'player2' in request.session:
+        del request.session['player2']
+        messages.success(request, "Player 2 has been logged out.")
+    else:
+        messages.error(request, "No Player 2 is currently logged in.")
+    return redirect('index')
 
