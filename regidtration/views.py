@@ -182,3 +182,20 @@ def logout_player2(request):
         messages.error(request, "No Player 2 is currently logged in.")
     return redirect('index')
 
+@csrf_exempt
+def save_game_result(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game_type = data.get('game_type')
+            winner_id = data.get('winner_id')
+            player_ids = data.get('player_ids', [])
+            winner = Profile.objects.get(id = winner_id)
+            game = Game.objects.create(game_type=game_type, winner=winner)
+            for player_id in player_ids:
+                player = Profile.objects.get(id = player_id)
+                game.players.add(player)
+                return JsonResponse({'success': True, 'message': 'Game result saved successfully!'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)

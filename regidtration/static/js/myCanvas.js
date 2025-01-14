@@ -13,6 +13,9 @@ const ballRadius = 10;
 let pl_1_score = 0;
 let pl_2_score = 0;
 
+let gameType = "2 Player Game";
+let playerIds = [1, 2];
+
 const paddleHeight = 100; 						// Side paddle height
 const paddleWidth = 10; 							// Side paddle width
 let paddleY_1 = (canvas.height - paddleHeight) / 2; 	// Left paddle
@@ -95,6 +98,7 @@ function hitBall() {
     resetBall();
     if (pl_2_score === 3) {
       alert("GAME OVER\n\nPLAYER 2 WINS");
+	  saveGameResult(gameType, 2, playerIds);
       document.location.reload();
       clearInterval(interval);
     }
@@ -105,6 +109,7 @@ function hitBall() {
     resetBall();
     if (pl_1_score === 3) {
       alert("GAME OVER\n\nPLAYER 1 WINS");
+	  saveGameResult(gameType, 1, playerIds);
       document.location.reload();
       clearInterval(interval);
     }
@@ -165,3 +170,38 @@ document.getElementById("runButton").addEventListener("click", function () {
   startGame();
   this.disabled = true;
 });
+
+function saveGameResult(gametype, winnerId, playerIds){
+	fetch('/save_game_result/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+        },
+        body: JSON.stringify({
+            game_type: gameType,
+            winner_id: winnerId,
+            player_ids: playerIds,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Game result saved:', data.message);
+        } else {
+            console.error('Error saving game result:', data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+function getCSRFToken() {
+    const name = 'csrftoken';
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+        }
+    }
+    return null;
+}

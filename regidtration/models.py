@@ -34,13 +34,10 @@ class Profile(models.Model):
         db_table = 'regidtration_profile'
 
 class Game(models.Model):
-    player1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="games_as_player1")
-    player2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="games_as_player2")
-    player1_score = models.PositiveIntegerField(default=0)
-    player2_score = models.PositiveIntegerField(default=0)
+    players = models.ManyToManyField(Profile, related_name='games')
     winner = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="games_won", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    game_type = models.CharField(max_length=50)
     def save_game_result(self):
         if self.player1_score > self.player2_score:
             self.winner = self.player1
