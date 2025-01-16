@@ -17,13 +17,14 @@
     {% endfor %}
 </ul>
 {% endif %}
+<meta name="csrf-token" content="{{ csrf_token }}">
 <canvas id="myCanvas" width="480" height="320"></canvas>
 		<button id="runButton">Start game</button>
 		<script src="/static/js/myCanvas.js"></script>
 
 <canvas id="fourPlayer" width="480" height="480"></canvas>
 		<button id="runButton4">Start 4 Player Game</button>
-		<script src="fourPlayer.js"></script>
+		<script src="/static/js/fourPlayer.js"></script>
     <header>
         <nav>
             <ul>

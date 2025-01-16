@@ -34,24 +34,13 @@ class Profile(models.Model):
         db_table = 'regidtration_profile'
 
 class Game(models.Model):
-    players = models.ManyToManyField(Profile, related_name='games')
+    player1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="games_as_Player1")
+    player2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="games_as_Player2")
+    player3 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player3")
+    player4 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player4")
     winner = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="games_won", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     game_type = models.CharField(max_length=50)
-    def save_game_result(self):
-        if self.player1_score > self.player2_score:
-            self.winner = self.player1
-            self.player1.update_stats(won=True)
-            self.player2.update_stats(won=False)
-        elif self.player2_score > self.player1_score:
-            self.winner = self.player2
-            self.player1.update_stats(won=False)
-            self.player2.update_stats(won=True)
-        else:
-            # Optional: Handle draw logic
-            pass
-        self.save()
-
     class Meta:
         db_table = 'regidtration_game'
 

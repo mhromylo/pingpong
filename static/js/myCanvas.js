@@ -14,7 +14,8 @@ let pl_1_score = 0;
 let pl_2_score = 0;
 
 let gameType = "2 Player Game";
-let playerIds = [1, 2];
+let player1Id = 1;
+let player2Id = 2;
 
 const paddleHeight = 100; 						// Side paddle height
 const paddleWidth = 10; 							// Side paddle width
@@ -109,7 +110,7 @@ function hitBall() {
     resetBall();
     if (pl_1_score === 3) {
       alert("GAME OVER\n\nPLAYER 1 WINS");
-	  saveGameResult(gameType, 1, playerIds);
+	  saveGameResult(gameType, 1, player1Id, player2Id);
       document.location.reload();
       clearInterval(interval);
     }
@@ -171,7 +172,7 @@ document.getElementById("runButton").addEventListener("click", function () {
   this.disabled = true;
 });
 
-function saveGameResult(gametype, winnerId, playerIds){
+function saveGameResult(gameType, winnerId, playerIds){
 	fetch('/save_game_result/', {
         method: 'POST',
         headers: {
@@ -181,7 +182,8 @@ function saveGameResult(gametype, winnerId, playerIds){
         body: JSON.stringify({
             game_type: gameType,
             winner_id: winnerId,
-            player_ids: playerIds,
+            player1id: player1Id,
+			player2id: player2Id,
         }),
     })
     .then(response => response.json())
@@ -195,13 +197,5 @@ function saveGameResult(gametype, winnerId, playerIds){
     .catch(error => console.error('Error:', error));
 }
 function getCSRFToken() {
-    const name = 'csrftoken';
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith(name + '=')) {
-            return cookie.substring(name.length + 1);
-        }
-    }
-    return null;
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 }
