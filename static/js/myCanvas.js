@@ -98,8 +98,8 @@ function hitBall() {
     pl_2_score++;
     resetBall();
     if (pl_2_score === 3) {
+      saveGameResult(gameType, player2Id, player1Id);
       alert("GAME OVER\n\nPLAYER 2 WINS");
-	  saveGameResult(gameType, 2, playerIds);
       document.location.reload();
       clearInterval(interval);
     }
@@ -109,8 +109,8 @@ function hitBall() {
     pl_1_score++;
     resetBall();
     if (pl_1_score === 3) {
+      saveGameResult(gameType, player1Id, player2Id);
       alert("GAME OVER\n\nPLAYER 1 WINS");
-	  saveGameResult(gameType, 1, player1Id, player2Id);
       document.location.reload();
       clearInterval(interval);
     }
@@ -172,7 +172,7 @@ document.getElementById("runButton").addEventListener("click", function () {
   this.disabled = true;
 });
 
-function saveGameResult(gameType, winnerId, playerIds){
+function saveGameResult(gameType, winnerId, player2Id){
 	fetch('/save_game_result/', {
         method: 'POST',
         headers: {
@@ -182,7 +182,6 @@ function saveGameResult(gameType, winnerId, playerIds){
         body: JSON.stringify({
             game_type: gameType,
             winner_id: winnerId,
-            player1id: player1Id,
 			player2id: player2Id,
         }),
     })
@@ -199,3 +198,11 @@ function saveGameResult(gameType, winnerId, playerIds){
 function getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 }
+function getProfileId() {
+    return document.getElementById("profileId").value;
+}
+
+function getPlayer2Id() {
+    return document.getElementById("player2Id").value; 
+}
+

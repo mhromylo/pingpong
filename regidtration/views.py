@@ -32,7 +32,7 @@ def register(request):
         else:
             messages.error(request, "There was an error, please try again later")
             form = RegistrationForm()
-            html = render_to_string('regidtration/login.html', {}, request=request)
+            html = render_to_string('regidtration/login.html', {'form': form}, request=request)
             return JsonResponse({'success': True, 'html': html})
     else:
         form = RegistrationForm()
@@ -182,20 +182,18 @@ def logout_player2(request):
         messages.error(request, "No Player 2 is currently logged in.")
     return redirect('index')
 
-@csrf_exempt
 def save_game_result(request):
     if request.method == 'POST':
         try:
+            print(request.body)
             data = json.loads(request.body)
             game_type = data.get('game_type')
             winner_id = data.get('winner_id')
-            player1id = data.get('player1id')
             player2id = data.get('player2id')
-            player1 = Profile.objects.get(id = player1id)
             player2 = Profile.objects.get(id = player2id)
             winner = Profile.objects.get(id = winner_id)
-            game = Game.objects.create(game_type=game_type, winner=winner, player1=player1, player2=player2)
+            game = Game.objects.create(game_type=game_type, winner=winner, player2=player2)
             return JsonResponse({'success': True, 'message': 'Game result saved successfully!'})
         except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=400)
+            return JsonResponse({'success': False, 'message': "Fuck"}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)

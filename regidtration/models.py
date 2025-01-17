@@ -34,7 +34,6 @@ class Profile(models.Model):
         db_table = 'regidtration_profile'
 
 class Game(models.Model):
-    player1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="games_as_Player1")
     player2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="games_as_Player2")
     player3 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player3")
     player4 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player4")
@@ -43,6 +42,9 @@ class Game(models.Model):
     game_type = models.CharField(max_length=50)
     class Meta:
         db_table = 'regidtration_game'
+        
+    def __str__(self):
+        return f"Game ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')} - {self.game_type})"
 
 
 

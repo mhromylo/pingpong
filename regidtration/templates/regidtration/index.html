@@ -29,6 +29,7 @@
         <nav>
             <ul>
                 {% if user.is_authenticated %}
+				<input type="hidden" id="profileId" value="{{ user.profile.id }}" />
                 <li> <a href="#logout" > LogOut </a> </li>
                     <li> <a href="#update_profile" > Update Profile </a> </li>
                     <li> <a href="#change_password" > Change Password </a> </li>
@@ -69,6 +70,7 @@
 </div>
         {% endif %}
 		{% if request.session.player2 %}
+		<input type="hidden" id="player2Id" value="{{ request.session.player2.id }}" />
     <h2>Welcome, {{ request.session.player2.display_name }}</h2>
     <img src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar">
     <h2>Player 2 Profile</h2>
