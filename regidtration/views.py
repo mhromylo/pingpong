@@ -166,6 +166,7 @@ def game_setup(request):
                 'avatar_url': player2.avatar.url if player2.avatar else '',
                 'wins': player2.wins,
                 'losses': player2.losses,
+                'id': player2.id,
             }
             return redirect('index')
         else:
@@ -191,7 +192,9 @@ def save_game_result(request):
             winner_id = data.get('winner_id')
             player2id = data.get('player2id')
             player2 = Profile.objects.get(id = player2id)
+            player2.update_stats(won = 0)
             winner = Profile.objects.get(id = winner_id)
+            winner.update_stats(won = 1)
             game = Game.objects.create(game_type=game_type, winner=winner, player2=player2)
             return JsonResponse({'success': True, 'message': 'Game result saved successfully!'})
         except Exception as e:

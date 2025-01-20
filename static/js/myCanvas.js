@@ -14,8 +14,8 @@ let pl_1_score = 0;
 let pl_2_score = 0;
 
 let gameType = "2 Player Game";
-let player1Id = 1;
-let player2Id = 2;
+let player1Id = 0;
+let player2Id = 0;
 
 const paddleHeight = 100; 						// Side paddle height
 const paddleWidth = 10; 							// Side paddle width
@@ -169,6 +169,10 @@ function startGame() {
 
 document.getElementById("runButton").addEventListener("click", function () {
   startGame();
+  player1Id = getProfileId();
+  player2Id = getPlayer2Id();
+  console.log("Player 1 ID:", player1Id);
+  console.log("Player 2 ID:", player2Id);
   this.disabled = true;
 });
 

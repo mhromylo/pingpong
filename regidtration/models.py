@@ -23,7 +23,6 @@ class Profile(models.Model):
             self.ranking = 0.0
             
     def update_stats(self, won):
-        self.games_played += 1
         if won:
             self.wins += 1
         else:
