@@ -31,7 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fetch(form.action, {
             method: 'POST',
-            headers: {'X-CSRFToken': csrftoken},
+            contentType: 'application/json',
+            headers: {'X-CSRFToken': csrfToken},
             body: formData,
         })
             .then(response => response.json())
@@ -60,13 +61,50 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    const forms = document.querySelectorAll('form');
+    function handleDefaultFormSubmit(event) {
+        const form = event.target;
+        const formData = new FormData(form);
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    // Attach the handler to each form
-    forms.forEach(form => {
-        form.addEventListener('submit', handleFormSubmit);
+
+        fetch(form.action, {
+            method: 'POST',
+            contentType: 'application/json',
+            headers: {'X-CSRFToken': csrfToken},
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else if (data.errors) {
+                    const errors = Object.entries(data.errors)
+                        .map(([field, msgs]) => `<p><strong>${field}:</strong> ${msgs.join(', ')}</p>`)
+                        .join('');
+                    container.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error submitting form", error);
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const forms = document.querySelectorAll('form');
+    
+        forms.forEach(function(form) {
+            if (form.id !== 'logout-form') { // Check if form does not have the ID 'logout-form'
+                form.addEventListener("submit", handleFormSubmit);
+            }
+        });
     });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("logout-form");
+        if (form) {
+            form.addEventListener("submit", handleDefaultFormSubmit);
+        }
+    });
 
     // const ws = new WebSocket('wss://localhost/ws/status/');
 
