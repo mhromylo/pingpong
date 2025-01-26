@@ -39,8 +39,10 @@ function keyDownHandler(e) {
 
   if (e.key === "ArrowUp" || e.key === "Up") {
     UpPressed = true;
+    e.preventDefault();
   } else if (e.key === "ArrowDown" || e.key === "Down") {
     DownPressed = true;
+    e.preventDefault();
   }
 }
 
