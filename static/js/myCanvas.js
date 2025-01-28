@@ -192,7 +192,9 @@ function saveGameResult(gameType, winnerId, player2Id){
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log('Game result saved:', data.message);
+            document.querySelector('#player2Wins').textContent = `Wins: ${data.player2.wins}`;
+			document.querySelector('#player2Losses').textContent = `Losses: ${data.player2.losses}`;
+			alert.data.message;
         } else {
             console.error('Error saving game result:', data.message);
         }

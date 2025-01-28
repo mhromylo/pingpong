@@ -186,7 +186,6 @@ def logout_player2(request):
 def save_game_result(request):
     if request.method == 'POST':
         try:
-            print(request.body)
             data = json.loads(request.body)
             game_type = data.get('game_type')
             winner_id = data.get('winner_id')
@@ -196,7 +195,14 @@ def save_game_result(request):
             winner = Profile.objects.get(id = winner_id)
             winner.update_stats(won = 1)
             game = Game.objects.create(game_type=game_type, winner=winner, player2=player2)
-            return JsonResponse({'success': True, 'message': 'Game result saved successfully!'})
+            return JsonResponse({'success': True, 
+                                 'message': 'Game result saved successfully!',
+                                 'player2' : {
+                                     'id': player2.id,
+                                     'wins': player2.wins,
+                                     'losses': player2.losses,
+								 }
+								 })
         except Exception as e:
-            return JsonResponse({'success': False, 'message': "Fuck"}, status=400)
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)

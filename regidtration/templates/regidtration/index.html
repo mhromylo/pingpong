@@ -74,10 +74,12 @@
 		<input type="hidden" id="player2Id" value="{{ request.session.player2.id }}" />
     <h2>Welcome, {{ request.session.player2.display_name }}</h2>
     <img src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar">
-    <h2>Player 2 Profile</h2>
-    <p>Wins: {{ request.session.player2.wins }}</p>
-    <p>Losses: {{ request.session.player2.losses }}</p>
-	<p>ID: {{ request.session.player2.profile.id }}</p>
+    <div id="player2Stats">
+	<h2>Player 2 Profile</h2>
+    <p id="player2Wins">Wins: {{ request.session.player2.wins }}</p>
+    <p id="player2Losses">Losses: {{ request.session.player2.losses }}</p>
+	<p>ID: {{ request.session.player2.id }}</p>
+</div>
 	<form action="{% url 'logout_player2' %}" method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Log Out Player 2</button>
