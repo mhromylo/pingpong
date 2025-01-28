@@ -4,91 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <title>User management</title>
+    <title>Transendence</title>
     {% load static %}
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'regidtration/css/style.css' %}">
 </head>
 <body>
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
-<meta name="csrf-token" content="{{ csrf_token }}">
-<canvas id="myCanvas" width="480" height="320"></canvas>
-		<button id="runButton">Start game</button>
-		<script src="/static/js/myCanvas.js"></script>
 
-<canvas id="fourPlayer" width="480" height="480"></canvas>
-		<button id="runButton4">Start 4 Player Game</button>
-		<script src="/static/js/fourPlayer.js"></script>
-    <header>
-        <nav>
-            <ul>
-                {% if user.is_authenticated %}
-				<input type="hidden" id="profileId" value="{{ user.profile.id }}" />
-                <li> <a href="#logout" > LogOut </a> </li>
-                    <li> <a href="#update_profile" > Update Profile </a> </li>
-                    <li> <a href="#change_password" > Change Password </a> </li>
-                     <li> <a href="#add_friend" > Add Friend </a> </li>
-					 <li> <a href="#game_setup" > Game Setup </a> </li>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#index">Transendence</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <input type="hidden" id="profileId" value="{{ user.profile.id }}" />
+                        <li class="nav-item"><a class="nav-link" href="#update_profile">Update Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#change_password">Change Password</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#add_friend">Add Friend</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#game_setup">Game Setup</a></li>
+                        <form action="{% url 'logout' %}" method="post" id="logout-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Log Out</button>
+                        </form>
                     {% else %}
-                <li> <a href="#login" > LOGIN </a> </li>
-                  {% endif %}
-                <li> <a href="#register" > Register </a> </li>
-
-
-            </ul>
-        </nav>
-    </header>
-    <main>
-
-        <div id = "content">
-
+                        <li class="nav-item"><a class="nav-link" href="#login">Log In</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#register">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
+    </nav>
+</header>
+
+<!-- Main Content -->
+<main class="container main-container">
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div id="content">
         {% if user.is_authenticated %}
-            <div id="profile">
-    <h2>Welcome, {{ user.username }}</h2>
+            <div id="profile" class="profile-info">
+                <h2>Welcome, {{ user.username }}</h2>
                 <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar">
-    <p>Display Name: {{ user.profile.display_name }}</p>
-    <p>Email: {{ user.email }}</p>
-    <p>Wins: {{ user.profile.wins }}</p>
-    <p>Losses: {{ user.profile.losses }}</p>
-	<p>ID: {{ user.profile.id }}</p>
-             <p>Friends: {% for f in user.profile.friends.all %}
-             {{ f.display_name }}{% if not forloop.last %}, {% endif %}
-                  {% empty %}
-        No friends added yet.
-             {% endfor %}
-             </p>
-
-
-
-
-</div>
+                <p><strong>Display Name:</strong> {{ user.profile.display_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
+                <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
+                <p><strong>ID:</strong> {{ user.profile.id }}</p>
+                <p><strong>Friends:</strong> 
+                    {% for f in user.profile.friends.all %}
+                        {{ f.display_name }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        No friends added yet.
+                    {% endfor %}
+                </p>
+            </div>
         {% endif %}
-		{% if request.session.player2 %}
-		<input type="hidden" id="player2Id" value="{{ request.session.player2.id }}" />
-    <h2>Welcome, {{ request.session.player2.display_name }}</h2>
-    <img src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar">
-    <div id="player2Stats">
-	<h2>Player 2 Profile</h2>
-    <p id="player2Wins">Wins: {{ request.session.player2.wins }}</p>
-    <p id="player2Losses">Losses: {{ request.session.player2.losses }}</p>
-	<p>ID: {{ request.session.player2.id }}</p>
-</div>
-	<form action="{% url 'logout_player2' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Log Out Player 2</button>
-    </form>
-{% else %}
-    <p>No Player 2 data available.</p>
-{% endif %}
-    </main>
-   <script src ="/static/js/main.js" > </script>
+        
+        {% if request.session.player2 %}
+            <input type="hidden" id="player2Id" value="{{ request.session.player2.id }}" />
+            <h2>Welcome, {{ request.session.player2.display_name }}</h2>
+            <div class="profile-info">
+                <img src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar">
+                <h3>Player 2 Profile</h3>
+                <p><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
+                <p><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
+                <p><strong>ID:</strong> {{ request.session.player2.profile.id }}</p>
+                <form action="{% url 'logout_player2' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Log Out Player 2</button>
+                </form>
+            </div>
+        {% else %}
+            <p>No Player 2 data available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Game Canvas Section -->
+    <div class="game-canvas">
+        <canvas id="myCanvas" width="480" height="320"></canvas>
+        <button id="runButton" class="btn btn-primary">Start Game</button>
+    </div>
+    
+    <div class="game-canvas">
+        <canvas id="fourPlayer" width="480" height="480"></canvas>
+        <button id="runButton4" class="btn btn-primary">Start 4 Player Game</button>
+    </div>
+</main>
+
+<script src="/static/js/myCanvas.js"></script>
+<script src="/static/js/fourPlayer.js"></script>
+<script src="/static/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 </html>
