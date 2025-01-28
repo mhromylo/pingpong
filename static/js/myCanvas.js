@@ -14,8 +14,8 @@ let pl_1_score = 0;
 let pl_2_score = 0;
 
 let gameType = "2 Player Game";
-let player1Id = 0;
-let player2Id = 0;
+let player1Id = 1;
+let player2Id = 2;
 
 const paddleHeight = 100; 						// Side paddle height
 const paddleWidth = 10; 							// Side paddle width
@@ -39,8 +39,10 @@ function keyDownHandler(e) {
 
   if (e.key === "ArrowUp" || e.key === "Up") {
     UpPressed = true;
+    e.preventDefault();
   } else if (e.key === "ArrowDown" || e.key === "Down") {
     DownPressed = true;
+    e.preventDefault();
   }
 }
 
@@ -192,8 +194,6 @@ function saveGameResult(gameType, winnerId, player2Id){
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            document.querySelector('#player2Wins').textContent = `Wins: ${data.player2.wins}`;
-			document.querySelector('#player2Losses').textContent = `Losses: ${data.player2.losses}`;
 			alert.data.message;
         } else {
             console.error('Error saving game result:', data.message);
