@@ -17,13 +17,15 @@ from regidtration.consumers import FriendStatusConsumer
 
 import pingpong
 
+import regidtration.routing
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pingpong.settings')
 
-# application = ProtocolTypeRouter({
-#     "http": get_asgi_application(),
-#     "websocket": AuthMiddlewareStack(
-#         URLRouter(
-#             path('ws/status/', FriendStatusConsumer.as_asgi()),
-#         )
-#     ),
-# })
+application = ProtocolTypeRouter({
+     'http': get_asgi_application(),
+     'websocket': AuthMiddlewareStack(
+         URLRouter(
+             regidtration.routing.websocket_urlpatterns
+         )
+     )
+})

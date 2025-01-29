@@ -15,6 +15,19 @@ services:
       - ./static:/app/static
     command: ["./start.sh"]
 
+  daphne:
+    build: .
+    container_name: daphne
+    restart: always
+    depends_on:
+      - db
+      - web
+    networks:
+      - pingpong_network
+    expose:
+        - "8001"
+    command: ["daphne", "-b", "0.0.0.0", "-p", "8001", "pingpong.asgi:application"]
+
   nginx:
     image: nginx:alpine
     volumes:
@@ -29,6 +42,7 @@ services:
       - pingpong_network
     depends_on:
       - web
+      - daphne
 
   db:
     image: postgres:15

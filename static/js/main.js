@@ -105,18 +105,20 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener("submit", handleDefaultFormSubmit);
         }
     });
+    let url = `wss://${window.location.host}/ws/socket-server/`
+    const wss = new WebSocket(url);
 
-    // const ws = new WebSocket('wss://localhost/ws/status/');
-
-    // ws.onmessage = function(event) {
-    //     const data = JSON.parse(event.data);
+    wss.onmessage = function(e) {
+         let data = JSON.parse(e.data);
+		 console.log('Data:', data);
     //     if (data.type === "friend_status") {
     //         const friendId = data.user_id;
     //         const status = data.status;
     //         updateFriendStatus(friendId, status); // Update the UI for the friend
     //     }
-    // };
-
+     };
+	
+	
     function updateFriendStatus(friendId, status) {
         const statusElement = document.getElementById(`status-${friendId}`);
         if (statusElement) {

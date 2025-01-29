@@ -3,5 +3,7 @@ psycopg2-binary
 Pillow>=8.0.0
 channels
 gunicorn>=20.1.0
+daphne
+channels-redis
 
 
