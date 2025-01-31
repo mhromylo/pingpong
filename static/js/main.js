@@ -106,24 +106,35 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener("submit", handleDefaultFormSubmit);
         }
     });
+	const multiplayerButton = document.getElementById("multiplayerButton");
+	multiplayerButton.addEventListener("click", function(){
+		socket = new WebSocket("wss://localhost/ws/socket-server/");
 
-    socket = new WebSocket("wss://localhost/ws/socket-server/");
+		socket.onopen = function(event){
+			console.log("Websocket connection established,");
+			socket.send(JSON.stringify({message: "ready", playerId: player1Id}));
+		};
+	
+		socket.onmessage = function(event) {
+			const message = JSON.parse(event.data);
+			console.log("Recived from server:", message);
 
-	socket.onopen = function(event){
-		console.log("Websocket connection established,");
-	};
-
-    socket.onmessage = function(event) {
-		console.log("Recived:", event.data);
-     };
-
-	socket.onerror = function(event){
-		console.error("Websocket error:", event);
-	};
-
-	socket.onclose = function(event){
-		console.log("Websocket connection closed.");
-	};
+			if(message.status === "ready"){
+				startGame();
+			}
+			updateGameState(message);
+		 };
+	
+		socket.onerror = function(event){
+			console.error("Websocket error:", event);
+		};
+	
+		socket.onclose = function(event){
+			console.log("Websocket connection closed.");
+		};
+		this.disabled = true;
+	})
+  
 	
 	
     function updateFriendStatus(friendId, status) {
@@ -143,3 +154,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 });
+
+function updateGameState(state){
+	paddleY_1 = state.paddles.player1;
+    paddleY_2 = state.paddles.player2;
+    x = state.ball.x;
+    y = state.ball.y;
+    dx = state.ball.dx;
+    dy = state.ball.dy;
+    pl_1_score = state.score.player1;
+    pl_2_score = state.score.player2;
+
+	draw();
+}
+
+function sendPlayerMove(){
+	const moveData = {
+		playerId: player1Id,
+		paddleY: paddleY_1,
+		action: 'move'
+	};
+	socket.send(JSON.stringify(moveData));
+}
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(e) {
+    if (e.key === "W" || e.key === "w") {
+        Wpressed = true;
+        sendPlayerMove();
+    } else if (e.key === "S" || e.key === "s") {
+        Spressed = true;
+        sendPlayerMove();
+    }
+
+    if (e.key === "ArrowUp" || e.key === "Up") {
+        UpPressed = true;
+        e.preventDefault();
+    } else if (e.key === "ArrowDown" || e.key === "Down") {
+        DownPressed = true;
+        e.preventDefault();
+    }
+}
+
+function keyUpHandler(e) {
+    if (e.key === "W" || e.key === "w") {
+        Wpressed = false;
+        sendPlayerMove();
+    } else if (e.key === "S" || e.key === "s") {
+        Spressed = false;
+        sendPlayerMove();
+    }
+
+    if (e.key === "ArrowUp") {
+        UpPressed = false;
+    } else if (e.key === "ArrowDown") {
+        DownPressed = false;
+    }
+}
