@@ -1,3 +1,4 @@
+let socket;
 document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById("content");
 
@@ -105,18 +106,24 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener("submit", handleDefaultFormSubmit);
         }
     });
-    let url = `wss://${window.location.host}/ws/socket-server/`
-    const wss = new WebSocket(url);
 
-    wss.onmessage = function(e) {
-         let data = JSON.parse(e.data);
-		 console.log('Data:', data);
-    //     if (data.type === "friend_status") {
-    //         const friendId = data.user_id;
-    //         const status = data.status;
-    //         updateFriendStatus(friendId, status); // Update the UI for the friend
-    //     }
+    socket = new WebSocket("wss://localhost/ws/socket-server/");
+
+	socket.onopen = function(event){
+		console.log("Websocket connection established,");
+	};
+
+    socket.onmessage = function(event) {
+		console.log("Recived:", event.data);
      };
+
+	socket.onerror = function(event){
+		console.error("Websocket error:", event);
+	};
+
+	socket.onclose = function(event){
+		console.log("Websocket connection closed.");
+	};
 	
 	
     function updateFriendStatus(friendId, status) {

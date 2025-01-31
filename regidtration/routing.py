@@ -1,9 +1,8 @@
-from django.urls import re_path
+from django.urls import path
 from . import consumers
 
-from regidtration.consumers import FriendStatusConsumer
+from regidtration.consumers import FriendStatusConsumer, PongConsumer
 
 websocket_urlpatterns = [
-	re_path(r'ws/socket-server/', consumers.ChatConsumer.as_asgi())
-#     path('ws/status/', FriendStatusConsumer.as_asgi()),
+    path("ws/socket-server/", PongConsumer.as_asgi()),
 ]

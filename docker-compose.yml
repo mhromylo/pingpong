@@ -21,7 +21,6 @@ services:
     restart: always
     depends_on:
       - db
-      - web
     networks:
       - pingpong_network
     expose:

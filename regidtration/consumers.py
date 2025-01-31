@@ -1,5 +1,10 @@
 import json
+import uuid
+
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
@@ -55,3 +60,13 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             "status": event["status"],
             "user_id": event["user_id"]
         }))
+class PongConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        pass
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        await self.send(text_data=json.dumps({"message": data["message"]}))

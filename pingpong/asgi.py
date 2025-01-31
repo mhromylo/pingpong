@@ -15,6 +15,8 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import include, path
 from regidtration.consumers import FriendStatusConsumer
 
+from regidtration.routing import websocket_urlpatterns
+
 import pingpong
 
 import regidtration.routing
@@ -23,9 +25,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pingpong.settings')
 
 application = ProtocolTypeRouter({
      'http': get_asgi_application(),
-     'websocket': AuthMiddlewareStack(
-         URLRouter(
-             regidtration.routing.websocket_urlpatterns
-         )
-     )
+     'websocket': URLRouter(websocket_urlpatterns),
+     
 })
