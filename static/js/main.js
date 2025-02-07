@@ -106,34 +106,39 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener("submit", handleDefaultFormSubmit);
         }
     });
-	const multiplayerButton = document.getElementById("multiplayerButton");
-	multiplayerButton.addEventListener("click", function(){
-		socket = new WebSocket("wss://localhost/ws/socket-server/");
+	let socket;
+let sessionId = localStorage.getItem("session_id") || null;
+let gameStarted = false;
+const localIP = "10.12.9.4";
+document.getElementById("multiplayerButton").addEventListener("click", function() {
+    if (!sessionId) {
+        sessionId = Math.random().toString(36).substr(2, 9);  // Generate session ID
+        localStorage.setItem("session_id", sessionId);
+    }
 
-		socket.onopen = function(event){
-			console.log("Websocket connection established,");
-			socket.send(JSON.stringify({message: "ready", playerId: player1Id}));
-		};
-	
-		socket.onmessage = function(event) {
-			const message = JSON.parse(event.data);
-			console.log("Recived from server:", message);
+    socket = new WebSocket(`wss://${localIP}/ws/socket-server/`);
 
-			if(message.status === "ready"){
-				startGame();
-			}
-			updateGameState(message);
-		 };
-	
-		socket.onerror = function(event){
-			console.error("Websocket error:", event);
-		};
-	
-		socket.onclose = function(event){
-			console.log("Websocket connection closed.");
-		};
-		this.disabled = true;
-	})
+    socket.onopen = function() {
+        console.log("Connected to game session: " + sessionId);
+        document.getElementById("status").innerText = "Waiting for opponent...";
+    };
+
+    socket.onmessage = function (event) {
+        let data = JSON.parse(event.data);
+        
+        if (data.event === "waiting_for_opponent") {
+            console.log("Waiting for an opponent...");
+        } else if (data.event === "game_start") {
+            console.log("Game starting!");
+            startGame();  // Your function to start the game
+        }
+    };
+
+    socket.onclose = function() {
+        console.log("Disconnected from game session.");
+        document.getElementById("status").innerText = "Disconnected. Refresh to try again.";
+    };
+});
   
 	
 	

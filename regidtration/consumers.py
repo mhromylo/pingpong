@@ -50,57 +50,41 @@ class FriendStatusConsumer(AsyncWebsocketConsumer):
             "status": event["status"],
             "user_id": event["user_id"]
         }))
+
 class PongConsumer(AsyncWebsocketConsumer):
-    players = []
-    game_state = {
-        'paddles': {'player1': 0, 'player2': 0},
-        'ball': {'x': 400, 'y': 300, 'dx': 2, 'dy': 1.5},
-        'score': {'player1': 0, 'player2': 0}
-    }
-    
+    waiting_player = None  # Store the first player waiting for an opponent
+
     async def connect(self):
-        if len(self.players) < 2:
-            self.players.append(self)
+        if PongConsumer.waiting_player is None:
+            # First player joins and waits
+            PongConsumer.waiting_player = self.channel_name
+            self.session_id = self.channel_name  # Temporary session ID
             await self.accept()
-            if len(self.players) == 2:
-                for player in self.players:
-                    await player.send(text_data=json.dumps({
-                        'message': 'Game started!',
-                        'status': 'ready',
-                        'game_state': self.game_state
-                    }))
+            await self.send(json.dumps({"event": "waiting_for_opponent"}))
         else:
-            await self.close()
+            # Second player joins, assign them to the same session
+            self.session_id = PongConsumer.waiting_player
+            await self.accept()
+
+            # Notify both players that the game is starting
+            await self.channel_layer.send(
+                PongConsumer.waiting_player,
+                {"type": "game_start"}
+            )
+            await self.send(json.dumps({"event": "game_start"}))
+
+            # Clear waiting player
+            PongConsumer.waiting_player = None
 
     async def disconnect(self, close_code):
-        self.players.remove(self)
-        print(f"Player diskonnected: {self}")
+        if self.session_id == PongConsumer.waiting_player:
+            PongConsumer.waiting_player = None
 
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-        print(f"Recived: {data}")
-        
-        if "action" in data:
-            action = data["action"]
-            if action == "move":
-                player_id = data.get("playerId")
-                paddle_y = data.get("paddleY")
-                print(f"Player {player_id} moved paddle to {paddle_y}")
-            # Handle move action here
-            else:
-                print("Unknown action:", action)
-        else:
-            print("No action provided in message.")
-             
-        for player in self.players:
-            await player.send(text_data=json.dumps({
-                'game_state': self.game_state
-            }))
-            self.update_ball()
-            for player in self.players:
-                await player.send(text_data=json.dumps({
-                    'game_state': self.game_state
-                }))
+    async def game_start(self, event):
+        await self.send(json.dumps({"event": "game_start"}))
+
+    async def game_message(self, event):
+        await self.send(text_data=json.dumps(event["message"]))
     def update_ball(self):
         # Handle ball movement
         self.game_state['ball']['x'] += self.game_state['ball']['dx']
