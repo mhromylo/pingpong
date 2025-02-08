@@ -269,4 +269,4 @@ function startGame_4p() {
   interval_4p = setInterval(draw_4p, 10);
 }
 
-// startGame_4p();
+startGame_4p();

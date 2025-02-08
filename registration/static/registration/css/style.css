@@ -25,9 +25,24 @@
 	padding: 0;
 }
 canvas {
-	background: #eee;
-	display: block;
-	margin: 0 auto;
+  background: #eee;
+  display: block;
+  margin: 20px auto;
+}
+
+.menu-container {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px auto;
+  width: 480px;
+}
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.menu label {
+  margin-bottom: 5px;
 }
 
 body {

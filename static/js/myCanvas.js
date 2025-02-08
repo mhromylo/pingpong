@@ -1,66 +1,44 @@
+import Player from "./Player.js";
+
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width *= 1.5; 		// Scale canvas size
-canvas.height *= 1.5;
+canvas.width;
+canvas.height;
 
-let x = canvas.width / 2;
-let y = canvas.height / 2;
-let dx = 2; 				// Ball speed x-direction
-let dy = 1.5; 				// Ball speed y-direction
+let x  ;
+let y  ;
+let dx ;
+let dy ;
 const ballRadius = 10;
 
-let pl_1_score = 0;
-let pl_2_score = 0;
+const paddleHeight = 100; // Side paddle height
+const paddleWidth = 10; // Side paddle width
 
-let gameType = "2 Player Game";
-let player1Id = 1;
-let player2Id = 2;
+let interval;
 
-const paddleHeight = 100; 						// Side paddle height
-const paddleWidth = 10; 							// Side paddle width
-let paddleY_1 = (canvas.height - paddleHeight) / 2; 	// Left paddle
-let paddleY_2 = (canvas.height - paddleHeight) / 2; 	// Right paddle
+const AI_INTERVAL = 1000;
+let executeAIlogicInterval_player_1 = performance.now();
+let executeAIlogicInterval_player_2 = performance.now();
 
-let Wpressed = false;
-let Spressed = false;
-let UpPressed = false;
-let DownPressed = false;
 
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
+let player1, player2;
 
-function keyDownHandler(e) {
-  if (e.key === "W" || e.key === "w") {
-    Wpressed = true;
-  } else if (e.key === "S" || e.key === "s") {
-    Spressed = true;
-  }
 
-  if (e.key === "ArrowUp" || e.key === "Up") {
-    UpPressed = true;
-    e.preventDefault();
-  } else if (e.key === "ArrowDown" || e.key === "Down") {
-    DownPressed = true;
-    e.preventDefault();
-  }
-}
+// Add event listeners for key presses
+document.addEventListener("keydown", (e) => {
+player1.keyDownHandler(e);
+player2.keyDownHandler(e);
+});
 
-function keyUpHandler(e) {
-  if (e.key === "W" || e.key === "w") {
-    Wpressed = false;
-  } else if (e.key === "S" || e.key === "s") {
-    Spressed = false;
-  }
+document.addEventListener("keyup", (e) => {
+  player1.keyUpHandler(e);
+  player2.keyUpHandler(e);
+});
 
-  if (e.key === "ArrowUp") {
-    UpPressed = false;
-  } else if (e.key === "ArrowDown") {
-    DownPressed = false;
-  }
-}
-
-function drawBall() {
+// Draw the ball
+function drawBall()
+{
   ctx.beginPath();
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
   ctx.fillStyle = "#0095DD";
@@ -68,50 +46,28 @@ function drawBall() {
   ctx.closePath();
 }
 
-function drawPaddle1() {
-  ctx.beginPath();
-  ctx.rect(0, paddleY_1, paddleWidth, paddleHeight);
-  ctx.fillStyle = "green";
-  ctx.fill();
-  ctx.closePath();
-}
-
-function drawPaddle2() {
-  ctx.beginPath();
-  ctx.rect(canvas.width - paddleWidth, paddleY_2, paddleWidth, paddleHeight);
-  ctx.fillStyle = "red";
-  ctx.fill();
-  ctx.closePath();
-}
-
+// Handle ball collisions
 function hitBall() {
-  if (x - ballRadius < paddleWidth && y > paddleY_1 && y < paddleY_1 + paddleHeight) {
+  if (x - ballRadius < paddleWidth && y > player1.paddleY && y < player1.paddleY + paddleHeight) {
     dx = -dx;
-  }
-  else if (
+  } else if (
     x + ballRadius > canvas.width - paddleWidth &&
-    y > paddleY_2 &&
-    y < paddleY_2 + paddleHeight)
-  {
+    y > player2.paddleY &&
+    y < player2.paddleY + paddleHeight
+  ) {
     dx = -dx;
-  }
-  else if (x - ballRadius < 0)
- {
-    pl_2_score++;
+  } else if (x - ballRadius < 0) {
+    player2.score++;
     resetBall();
-    if (pl_2_score === 3) {
-      saveGameResult(gameType, player2Id, player1Id);
+    if (player2.score === 3) {
       alert("GAME OVER\n\nPLAYER 2 WINS");
       document.location.reload();
       clearInterval(interval);
     }
-  }
-  else if (x + ballRadius > canvas.width)
- {
-    pl_1_score++;
+  } else if (x + ballRadius > canvas.width) {
+    player1.score++;
     resetBall();
-    if (pl_1_score === 3) {
-      saveGameResult(gameType, player1Id, player2Id);
+    if (player1.score === 3) {
       alert("GAME OVER\n\nPLAYER 1 WINS");
       document.location.reload();
       clearInterval(interval);
@@ -123,92 +79,133 @@ function hitBall() {
   }
 }
 
-function resetBall() {
+// Reset ball position
+function resetBall()
+{
   x = canvas.width / 2;
   y = canvas.height / 2;
   dx = -dx;
 }
 
-function moveBall() {
+// Move the ball
+function moveBall()
+{
   hitBall();
   x += dx;
   y += dy;
 }
 
+// Draw player scores
 function drawScores() {
   ctx.font = "40px Lato";
-  ctx.fillStyle = "green";
-  ctx.fillText(pl_1_score.toString(), canvas.width / 4, 50);
-  ctx.fillStyle = "red";
-  ctx.fillText(pl_2_score.toString(), (canvas.width * 3) / 4, 50);
+  ctx.fillStyle = player1.paddleColour;
+  ctx.fillText(player1.score.toString(), canvas.width / 4, 50);
+  ctx.fillStyle = player2.paddleColour;
+  ctx.fillText(player2.score.toString(), (canvas.width * 3) / 4, 50);
 }
 
+// Main draw loop
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawScores();
   drawBall();
-  drawPaddle1();
-  drawPaddle2();
+  printBallDir(dx, dy, x, y, ctx)
+  player1.drawPaddle(ctx, canvas);
+  player2.drawPaddle(ctx, canvas);
+  
+  if (player1.isAI)
+  {
 
-  if (Wpressed) {
-    paddleY_1 = Math.max(paddleY_1 - 7, 0);
-  } else if (Spressed) {
-    paddleY_1 = Math.min(paddleY_1 + 7, canvas.height - paddleHeight);
+	if (performance.now() - executeAIlogicInterval_player_1 >= AI_INTERVAL)
+	{
+  	player1.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius);
+	executeAIlogicInterval_player_1 = performance.now();
+	}
+	player1.moveAIpaddle(ctx);
   }
+  else
+  	player1.movePaddlePlayer(canvas);
 
-  if (UpPressed) {
-    paddleY_2 = Math.max(paddleY_2 - 7, 0);
-  } else if (DownPressed) {
-    paddleY_2 = Math.min(paddleY_2 + 7, canvas.height - paddleHeight);
+  if (player2.isAI)
+  {
+	if (performance.now() - executeAIlogicInterval_player_2 >= AI_INTERVAL)
+	{
+		player2.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius);
+		executeAIlogicInterval_player_2 = performance.now();
+	}   
+	player2.moveAIpaddle(ctx);
   }
+  else
+    player2.movePaddlePlayer(canvas);
 
   moveBall();
 }
 
-function startGame() {
+// Start the game
+function startGame(player1Type, player1Colour, player2Type, player2Colour) {
+
+  if (interval)
+  {
+  	clearInterval(interval);
+  }
+
+  x = canvas.width / 2;
+  y = canvas.height / 2;
+  dx = 2; 
+  dy = 1.5;
+
+
+  player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width);
+  player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width);
+
+  // Start game loop
   interval = setInterval(draw, 10);
 }
 
-document.getElementById("runButton").addEventListener("click", function () {
-  startGame();
-  player1Id = getProfileId();
-  player2Id = getPlayer2Id();
-  console.log("Player 1 ID:", player1Id);
-  console.log("Player 2 ID:", player2Id);
-  this.disabled = true;
+// Add event listener to start button
+document.getElementById("runButton").addEventListener("click", () => {
+  const player1Type = document.getElementById("player1Type").value;
+  const player1Colour = document.getElementById("player1Colour").value;
+  const player2Colour = document.getElementById("player2Colour").value;
+  const player2Type = document.getElementById("player2Type").value;
+
+  console.log("Game Starting...");
+  console.log("Player 1 Type:", player1Type);
+  console.log("Player 1 Colour:", player1Colour);
+  console.log("Player 2 Colour:", player2Colour);
+  console.log("Player 2 Type:", player2Type);
+
+  startGame(player1Type, player1Colour, player2Type, player2Colour);
 });
 
-function saveGameResult(gameType, winnerId, player2Id){
-	fetch('/save_game_result/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken(),
-        },
-        body: JSON.stringify({
-            game_type: gameType,
-            winner_id: winnerId,
-			player2id: player2Id,
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-			alert.data.message;
-        } else {
-            console.error('Error saving game result:', data.message);
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-function getCSRFToken() {
-    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-}
-function getProfileId() {
-    return document.getElementById("profileId").value;
-}
 
-function getPlayer2Id() {
-    return document.getElementById("player2Id").value; 
+	/* TEST FUNCTIONS, DELETE LATER */
+function	printBallDir(dx, dy, x, y, ctx)
+{
+//	ctx.font = "15px Lato";
+//	ctx.fillStyle = "black";
+//	ctx.fillText("dx: " + dx.toString(), x, y - 25);
+//	ctx.fillText("dy: " + dy.toString(), x, y + 25);	
+//	ctx.fillText("player 2 ballTowardsUs: " + player2.ballTowardsUs.toString(), x, y + 75);
+//
+//	ctx.fillText(player2.testValueDeleteLater_calculatedYforAI, x, y + 100);
+//
+//	
+//
+//
+//	if (player2.ballTowardsUs * dx >= 0)
+//		{
+//			//print on the canvas that it is going towards the AI for thest
+//			ctx.font = "25px Lato";
+//			ctx.fillStyle = "black";
+//			ctx.fillText("It is going towards the AI", 200, 200);
+//		}
+//	else
+//		{
+//			//print on the canvas that it is going towards the player for thest
+//			ctx.font = "25px Lato";
+//			ctx.fillStyle = "black";
+//			ctx.fillText("It is going towards the player", 200, 200);
+//		}
 }
 
