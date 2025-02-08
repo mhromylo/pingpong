@@ -1,26 +1,44 @@
 document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById("content");
 
-    function Navigate(page) {
-        fetch("/" + page + "/")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Responce wrong ${response.status}`);
+    function loadPage(url, addToHistory = true) {
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+    
+                const newContent = tempDiv.querySelector('#content');
+                console.log('AAAAAAAAAAAAAAAAAAAA');
+                console.log(html);
+                console.log('AAAAAAAAAAAAAAAAAAAA');
+                console.log(newContent);
+    
+                if (newContent) {
+                    container.innerHTML = newContent.innerHTML;
                 }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success && data.html) {
-                    container.innerHTML = data.html;
-                } else {
-                    container.innerHTML = `<h2>Page not found: ${page}</h2>`;
+    
+                if (addToHistory) {
+                    history.pushState({ path: url }, "", url);
                 }
             })
-            .catch(error => {
-                console.error("Error fetching regidtration", error);
-                container.innerHTML = `<h2>Page not found: ${page}</h2>`;
-            });
+            .catch(error => console.error("Error loading page:", error));
     }
+    
+
+    document.querySelectorAll("a.nav-link").forEach(link => {
+        link.addEventListener("click", function (event) {
+            event.preventDefault();
+            const url = this.getAttribute("href").replace("#", ""); // Remove #
+            loadPage(url);
+        });
+    });
+
+    window.addEventListener("popstate", function (event) {
+        if (event.state) {
+            loadPage(event.state.path, false);
+        }
+    });
 
     function handleFormSubmit(event) {
         event.preventDefault(); // Prevent normal form submission
@@ -50,16 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error submitting form", error);
             });
     }
-
-    document.querySelectorAll("nav a").forEach(link => {
-        link.addEventListener("click", function (event) {
-            event.preventDefault();
-
-            let page = this.getAttribute("href").substring(1);
-
-            Navigate(page);
-        });
-    });
 
     function handleDefaultFormSubmit(event) {
         const form = event.target;

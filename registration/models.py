@@ -30,7 +30,7 @@ class Profile(models.Model):
         self.save()
 
     class Meta:
-        db_table = 'regidtration_profile'
+        db_table = 'registration_profile'
 
 class Game(models.Model):
     player2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="games_as_Player2")
@@ -40,7 +40,7 @@ class Game(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     game_type = models.CharField(max_length=50)
     class Meta:
-        db_table = 'regidtration_game'
+        db_table = 'registration_game'
         
     def __str__(self):
         return f"Game ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')} - {self.game_type})"
