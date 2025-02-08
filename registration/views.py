@@ -12,15 +12,15 @@ from .models import Profile, Game
 
 
 def index(request):
-    return render(request, "regidtration/index.html")
+    return render(request, "registration/index.html")
 
 
 def pvp(request, profile):
-    return render(request, "regidtration/index.html", {'profile': profile})
+    return render(request, "registration/index.html", {'profile': profile})
 
 
 def register_done(request):
-    return render(request, "regidtration/register_done.html")
+    return render(request, "registration/register_done.html")
 
 
 def register(request):
@@ -32,13 +32,11 @@ def register(request):
             return redirect("index")
         else:
             messages.error(request, "There was an error, please try again later")
-            form = RegistrationForm()
-            html = render_to_string('regidtration/login.html', {'form': form}, request=request)
-            return JsonResponse({'success': True, 'html': html})
+            return render(request, 'registration/login.html', {'form': form})
     else:
         form = RegistrationForm()
-        html = render_to_string('regidtration/register.html', {'form': form}, request=request)
-        return JsonResponse({'success': True, 'html': html})
+        return render(request, 'registration/register.html', {'form': form})
+
 
 
 def user_login(request):
@@ -54,8 +52,7 @@ def user_login(request):
             messages.error(request, "Invalid username or password")
             return redirect("index")
     else:
-        html = render_to_string('regidtration/login.html', {}, request=request)
-        return JsonResponse({'success': True, 'html': html})
+        return render(request, 'registration/login.html', {})
 
 
 @login_required
@@ -87,8 +84,8 @@ def update_profile(request):
         'u_form': u_form,
         'p_form': p_form,
     }
-    html = render_to_string('regidtration/update_profile.html', context, request=request)
-    return JsonResponse({'success': True, 'html': html})
+    return render(request, 'registration/update_profile.html', context)
+
 
 
 @login_required
@@ -105,8 +102,7 @@ def change_password(request):
             return redirect('index')
     else:
         form = PasswordChangeForm(user=request.user)
-        html = render_to_string('regidtration/change_password.html', {'form': form}, request=request)
-        return JsonResponse({'success': True, 'html': html})
+        return render(request, 'registration/change_password.html', {'form': form})
 
 
 @login_required
@@ -137,8 +133,7 @@ def add_friend(request):
             return redirect('index')
     else:
         form = AddFriendsForm()
-        html = render_to_string('regidtration/add_friend.html', {'form': form}, request=request)
-        return JsonResponse({'success': True, 'html': html})
+        return render(request, 'registration/add_friend.html', {'form': form})
 
 
 @login_required
@@ -183,8 +178,7 @@ def game_setup(request):
         else:
             messages.error(request, "Wrong credentials for Player 2")
             return redirect('index')
-    html = render_to_string('regidtration/game_setup.html', {}, request=request)
-    return JsonResponse({'success': True, 'html': html})
+    return render(request, 'registration/game_setup.html', {})
 
 
 def logout_player2(request):

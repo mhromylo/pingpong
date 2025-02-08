@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div id="content">
+        <h2>Welcome, {{ user.username }}</h2>
+        <p>Display Name: {{ user.profile.display_name }}</p>
+        <p>Email: {{ user.email }}</p>
+        <p>Wins: {{ user.profile.wins }}</p>
+        <p>Losses: {{ user.profile.losses }}</p>
+    </div>
+{% endblock %}

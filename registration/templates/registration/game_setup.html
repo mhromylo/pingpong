@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Game Setup</title>
-</head>
-<body>
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div id="content">
     <h1>Set Up Your Game</h1>
     <form method="POST" action="{% url 'game_setup' %}" >
         {% csrf_token %}
@@ -19,5 +18,6 @@
         <p>Wins: {{ player2.wins }}</p>
         <p>Losses: {{ player2.losses }}</p>
     {% endif %}
-</body>
-</html>
+</div>
+
+{% endblock %}

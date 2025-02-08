@@ -2,9 +2,9 @@ from django.apps import AppConfig
 
 
 
-class RegidtrationConfig(AppConfig):
+class registrationConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'regidtration'
+    name = 'registration'
 
     def ready(self):
-        import regidtration.signals
+        import registration.signals
