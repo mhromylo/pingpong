@@ -54,9 +54,51 @@
     {% block content %}
     {% endblock %}
 
+
+    <div class="menu-container">
+        <div class="menu">
+            <label for="player1Type">Player 1:</label>
+            <select id="player1Type">
+                <option value="human">Human</option>
+                <option value="ai">AI</option>
+            </select>
+        </div>
+        <div class="menu">
+            <label for="player1Colour"></label>
+            <select id="player1Colour">
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+                <option value="orange">Orange</option>
+                <option value="purple">Purple</option>
+                <option value="gold">Gold</option>
+                <option value="black">Black</option>
+            </select>
+        </div>
+        <div class="menu">
+            <label for="player2Colour"></label>
+            <select id="player2Colour">
+                <option value="green">Green</option>
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="orange">Orange</option>
+                <option value="purple">Purple</option>
+                <option value="gold">Gold</option>
+                <option value="black">Black</option>
+            </select>
+        </div>
+        <div class="menu">
+            <label for="player2Type">Player 2:</label>
+            <select id="player2Type">
+                <option value="human">Human</option>
+                <option value="ai">AI</option>
+            </select>
+        </div>
+    </div>
+
     <!-- Game Canvas Section -->
     <div class="game-canvas">
-        <canvas id="myCanvas" width="480" height="320"></canvas>
+        <canvas id="myCanvas" width="720" height="480"></canvas>
         <button id="runButton" class="btn btn-primary">Start Game</button>
     </div>
     
@@ -66,8 +108,8 @@
     </div>
 </main>
 
-<script src="/static/js/myCanvas.js"></script>
-<script src="/static/js/fourPlayer.js"></script>
+<script type="module" src="/static/js/myCanvas.js"></script>
+<!-- <script src="/static/js/fourPlayer.js"></script> -->
 <script src="/static/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
