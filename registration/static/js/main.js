@@ -7,16 +7,15 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(html => {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = html;
-    
+
                 const newContent = tempDiv.querySelector('#content');
-                console.log('AAAAAAAAAAAAAAAAAAAA');
-                console.log(html);
-                console.log('AAAAAAAAAAAAAAAAAAAA');
-                console.log(newContent);
     
                 if (newContent) {
                     container.innerHTML = newContent.innerHTML;
                 }
+
+                if (url === '/game_setup')
+                    loadMyCanvasScript();
     
                 if (addToHistory) {
                     history.pushState({ path: url }, "", url);
@@ -142,3 +141,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 });
+
+
+function loadMyCanvasScript() {
+    var existingScript = document.querySelector('script[src="/static/js/myCanvas.js"]');
+    if (existingScript) {
+        existingScript.remove();
+    }
+    var script = document.createElement('script');
+    script.type = 'module';
+    script.src = "/static/js/myCanvas.js";
+    script.onload = function() {};
+    document.head.appendChild(script);
+}
