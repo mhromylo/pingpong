@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 from django.contrib import messages
 import json
 
-from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm
+from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm
 from .models import Profile, Game
 
 
@@ -222,3 +222,32 @@ def save_game_result(request):
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
             return JsonResponse({'success': False, 'message': "Error saving game result."}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+
+@login_required
+def tornament_name_user(request):
+    if request.method == 'POST':
+        user = request.user
+        profile = Profile.objects.get(user=user)
+        t_form = TournamentUpdateForm(request.POST, instance=profile)
+        if t_form.is_valid():
+            display_name = request.POST.get('display_name')
+            t_form.save()
+            return JsonResponse({
+                'success': True, 
+                'message': 'Your Tournament name has been updated!', 
+                'new_tournament_name': display_name,
+            })
+        else:
+            errors = {field: msgs for field, msgs in t_form.errors.items()}
+            return JsonResponse({'success': False, 'errors': errors})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+def tournament(request):
+    player = Profile.objects.get(user=request.user)
+    t_form = TournamentUpdateForm(request.POST, instance=player)
+    if request.method == 'POST':
+        if t_form.is_valid():
+            t_form.save()
+        else:
+            t_form = TournamentUpdateForm(instance=player)
+    return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})

@@ -50,7 +50,8 @@ path('logout/', views.user_logout, name='logout'),
 
     path('logout_player2/', views.logout_player2, name='logout_player2'),
     path('save_game_result/', views.save_game_result, name='save_game_result'),
-
+    path('tournament/', views.tournament, name='tornament'),
+    path('tornament_name_user/', views.tornament_name_user, name='tornament_name_user'),
 
 
 ]

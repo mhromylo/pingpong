@@ -65,3 +65,14 @@ class ProfileUpdateForm(forms.ModelForm):
 
 class AddFriendsForm(forms.Form):
     friend_name = forms.CharField(label='Friend Name', max_length=150)
+
+class TournamentUpdateForm(forms.ModelForm):
+    display_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Profile
+        fields = ['display_name']
+
+    def __init__(self, *args, **kwargs):
+        super(TournamentUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['display_name'].widget.attrs.update({'class': 'form-control'})

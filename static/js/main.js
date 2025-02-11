@@ -48,7 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fetch(form.action, {
             method: 'POST',
-            contentType: 'application/json',
             headers: {'X-CSRFToken': csrfToken},
             body: formData,
         })
@@ -56,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data.success) {
                     container.innerHTML = `<h2>${data.message}</h2>`;
+                    document.getElementById("user.profile.display_name").textContent = data.new_tournament_name; // Update the tournament name dynamically
                 } else if (data.errors) {
                     const errors = Object.entries(data.errors)
                         .map(([field, msgs]) => `<p><strong>${field}:</strong> ${msgs.join(', ')}</p>`)
@@ -67,34 +67,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error submitting form", error);
             });
     }
-
-    function handleDefaultFormSubmit(event) {
-        const form = event.target;
-        const formData = new FormData(form);
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-
-        fetch(form.action, {
-            method: 'POST',
-            contentType: 'application/json',
-            headers: {'X-CSRFToken': csrfToken},
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else if (data.errors) {
-                    const errors = Object.entries(data.errors)
-                        .map(([field, msgs]) => `<p><strong>${field}:</strong> ${msgs.join(', ')}</p>`)
-                        .join('');
-                    container.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
-                }
-            })
-            .catch(error => {
-                console.error("Error submitting form", error);
-            });
-    }
+    const forms = document.querySelectorAll('form');
+    forms.forEach(function(form) {
+        form.addEventListener("submit", handleFormSubmit);
+    });
 
     document.addEventListener("DOMContentLoaded", function() {
         const forms = document.querySelectorAll('form');
@@ -106,12 +82,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.getElementById("logout-form");
-        if (form) {
-            form.addEventListener("submit", handleDefaultFormSubmit);
-        }
-    });
 
     // const ws = new WebSocket('wss://localhost/ws/status/');
 

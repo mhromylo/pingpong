@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'registration.apps.registrationConfig',
     'channels',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
