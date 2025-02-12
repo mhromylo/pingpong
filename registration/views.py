@@ -220,7 +220,6 @@ def save_game_result(request):
             return JsonResponse({'success': True, 'message': 'Game result saved successfully!'})
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
-            return JsonResponse({'success': False, 'message': "Error saving game result."}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
 @login_required
@@ -232,16 +231,66 @@ def tornament_name_user(request):
         if t_form.is_valid():
             display_name = request.POST.get('display_name')
             t_form.save()
-            return JsonResponse({
-                'success': True, 
-                'message': 'Your Tournament name has been updated!', 
-                'new_tournament_name': display_name,
-            })
+            return render(request, 'registration/tournament.html', {'player': profile, 't_form': t_form})
         else:
             errors = {field: msgs for field, msgs in t_form.errors.items()}
             return JsonResponse({'success': False, 'errors': errors})
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-
+@login_required
+def tornament_name_user2(request):
+    if request.method == 'POST':
+        user = request.user
+        user2 = request.session['user2']
+        profile = Profile.objects.get(user=user)
+        profile2 = Profile.objects.get(user=user2)
+        t_form = TournamentUpdateForm(request.POST, instance=profile2)
+        if t_form.is_valid():
+            display_name = request.POST.get('display_name')
+            t_form.save()
+            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, 't_form': t_form})
+        else:
+            errors = {field: msgs for field, msgs in t_form.errors.items()}
+            return JsonResponse({'success': False, 'errors': errors})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+@login_required
+def tornament_name_user3(request):
+    if request.method == 'POST':
+        user = request.user
+        user2 = request.session['user2']
+        user3 = request.session['user3']
+        profile = Profile.objects.get(user=user)
+        profile2 = Profile.objects.get(user=user2)
+        profile3 = Profile.objects.get(user=user3)
+        t_form = TournamentUpdateForm(request.POST, instance=profile3)
+        if t_form.is_valid():
+            display_name = request.POST.get('display_name')
+            t_form.save()
+            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, ' player3': profile3,'t_form': t_form})
+        else:
+            errors = {field: msgs for field, msgs in t_form.errors.items()}
+            return JsonResponse({'success': False, 'errors': errors})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+@login_required
+def tornament_name_user4(request):
+    if request.method == 'POST':
+        user = request.user
+        user2 = request.session['user2']
+        user3 = request.session['user3']
+        user4 = request.session['user4']
+        profile = Profile.objects.get(user=user)
+        profile2 = Profile.objects.get(user=user2)
+        profile3 = Profile.objects.get(user=user3)
+        profile4 = Profile.objects.get(user=user4)
+        t_form = TournamentUpdateForm(request.POST, instance=profile3)
+        if t_form.is_valid():
+            display_name = request.POST.get('display_name')
+            t_form.save()
+            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, ' player3': profile3,' player4': profile4, 't_form': t_form})
+        else:
+            errors = {field: msgs for field, msgs in t_form.errors.items()}
+            return JsonResponse({'success': False, 'errors': errors})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+#return render(request, 'registration/tournament.html', {'player': profile, 't_form': t_form})
 def tournament(request):
     player = Profile.objects.get(user=request.user)
     t_form = TournamentUpdateForm(request.POST, instance=player)
@@ -251,3 +300,61 @@ def tournament(request):
         else:
             t_form = TournamentUpdateForm(instance=player)
     return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
+
+@login_required
+def second_player_tournament(request):
+    player = Profile.objects.get(user=request.user)
+    t_form = TournamentUpdateForm(request.POST, instance=player)
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user2 = authenticate(request, username=username, password=password)
+        if user2:
+            player2 = Profile.objects.get(user=user2)
+            if player == player2:
+                messages.error(request, "You cannot play against yourself.")
+                return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
+            request.session['player2'] = {
+                'display_name': player2.display_name,
+                'avatar_url': player2.avatar.url if player2.avatar else '',
+                'wins': player2.wins,
+                'losses': player2.losses,
+                'id': player2.id,
+            }
+            return render(request, 'registration/tournament.html', {'player': player, 'player2': player2, 't_form': t_form})
+        else:
+            messages.error(request, "Wrong credentials for Player 2")
+            return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
+    return render(request, 'registration/tournament.html', {'player': player,'t_form': t_form})
+
+@login_required
+def third_player_tournament(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user3 = authenticate(request, username=username, password=password)
+        if user3:
+            if user3 is not None:
+            # Ensure this user is not already logged in as another player
+                existing_users = [
+                    request.session.get("user2"),
+                    request.session.get("user3"),
+                ]
+            player1 = Profile.objects.get(user=existing_users[0])
+            player2 = Profile.objects.get(user=existing_users[1])
+            if user3.username in existing_users:
+                messages.error(request, f"{username} is already logged in as another player.")
+                return render(request, 'registration/tournament.html', {'player': player1, 'player2': player2})
+            player3 = Profile.objects.get(user=user3)
+            request.session['player3'] = {
+                'display_name': player3.display_name,
+                'avatar_url': player3.avatar.url if player3.avatar else '',
+                'wins': player3.wins,
+                'losses': player3.losses,
+                'id': player3.id,
+            }
+            return render(request, 'registration/tournament.html', {'player': player1, 'player2': player2, 'player3': player3})
+        else:
+            messages.error(request, "Wrong credentials for Player 3")
+            return render(request, 'registration/tournament.html', {'player': player1, 'player2': player2})
+    return render(request, 'registration/tournament.html', {'player': player1, 'player2': player2, 'player3': player3})

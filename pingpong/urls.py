@@ -52,11 +52,12 @@ path('logout/', views.user_logout, name='logout'),
     path('save_game_result/', views.save_game_result, name='save_game_result'),
     path('tournament/', views.tournament, name='tornament'),
     path('tornament_name_user/', views.tornament_name_user, name='tornament_name_user'),
-
-
+     path('tornament_name_user2/', views.tornament_name_user2, name='tornament_name_user2'),
+      path('tornament_name_user3/', views.tornament_name_user3, name='tornament_name_user3'),
+       path('tornament_name_user4/', views.tornament_name_user4, name='tornament_name_user4'),
+    path('second_player_tournament/', views.second_player_tournament, name='second_player_tournament'),
+    path('third_player_tournament/', views.third_player_tournament, name='third_player_tournament'),
 ]
-
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

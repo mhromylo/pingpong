@@ -4,22 +4,23 @@
 
 <div id="content">
     <h1>Welcome to tournament</h1>
-    <div id="profile" class="profile-info">
-        <h2>Welcome, {{ user.username }}</h2>
+
+    <div class="profiles-container">
+    <div class="profile">
+        <h2>{{ user.username }}</h2>
         <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar">
-        <p id = user.profile.display_name>  <strong>Display Name:</strong> {{ user.profile.display_name }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p id = "display_name">  <strong>Display Name:</strong> {{ user.profile.display_name }}</p>
         <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
         <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
         <p><strong>ID:</strong> {{ user.profile.id }}</p>
-        <h2>Tournament name</h2>
         <form id = "update-tournament-name" method="POST" action="{% url 'tornament_name_user' %}">
             {% csrf_token %}
             {{ t_form.as_p }}
-            <button type="submit" class="btn btn-primary">Update Tournamentname</button>
+            <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>
-    <form method="POST" action="{% url 'game_setup' %}" >
+    {% if not player2 %}
+    <form method="POST" action="{% url 'second_player_tournament' %}" >
         {% csrf_token %}
         <label for="username">Player 2 Username:</label>
         <input type="text" id="username" name="username" required>
@@ -27,13 +28,69 @@
         <input type="password" id="password" name="password" required>
         <button type="submit">Log in second Player</button>
     </form>
-    {% if player2 %}
-        <h2>Player 2 Profile</h2>
-        <p>Display Name: {{ player2.display_name }}</p>
-        <p>Wins: {{ player2.wins }}</p>
-        <p>Losses: {{ player2.losses }}</p>
     {% endif %}
-
+    {% if player2 %}
+    <div class="profile">
+        <h2>{{ player2.username }}</h2>
+        <img src="{{ player2.avatar.url }}" alt="User Avatar" class="avatar">
+        <p><strong>Display Name:</strong> {{ player2.display_name }}</p>
+        <p><strong>Wins:</strong> {{ player2.wins }}</p>
+        <p><strong>Losses:</strong> {{ player2.losses }}</p>
+        <form id = "update-tournament-name-user2" method="POST" action="{% url 'tornament_name_user2' %}">
+            {% csrf_token %}
+            {{ t_form.as_p }}
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+    {% endif %}
+    {% if not player3 %}
+    <form method="POST" action="{% url 'third_player_tournament' %}" >
+        {% csrf_token %}
+        <label for="username">Player 3 Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Player 3 Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Log in third Player</button>
+    </form>
+    {% endif %}
+    {% if player3 %}
+    <div class="profile">
+        <h2>{{ player3.username }}</h2>
+        <img src="{{ player3.avatar.url }}" alt="User Avatar" class="avatar">
+        <p><strong>Display Name:</strong> {{ player3.display_name }}</p>
+        <p><strong>Wins:</strong> {{ player3.wins }}</p>
+        <p><strong>Losses:</strong> {{ player3.losses }}</p>
+        <form id = "update-tournament-name-user3" method="POST" action="{% url 'tornament_name_user3' %}">
+            {% csrf_token %}
+            {{ t_form.as_p }}
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+    {% endif %}
+    {% if not player4 %}
+    <form method="POST" action="{% url 'second_player_tournament' %}" >
+        {% csrf_token %}
+        <label for="username">Player 4 Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Player 4 Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Log in forth Player</button>
+    </form>
+    {% endif %}
+    {% if player4 %}
+    <div class="profile">
+        <h2>{{ player4.username }}</h2>
+        <img src="{{ player4.avatar.url }}" alt="User Avatar" class="avatar">
+        <p><strong>Display Name:</strong> {{ player4.display_name }}</p>
+        <p><strong>Wins:</strong> {{ player4.wins }}</p>
+        <p><strong>Losses:</strong> {{ player4.losses }}</p>
+        <form id = "update-tournament-name-user4" method="POST" action="{% url 'tornament_name_user4' %}">
+            {% csrf_token %}
+            {{ t_form.as_p }}
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+    {% endif %}
     <div class="menu-container">
         <div class="menu">
             <label for="player1Type">Player 1:</label>
@@ -92,9 +149,10 @@ document.getElementById('update-tournament-name').addEventListener('submit', fun
     event.preventDefault();  // Prevent the form from submitting normally
 
     const formData = new FormData(this);  // Collect the form data
+    console.log(formData);
 
     // Send the data via a POST request to your Django view
-    fetch('tornament_name_user/', {
+    fetch('localhost/tornament_name_user/', {
         method: 'POST',
         body: formData,  // Send the form data
         headers: {
@@ -106,7 +164,7 @@ document.getElementById('update-tournament-name').addEventListener('submit', fun
         if (data.success) {
             // Handle success (e.g., show a success message)
             alert(data.message);
-            document.getElementById('user.profile.display_name').innerText = data.new_tournament_name;
+            document.getElementById('display_name').innerText = data.new_tournament_name;
         } else {
             // Handle errors (e.g., display validation errors)
             alert('Error: ' + JSON.stringify(data.errors));
@@ -118,5 +176,39 @@ document.getElementById('update-tournament-name').addEventListener('submit', fun
     });
 });
 </script>
-
+<style>
+    /* Styling */
+    .profiles-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+    .profile {
+        width: 200px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        text-align: center;
+        background-color: #f9f9f9;
+        margin: 10px;
+    }
+    .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+    }
+    .menu-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+    .menu {
+        margin-right: 20px;
+    }
+    .game-canvas {
+        text-align: center;
+        margin-top: 20px;
+    }
+    </style>
 {% endblock %}
