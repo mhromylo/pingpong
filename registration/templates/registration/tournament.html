@@ -3,92 +3,122 @@
 {% block content %}
 
 <div id="content">
+    {%if tournament %}
     <h1>Welcome to tournament</h1>
-
+    <div id="tournament-info">
+        <!-- Tournament data will be displayed here -->
+    </div>
+    <p><strong>Tournament:</strong> {{ tournament.name }}</p>
+    <p><strong>Tournament_id:</strong> {{ tournament.id }}</p>
+    {% for p in tournament.players.all %}
+    <li id="Player{{ p.id }}">
+              <span class="Player name">{{ p.display_name }}</span>
+              <span class="status-indicator"
+                    style="color: {% if p.is_online %} green {% else %}red{% endif %};">
+                  {% if p.is_online %} Online {% else %}Offline{% endif %}
+              </span>
+             
+          </li>
+  {% endfor %}
+  <form method="POST" action="{% url 'start_tournament' %}">
+    {% csrf_token %}
+      <button type="submit" name="start_tournament" class="btn btn-primary">Start Tournament</button>
+  </form>
+  {% endif %}
+        
     <div class="profiles-container">
-    <div class="profile">
-        <h2>{{ user.username }}</h2>
-        <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar">
-        <p id = "display_name">  <strong>Display Name:</strong> {{ user.profile.display_name }}</p>
-        <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
-        <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
-        <p><strong>ID:</strong> {{ user.profile.id }}</p>
-        <form id = "update-tournament-name" method="POST" action="{% url 'tornament_name_user' %}">
+        <div class="profile">
+            <h2>{{ user.username }}</h2>
+            <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar">
+            <p id = "display_name">  <strong>Display Name:</strong> {{ user.profile.display_name }}</p>
+            <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
+            <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
+            <p><strong>ID:</strong> {{ user.profile.id }}</p>
+            <form id = "update-tournament-name" method="POST" action="{% url 'tournament_name_user' %}">
+                {% csrf_token %}
+                {{ t_form.as_p }}
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+
+            <form method="POST" action="{% url 'create_tournament' %}">
+              {% csrf_token %}
+              {{ form.as_p }}  <!-- This will display the form as paragraphs -->
+              <button type="submit" class="btn btn-primary">Create Tournament</button>
+            </form>
+        </div>
+        {% if not player2 %}
+        <form method="POST" action="{% url 'second_player_tournament' tournament_id=tournament.id%}" >
             {% csrf_token %}
-            {{ t_form.as_p }}
-            <button type="submit" class="btn btn-primary">Update</button>
+            <input type="hidden" id="tournament_id" value="{{ tournament.id }}" />
+            <label for="username">Player 2 Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Player 2 Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Log in second Player</button>
         </form>
-    </div>
-    {% if not player2 %}
-    <form method="POST" action="{% url 'second_player_tournament' %}" >
-        {% csrf_token %}
-        <label for="username">Player 2 Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Player 2 Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Log in second Player</button>
-    </form>
-    {% endif %}
-    {% if player2 %}
-    <div class="profile">
-        <h2>{{ player2.username }}</h2>
-        <img src="{{ player2.avatar.url }}" alt="User Avatar" class="avatar">
-        <p><strong>Display Name:</strong> {{ player2.display_name }}</p>
-        <p><strong>Wins:</strong> {{ player2.wins }}</p>
-        <p><strong>Losses:</strong> {{ player2.losses }}</p>
-        <form id = "update-tournament-name-user2" method="POST" action="{% url 'tornament_name_user2' %}">
+        {% if player2 %}
+        <div class="profile">
+            <h2>{{ player2.username }}</h2>
+            <img src="{{ player2.avatar.url }}" alt="User Avatar" class="avatar">
+            <p><strong>Display Name:</strong> {{ player2.display_name }}</p>
+            <p><strong>Wins:</strong> {{ player2.wins }}</p>
+            <p><strong>Losses:</strong> {{ player2.losses }}</p>
+            <p><strong>ID:</strong> {{ player2.id }}</p>
+            <form id = "update-tournament-name-user2" method="POST" action="{% url 'tournament_name_user2' %}">
+                {% csrf_token %}
+                {{ t_form.as_p }}
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+        {% endif %}
+        {% if not player3 %}
+        <form method="POST" action="{% url 'third_player_tournament' %}" >
             {% csrf_token %}
-            {{ t_form.as_p }}
-            <button type="submit" class="btn btn-primary">Update</button>
+            <label for="username">Player 3 Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Player 3 Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Log in third Player</button>
         </form>
-    </div>
-    {% endif %}
-    {% if not player3 %}
-    <form method="POST" action="{% url 'third_player_tournament' %}" >
-        {% csrf_token %}
-        <label for="username">Player 3 Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Player 3 Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Log in third Player</button>
-    </form>
-    {% endif %}
-    {% if player3 %}
-    <div class="profile">
-        <h2>{{ player3.username }}</h2>
-        <img src="{{ player3.avatar.url }}" alt="User Avatar" class="avatar">
-        <p><strong>Display Name:</strong> {{ player3.display_name }}</p>
-        <p><strong>Wins:</strong> {{ player3.wins }}</p>
-        <p><strong>Losses:</strong> {{ player3.losses }}</p>
-        <form id = "update-tournament-name-user3" method="POST" action="{% url 'tornament_name_user3' %}">
+        {% endif %}
+        {% if player3 %}
+        <div class="profile">
+            <h2>{{ player3.username }}</h2>
+            <img src="{{ player3.avatar.url }}" alt="User Avatar" class="avatar">
+            <p><strong>Display Name:</strong> {{ player3.display_name }}</p>
+            <p><strong>Wins:</strong> {{ player3.wins }}</p>
+            <p><strong>Losses:</strong> {{ player3.losses }}</p>
+            <form id = "update-tournament-name-user3" method="POST" action="{% url 'tournament_name_user3' %}">
+                {% csrf_token %}
+                {{ t_form.as_p }}
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+        {% endif %}
+        {% if not player4 %}
+        <form method="POST" action="{% url 'forth_player_tournament' %}" >
             {% csrf_token %}
-            {{ t_form.as_p }}
-            <button type="submit" class="btn btn-primary">Update</button>
+            <label for="username">Player 4 Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Player 4 Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Log in forth Player</button>
         </form>
-    </div>
-    {% endif %}
-    {% if not player4 %}
-    <form method="POST" action="{% url 'second_player_tournament' %}" >
-        {% csrf_token %}
-        <label for="username">Player 4 Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Player 4 Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Log in forth Player</button>
-    </form>
-    {% endif %}
-    {% if player4 %}
-    <div class="profile">
-        <h2>{{ player4.username }}</h2>
-        <img src="{{ player4.avatar.url }}" alt="User Avatar" class="avatar">
-        <p><strong>Display Name:</strong> {{ player4.display_name }}</p>
-        <p><strong>Wins:</strong> {{ player4.wins }}</p>
-        <p><strong>Losses:</strong> {{ player4.losses }}</p>
-        <form id = "update-tournament-name-user4" method="POST" action="{% url 'tornament_name_user4' %}">
-            {% csrf_token %}
-            {{ t_form.as_p }}
-            <button type="submit" class="btn btn-primary">Update</button>
-        </form>
+        {% endif %}
+        {% if player4 %}
+        <div class="profile">
+            <h2>{{ player4.username }}</h2>
+            <img src="{{ player4.avatar.url }}" alt="User Avatar" class="avatar">
+            <p><strong>Display Name:</strong> {{ player4.display_name }}</p>
+            <p><strong>Wins:</strong> {{ player4.wins }}</p>
+            <p><strong>Losses:</strong> {{ player4.losses }}</p>
+            <form id = "update-tournament-name-user4" method="POST" action="{% url 'tournament_name_user4' %}">
+                {% csrf_token %}
+                {{ t_form.as_p }}
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+        {% endif %}
     </div>
     {% endif %}
     <div class="menu-container">
@@ -152,7 +182,7 @@ document.getElementById('update-tournament-name').addEventListener('submit', fun
     console.log(formData);
 
     // Send the data via a POST request to your Django view
-    fetch('localhost/tornament_name_user/', {
+    fetch('/tournament_name_user/', {
         method: 'POST',
         body: formData,  // Send the form data
         headers: {
@@ -175,6 +205,33 @@ document.getElementById('update-tournament-name').addEventListener('submit', fun
         alert('An error occurred.');
     });
 });
+function fetchTournamentData(tournamentId) {
+        fetch(`/get_tournament_data/${tournamentId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    // Update the tournament info section dynamically
+                    const tournamentInfo = document.getElementById('tournament-info');
+                    tournamentInfo.innerHTML = `
+                        <h2>${data.tournament_name}</h2>
+                        <h3>Players:</h3>
+                        <ul>
+                            ${data.players.map(player => `
+                                <li>
+                                    <img src="${player.avatar_url}" alt="${player.display_name}'s avatar" width="50" height="50">
+                                    ${player.display_name}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                }
+            })
+            .catch(error => console.error('Error fetching tournament data:', error));
+    }
+
+    // Set the form action dynamically based on the tournament_id
 </script>
 <style>
     /* Styling */

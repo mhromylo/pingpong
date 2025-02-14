@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, Tournament
 
 
 class RegistrationForm(UserCreationForm):
@@ -76,3 +76,14 @@ class TournamentUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TournamentUpdateForm, self).__init__(*args, **kwargs)
         self.fields['display_name'].widget.attrs.update({'class': 'form-control'})
+
+class CreateTournamentForm(forms.ModelForm):
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Tournament
+        fields = ['name']
+
+    def __init__(self, *args, **kwargs):
+        super(CreateTournamentForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({'class': 'form-control'})
