@@ -50,7 +50,7 @@ class Tournament(models.Model):
     name = models.CharField(max_length=100)
     players = models.ManyToManyField(Profile, related_name='tournaments')
     created_at = models.DateTimeField(default=timezone.now)
-
+    creator = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="tournaments_create", null=True, blank=True)
     class Meta:
         db_table = 'registration_tournament'
 

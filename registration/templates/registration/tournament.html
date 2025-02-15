@@ -46,24 +46,25 @@
               <button type="submit" class="btn btn-primary">Create Tournament</button>
             </form>
         </div>
-        {% if not player2 %}
-        <form method="POST" action="{% url 'second_player_tournament' tournament_id=tournament.id%}" >
+        {% if not request.session.player2 %}
+        <form id = "second-player-form" method="POST">
             {% csrf_token %}
             <input type="hidden" id="tournament_id" value="{{ tournament.id }}" />
             <label for="username">Player 2 Username:</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Player 2 Password:</label>
             <input type="password" id="password" name="password" required>
-            <button type="submit">Log in second Player</button>
+            <a class="nav-link" href="/second_player_tournament">Log in second Player</a>
         </form>
-        {% if player2 %}
+        {% endif %}
+        {% if request.session.player2 %}
         <div class="profile">
-            <h2>{{ player2.username }}</h2>
-            <img src="{{ player2.avatar.url }}" alt="User Avatar" class="avatar">
-            <p><strong>Display Name:</strong> {{ player2.display_name }}</p>
-            <p><strong>Wins:</strong> {{ player2.wins }}</p>
-            <p><strong>Losses:</strong> {{ player2.losses }}</p>
-            <p><strong>ID:</strong> {{ player2.id }}</p>
+            <h2>{{ request.session.player2.username }}</h2>
+            <img src="{{ request.session.player2.avatar.url }}" alt="User Avatar" class="avatar">
+            <p><strong>Display Name:</strong> {{ request.session.player2.display_name }}</p>
+            <p><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
+            <p><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
+            <p><strong>ID:</strong> {{ request.session.player2.id }}</p>
             <form id = "update-tournament-name-user2" method="POST" action="{% url 'tournament_name_user2' %}">
                 {% csrf_token %}
                 {{ t_form.as_p }}
@@ -120,7 +121,6 @@
         </div>
         {% endif %}
     </div>
-    {% endif %}
     <div class="menu-container">
         <div class="menu">
             <label for="player1Type">Player 1:</label>
@@ -175,6 +175,45 @@
 </div>
 
 <script>
+
+$(document).ready(function ()
+{
+  
+    $(document).on("click", "#second_player", function (event) {
+    event.preventDefault();  // Prevent default form submission
+
+    const form = document.getElementById("second-player-form"); // Select the form
+    const formData = new FormData(form);
+    const tournamentId = document.getElementById("tournament_id").value; // Get tournament ID
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // CSRF token
+
+    fetch(`/second_player_tournament/`, {  // Use the correct URL
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken  // Include CSRF token
+        }
+    })
+    .then(response => response.json())  // Parse JSON response
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            document.getElementById('display_name').innerText = data.new_tournament_name;
+        } else {
+            alert('Error: ' + JSON.stringify(data.errors));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred.');
+    });
+});
+
+    
+})
+
+
 document.getElementById('update-tournament-name').addEventListener('submit', function(event) {
     event.preventDefault();  // Prevent the form from submitting normally
 

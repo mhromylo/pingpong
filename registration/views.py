@@ -304,9 +304,9 @@ def tournament(request):
     return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form, 'form': form})
 
 @login_required
-def second_player_tournament(request, tournament_id):
+def second_player_tournament(request):
+
     player = Profile.objects.get(user=request.user)
-    tournament = get_object_or_404(Tournament, id=tournament_id)
     t_form = TournamentUpdateForm(request.POST, instance=player)
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -317,9 +317,6 @@ def second_player_tournament(request, tournament_id):
             if player == player2:
                 messages.error(request, "You cannot play against yourself.")
                 return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
-            if player2 not in tournament.players.all():
-                tournament.players.add(player2)
-                tournament.save()
             request.session['player2'] = {
                 'display_name': player2.display_name,
                 'avatar_url': player2.avatar.url if player2.avatar else '',
@@ -327,12 +324,11 @@ def second_player_tournament(request, tournament_id):
                 'losses': player2.losses,
                 'id': player2.id,
             }
-            return render(request, 'registration/tournament.html', {'player': player, 'player2': player2, 'tournament': tournament, 'tournament': tournament, 't_form': t_form})
-            # return render(request, 'registration/tournament.html', {'player': player, 'player2': player2, 't_form': t_form})
+            return render(request, 'registration/tournament.html', {'player': player, 'player2': player2, 't_form': t_form})
         else:
             messages.error(request, "Wrong credentials for Player 2")
-            return render(request, 'registration/tournament.html', {'player': player, 'tournament': tournament, 't_form': t_form})
-    return render(request, 'registration/tournament.html', {'player': player, 'tournament': tournament, 't_form': t_form})
+            return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
+    return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
 
 @login_required
 def third_player_tournament(request):
@@ -416,6 +412,7 @@ def create_tournament(request):
             tournament = form.save(commit=False)  # Don't save yet
             tournament.save()  # Save the tournament instance
             tournament.players.add(player1)
+            tournament.creator = player1
 
             messages.success(request, "Tournament created successfully!")
             return render(request, 'registration/tournament.html', {'tournament':tournament, 'player1': player1})
