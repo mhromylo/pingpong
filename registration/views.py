@@ -232,7 +232,7 @@ def tournament_name_user(request):
         if t_form.is_valid():
             display_name = request.POST.get('display_name')
             t_form.save()
-            return render(request, 'registration/tournament.html', {'player': profile, 't_form': t_form, 'form': form})
+            return JsonResponse({'success': True, 'message': 'Tournament name updated!', 'new_tournament_name': display_name})
         else:
             errors = {field: msgs for field, msgs in t_form.errors.items()}
             return JsonResponse({'success': False, 'errors': errors})
@@ -248,7 +248,7 @@ def tournament_name_user2(request):
         if t_form.is_valid():
             display_name = request.POST.get('display_name')
             t_form.save()
-            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, 't_form': t_form})
+            return JsonResponse({'success': True, 'message': 'Tournament name updated!', 'new_tournament_name': display_name})
         else:
             errors = {field: msgs for field, msgs in t_form.errors.items()}
             return JsonResponse({'success': False, 'errors': errors})
@@ -266,7 +266,7 @@ def tournament_name_user3(request):
         if t_form.is_valid():
             display_name = request.POST.get('display_name')
             t_form.save()
-            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, ' player3': profile3,'t_form': t_form})
+            return JsonResponse({'success': True, 'message': 'Tournament name updated!', 'new_tournament_name': display_name})
         else:
             errors = {field: msgs for field, msgs in t_form.errors.items()}
             return JsonResponse({'success': False, 'errors': errors})
@@ -286,7 +286,7 @@ def tournament_name_user4(request):
         if t_form.is_valid():
             display_name = request.POST.get('display_name')
             t_form.save()
-            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, ' player3': profile3,' player4': profile4, 't_form': t_form})
+            return JsonResponse({'success': True, 'message': 'Tournament name updated!', 'new_tournament_name': display_name})
         else:
             errors = {field: msgs for field, msgs in t_form.errors.items()}
             return JsonResponse({'success': False, 'errors': errors})
@@ -416,7 +416,7 @@ def create_tournament(request):
     if request.method == 'POST':
         player1 = Profile.objects.get(user=request.user)
         form = CreateTournamentForm(request.POST)
-        t_form = TournamentUpdateForm(request.POST, instance=player1)
+        # t_form = TournamentUpdateForm(request.POST, instance=player1)
         if form.is_valid():
             tournament = form.save(commit=False)  # Don't save yet
             tournament.save()  # Save the tournament instance
@@ -437,7 +437,7 @@ def create_tournament(request):
     else:
         form = CreateTournamentForm()
 
-    return render(request, 'registration/tournament.html', {'player': player1, 'form': form})
+    return JsonResponse({'success': False, 'message': 'Creating tournament failed'})
 
 def get_tournament_data(request, tournament_id):
     try:

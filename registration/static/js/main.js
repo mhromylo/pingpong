@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const forms = document.querySelectorAll('form');
     
         forms.forEach(function(form) {
-            if (form.id !== 'logout-form') { // Check if form does not have the ID 'logout-form'
+            if (form.id !== 'logout-form' && form.id !== 'create-tournament-form') { // Check if form does not have the ID 'logout-form'
                 form.addEventListener("submit", handleFormSubmit);
             }
         });

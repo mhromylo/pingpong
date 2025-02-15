@@ -30,16 +30,16 @@
             <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
             <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
             <p><strong>ID:</strong> {{ user.profile.id }}</p>
-            <form id = "update-tournament-name" method="POST" action="{% url 'tournament_name_user' %}">
+            <form id = "update-tournament-name" method="POST">
                 {% csrf_token %}
                 {{ t_form.as_p }}
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn btn-primary" id="update-tournament-name-btn">Update</button>
             </form>
 
-            <form method="POST" action="{% url 'create_tournament' %}">
+            <form method="POST" id="create-tournament-form">
               {% csrf_token %}
               {{ c_form.as_p }}  <!-- This will display the form as paragraphs -->
-              <button type="submit" class="btn btn-primary">Create Tournament</button>
+              <button type="submit" class="btn btn-primary" id="create-tournament-btn">Create Tournament</button>
             </form>
             <div id="tournament-info" style="display: none;"></div>
         </div>
@@ -173,14 +173,13 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    const c_form = document.getElementById('create-tournament-form');
-    
-    if (c_form) {
-        c_form.addEventListener('submit', function (event) {
+    document.getElementById('create-tournament-btn').addEventListener('click', function(event) {
             event.preventDefault();  // Prevent default form submission
 
-            const c_formData = new FormData(t_form);
+            const c_form = document.getElementById('create-tournament-form');  
+            const c_formData = new FormData(form);
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Get CSRF token
+            console.log(c_formData);
 
             fetch('/create_tournament/', {  // Use the correct URL for your form submission
                 method: 'POST',
@@ -190,8 +189,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     'X-CSRFToken': csrfToken  // Include CSRF token
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log("Raw Response:", response);  // Print raw response
+                return response.json();  // Parse JSON response
+            })
             .then(data => {
+                console.log("DATA create_tournament:", data);
                 if (data.success) {
                     // Show the tournament info dynamically
                     const tournamentDiv = document.getElementById('tournament-info');
@@ -212,7 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('An error occurred while creating the tournament.');
             });
         });
-    }
 
     const form = document.getElementById('second-player-form');
     if (!form) return; // Ensure form exists before adding event listener
@@ -264,10 +266,12 @@ document.addEventListener("DOMContentLoaded", function () {
     
 
 
-document.getElementById('update-tournament-name').addEventListener('submit', function(event) {
+document.getElementById('update-tournament-name-btn').addEventListener('click', function(event) {
     event.preventDefault();  // Prevent the form from submitting normally
 
-    const formData = new FormData(this);  // Collect the form data
+    const form = document.getElementById('update-tournament-name');  
+    const formData = new FormData(form);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Get CSRF token
     console.log(formData);
 
     // Send the data via a POST request to your Django view
@@ -275,10 +279,14 @@ document.getElementById('update-tournament-name').addEventListener('submit', fun
         method: 'POST',
         body: formData,  // Send the form data
         headers: {
-            'X-Requested-With': 'XMLHttpRequest'  // Indicate that this is an AJAX request
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken  // Include CSRF token
         }
     })
-    .then(response => response.json())  // Parse the JSON response
+    .then(response => {
+        console.log("Raw Response:", response);  // Print raw response
+        return response.json();  // Parse JSON response
+    })
     .then(data => {
         if (data.success) {
             // Handle success (e.g., show a success message)
