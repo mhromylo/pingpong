@@ -55,7 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data.success) {
                     container.innerHTML = `<h2>${data.message}</h2>`;
-                    document.getElementById("user.profile.display_name").textContent = data.new_tournament_name; // Update the tournament name dynamically
                 } else if (data.errors) {
                     const errors = Object.entries(data.errors)
                         .map(([field, msgs]) => `<p><strong>${field}:</strong> ${msgs.join(', ')}</p>`)

@@ -324,7 +324,15 @@ def second_player_tournament(request):
                 'losses': player2.losses,
                 'id': player2.id,
             }
-            return render(request, 'registration/tournament.html', {'player': player, 'player2': player2, 't_form': t_form})
+            return JsonResponse({
+                'success': True,
+                'message': "Player 2 added successfully!",
+                'player2_display_name': player2.display_name,
+                'player2_wins': player2.wins,
+                'player2_losses': player2.losses,
+                'player2_id': player2.id,
+                'player2_avatar': player2.avatar.url if player2.avatar else ''
+            })
         else:
             messages.error(request, "Wrong credentials for Player 2")
             return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
@@ -420,7 +428,7 @@ def create_tournament(request):
     else:
         form = CreateTournamentForm()
 
-    return render(request, 'registration/tournament.html', {'player': player1, 'tournament': tournament, 'form': form})
+    return render(request, 'registration/tournament.html', {'player': player1, 'form': form})
 
 def get_tournament_data(request, tournament_id):
     try:
