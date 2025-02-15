@@ -51,6 +51,8 @@ class Tournament(models.Model):
     players = models.ManyToManyField(Profile, related_name='tournaments')
     created_at = models.DateTimeField(default=timezone.now)
     creator = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="tournaments_create", null=True, blank=True)
+    started = models.BooleanField(default=False)
+
     class Meta:
         db_table = 'registration_tournament'
 

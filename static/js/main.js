@@ -1,4 +1,39 @@
 document.addEventListener("DOMContentLoaded", function () {
+    function handleDefaultFormSubmit(event) {
+        const form = event.target;
+        const formData = new FormData(form);
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    
+        fetch(form.action, {
+            method: 'POST',
+            contentType: 'application/json',
+            headers: {'X-CSRFToken': csrfToken},
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else if (data.errors) {
+                    const errors = Object.entries(data.errors)
+                        .map(([field, msgs]) => `<p><strong>${field}:</strong> ${msgs.join(', ')}</p>`)
+                        .join('');
+                    container.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error submitting form", error);
+            });
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("logout-form");
+        if (form) {
+            form.addEventListener("submit", handleDefaultFormSubmit);
+        }
+    });
+    
     const container = document.getElementById("content");
 
     function loadPage(url, addToHistory = true) {
@@ -123,3 +158,5 @@ function loadMyCanvasScript() {
     script.onload = function() {};
     document.head.appendChild(script);
 }
+
+

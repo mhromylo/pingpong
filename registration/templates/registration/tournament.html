@@ -3,10 +3,13 @@
 {% block content %}
 
 <div id="content">
-    {%if tournament %}
-    <p><strong>Tournament:</strong> {{ tournament.name }}</p>
-    <p><strong>Tournament_id:</strong> {{ tournament.id }}</p>
-    {% for p in tournament.players.all %}
+    <div class="tournament">
+        <h2>{{ existing_tournament.name }}</h2>
+        <p><strong>Creator:</strong> {{ existing_tournament.creator.display_name }}</p>
+        <p><strong>Players:</strong> {{ existing_tournament.players.count }}/{{ existing_tournament.max_players }}</p>
+        <!-- Button to join the tournament -->
+    </div>
+    {% for p in existing_tournament.players.all %}
     <li id="Player{{ p.id }}">
               <span class="Player name">{{ p.display_name }}</span>
               <span class="status-indicator"
@@ -20,8 +23,7 @@
     {% csrf_token %}
       <button type="submit" name="start_tournament" class="btn btn-primary">Start Tournament</button>
   </form>
-  {% endif %}
-        
+  <div id="tournament-info" style="display: none;"></div>
     <div class="profiles-container">
         <div class="profile">
             <h2>{{ user.username }}</h2>
@@ -41,7 +43,6 @@
               {{ c_form.as_p }}  <!-- This will display the form as paragraphs -->
               <button type="submit" class="btn btn-primary">Create Tournament</button>
             </form>
-            <div id="tournament-info" style="display: none;"></div>
         </div>
       
         <form id = "second-player-form" method="POST" action="{% url 'second_player_tournament' %}">
@@ -179,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
         c_form.addEventListener('submit', function (event) {
             event.preventDefault();  // Prevent default form submission
 
-            const c_formData = new FormData(t_form);
+            const c_formData = new FormData(c_form);
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Get CSRF token
 
             fetch('/create_tournament/', {  // Use the correct URL for your form submission

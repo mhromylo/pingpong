@@ -295,13 +295,18 @@ def tournament_name_user4(request):
 def tournament(request):
     player = Profile.objects.get(user=request.user)
     t_form = TournamentUpdateForm(request.POST, instance=player)
-    form = CreateTournamentForm(request.POST)
-    if request.method == 'POST':
-        if t_form.is_valid():
-            t_form.save()
-        else:
-            t_form = TournamentUpdateForm(instance=player)
-    return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form, 'form': form})
+    existing_tournament = Tournament.objects.filter(creator=player, started=False).first()
+    if existing_tournament:
+        # If there is a not-started tournament, show it and allow the user to join
+        return render(request, 'registration/tournament.html', {
+            'existing_tournament': existing_tournament,
+            'player': player,
+        })
+    else:
+        c_form = CreateTournamentForm(request.POST)
+        return render(request, 'registration/tournament.html', {
+            'player': player, 'c_form': c_form
+        })
 
 @login_required
 def second_player_tournament(request):
@@ -429,7 +434,7 @@ def create_tournament(request):
                 'success': True,
                 'tournament_name': tournament.name,
                 'tournament_id': tournament.id,
-                'creator': player1.display_name,
+                'creator': tournament.creator.display_name,
                 'player1_avatar': player1.avatar.url if player1.avatar else '',
                 'player_count': tournament.players.count(),
             })
