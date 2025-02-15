@@ -4,10 +4,6 @@
 
 <div id="content">
     {%if tournament %}
-    <h1>Welcome to tournament</h1>
-    <div id="tournament-info">
-        <!-- Tournament data will be displayed here -->
-    </div>
     <p><strong>Tournament:</strong> {{ tournament.name }}</p>
     <p><strong>Tournament_id:</strong> {{ tournament.id }}</p>
     {% for p in tournament.players.all %}
@@ -42,9 +38,10 @@
 
             <form method="POST" action="{% url 'create_tournament' %}">
               {% csrf_token %}
-              {{ form.as_p }}  <!-- This will display the form as paragraphs -->
+              {{ c_form.as_p }}  <!-- This will display the form as paragraphs -->
               <button type="submit" class="btn btn-primary">Create Tournament</button>
             </form>
+            <div id="tournament-info" style="display: none;"></div>
         </div>
       
         <form id = "second-player-form" method="POST" action="{% url 'second_player_tournament' %}">
@@ -56,7 +53,6 @@
             <button type="submit">Log in second Player</button>
         </form>
         
-        {% if request.session.player2 %}
         <div id = second-player-profile class="profile">
             <h2>{{ request.session.player2.display_name }}</h2>
             <img id="player2-avatar" src="{{ request.session.player2.avatar.url }}" alt="User Avatar" class="avatar">
@@ -71,7 +67,6 @@
                 <button type="submit" class="btn btn-primary">Update</button>
             </form>
         </div>
-        {% endif %}
         {% if not player3 %}
         <form method="POST" action="{% url 'third_player_tournament' %}" >
             {% csrf_token %}
@@ -177,6 +172,48 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    const c_form = document.getElementById('create-tournament-form');
+    
+    if (c_form) {
+        c_form.addEventListener('submit', function (event) {
+            event.preventDefault();  // Prevent default form submission
+
+            const c_formData = new FormData(t_form);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Get CSRF token
+
+            fetch('/create_tournament/', {  // Use the correct URL for your form submission
+                method: 'POST',
+                body: c_formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken  // Include CSRF token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show the tournament info dynamically
+                    const tournamentDiv = document.getElementById('tournament-info');
+                    tournamentDiv.innerHTML = `
+                        <h3>Created Tournament: ${data.tournament_name}</h3>
+                        <p><strong>Creator:</strong> ${data.creator}</p>
+                        <p><strong>Players:</strong> ${data.player_count}</p>
+                        <p><strong>Avatar:</strong> <img src="${data.player1_avatar}" alt="Player Avatar" class="avatar"></p>
+                        <a href="/tournament/${data.tournament_id}/">View Tournament</a>
+                    `;
+                    tournamentDiv.style.display = 'block';  // Make the tournament info visible
+                } else {
+                    alert('Error creating tournament');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while creating the tournament.');
+            });
+        });
+    }
+
     const form = document.getElementById('second-player-form');
     if (!form) return; // Ensure form exists before adding event listener
 

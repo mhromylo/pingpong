@@ -416,6 +416,7 @@ def create_tournament(request):
     if request.method == 'POST':
         player1 = Profile.objects.get(user=request.user)
         form = CreateTournamentForm(request.POST)
+        t_form = TournamentUpdateForm(request.POST, instance=player1)
         if form.is_valid():
             tournament = form.save(commit=False)  # Don't save yet
             tournament.save()  # Save the tournament instance
@@ -423,7 +424,15 @@ def create_tournament(request):
             tournament.creator = player1
 
             messages.success(request, "Tournament created successfully!")
-            return render(request, 'registration/tournament.html', {'tournament':tournament, 'player1': player1})
+            
+            return JsonResponse({
+                'success': True,
+                'tournament_name': tournament.name,
+                'tournament_id': tournament.id,
+                'creator': player1.display_name,
+                'player1_avatar': player1.avatar.url if player1.avatar else '',
+                'player_count': tournament.players.count(),
+            })
 
     else:
         form = CreateTournamentForm()
