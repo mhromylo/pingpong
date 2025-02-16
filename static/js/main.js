@@ -3,6 +3,44 @@ document.addEventListener("DOMContentLoaded", function () {
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
         return csrfToken ? csrfToken.value : '';
     }
+
+    function handleFormRegistrationSubmission(formId, endpoint, onSuccess) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();  // Prevent default form submission
+            const formData = new FormData(form);
+            const csrfToken = getCSRFToken();  // Get the CSRF token
+
+            fetch(endpoint, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken || ''  // Ensure no error if token is missing
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    onSuccess(data);  // Call the success callback function
+                } else {
+                    alert(data.message || 'An error occurred.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing the request.');
+            });
+        });
+    }
+
+    // Handle registration form submission
+    handleFormRegistrationSubmission('registration-form', '/register/', function (data) {
+        alert(data.message);  // Show the success message
+        window.location.href = '/login/';  // Redirect to login page after successful registration
+    });
     
     function handleFormTournamentSubmission(formId, endpoint, onSuccess) {
         const form = document.getElementById(formId);

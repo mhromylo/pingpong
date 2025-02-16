@@ -29,10 +29,10 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Account created, you can now login")
-            return redirect("index")
+            return JsonResponse({'success': True, 'message': 'Account created, you can now login'})
         else:
             messages.error(request, "There was an error, please try again later")
-            return render(request, 'registration/login.html', {'form': form})
+            return JsonResponse({'success': False, 'message': 'There was an error, please try again later'})
     else:
         form = RegistrationForm()
         return render(request, 'registration/register.html', {'form': form})
