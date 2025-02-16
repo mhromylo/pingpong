@@ -35,9 +35,10 @@
             <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
             <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
             <p><strong>ID:</strong> {{ user.profile.id }}</p>
-            <form id = "update-tournament-name" method="POST" action="{% url 'tournament_name_user' %}">
+            <form id = "update-tournament-name" method="POST" action="/tournament_name_user/1/">
                 {% csrf_token %}
-                {{ t_form.as_p }}
+                <label for="display_name">Player dislpay Name:</label>
+                <input type="text" id="display_name" name="display_name" required>
                 <button type="submit" class="btn btn-primary">Update</button>
             </form>
 
@@ -54,20 +55,20 @@
         </form>
         
         <div id="second-player-profile" class="profile">
-            <h2>{{ request.session.player2.display_name }}</h2>
             <img id="player2-avatar" src="{{ request.session.player2.avatar.url }}" alt="User Avatar" class="avatar">
             <p id="second-player-display-name"><strong>Display Name:</strong> {{ player2.display_name }}</p>
             <p id="second-player-wins"><strong>Wins:</strong> {{ player2.wins }}</p>
             <p id="second-player-losses"><strong>Losses:</strong> {{ player2.losses }}</p>
             <p id="second-player-id"><strong>ID:</strong> {{ player2.id }}</p>
         
-            <form id="update-tournament-name-user2" method="POST" action="{% url 'tournament_name_user2' %}">
+            <form id="update-tournament-name-user2" method="POST" action="/tournament_name_user/2">
                 {% csrf_token %}
-                {{ t_form.as_p }}
+                <label for="display_name">Player dislpay Name:</label>
+                <input type="text" id="display_name" name="display_name" required>
                 <button type="submit" class="btn btn-primary">Update</button>
             </form>
         </div>
-        <form method="POST" action="{% url 'third_player_tournament' %}" >
+        <form id = "third-player-form" method="POST" action="{% url 'third_player_tournament' %}" >
             {% csrf_token %}
             <label for="username">Player 3 Username:</label>
             <input type="text" id="username" name="username" required>
@@ -75,19 +76,21 @@
             <input type="password" id="password" name="password" required>
             <button type="submit">Log in third Player</button>
         </form>
-        <div class="profile">
-            <h2>{{ player3.username }}</h2>
-            <img src="{{ player3.avatar.url }}" alt="User Avatar" class="avatar">
-            <p><strong>Display Name:</strong> {{ player3.display_name }}</p>
-            <p><strong>Wins:</strong> {{ player3.wins }}</p>
-            <p><strong>Losses:</strong> {{ player3.losses }}</p>
-            <form id = "update-tournament-name-user3" method="POST" action="{% url 'tournament_name_user3' %}">
+        <div id="third-player-profile" class="profile">
+            <img id="player3-avatar" src="{{ player3.avatar.url }}" alt="User Avatar" class="avatar">
+            <p id="third-player-display-name"><strong>Display Name:</strong> {{ player3.display_name }}</p>
+            <p id="third-player-wins"><strong>Wins:</strong> {{ player3.wins }}</p>
+            <p id="third-player-losses"><strong>Losses:</strong> {{ player3.losses }}</p>
+            <p id="third-player-id"><strong>ID:</strong> {{ player3.id }}</p>
+
+            <form id = "update-tournament-name-user3" method="POST" action="/tournament_name_user/3/">
                 {% csrf_token %}
-                {{ t_form.as_p }}
+                <label for="display_name">Player dislpay Name:</label>
+                <input type="text" id="display_name" name="display_name" required>
                 <button type="submit" class="btn btn-primary">Update</button>
             </form>
         </div>
-        <form method="POST" action="{% url 'forth_player_tournament' %}" >
+        <form id = "forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" >
             {% csrf_token %}
             <label for="username">Player 4 Username:</label>
             <input type="text" id="username" name="username" required>
@@ -95,15 +98,17 @@
             <input type="password" id="password" name="password" required>
             <button type="submit">Log in forth Player</button>
         </form>
-        <div class="profile">
-            <h2>{{ player4.username }}</h2>
-            <img src="{{ player4.avatar.url }}" alt="User Avatar" class="avatar">
-            <p><strong>Display Name:</strong> {{ player4.display_name }}</p>
-            <p><strong>Wins:</strong> {{ player4.wins }}</p>
-            <p><strong>Losses:</strong> {{ player4.losses }}</p>
-            <form id = "update-tournament-name-user4" method="POST" action="{% url 'tournament_name_user4' %}">
+        <div id="forth-player-profile" class="profile">
+            <img id="player4-avatar" src="{{ player4.avatar.url }}" alt="User Avatar" class="avatar">
+            <p id="forth-player-display-name"><strong>Display Name:</strong> {{ player4.display_name }}</p>
+            <p id="forth-player-wins"><strong>Wins:</strong> {{ player4.wins }}</p>
+            <p id="forth-player-losses"><strong>Losses:</strong> {{ player4.losses }}</p>
+            <p id="forth-player-id"><strong>ID:</strong> {{ player4.id }}</p>
+
+            <form id = "update-tournament-name-user4" method="POST" action="/tournament_name_user/4/">
                 {% csrf_token %}
-                {{ t_form.as_p }}
+                <label for="display_name">Player dislpay Name:</label>
+                <input type="text" id="display_name" name="display_name" required>
                 <button type="submit" class="btn btn-primary">Update</button>
             </form>
         </div>

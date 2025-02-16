@@ -36,8 +36,17 @@
                 <button type="submit" class="btn btn-danger">Log Out Player 2</button>
             </form>
         </div>
-    {% else %}
-        <p>No Player 2 data available.</p>
+    {% endif %}
+    {% if request.session.player3 %}
+        <input type="hidden" id="player3Id" value="{{ request.session.player3.id }}" />
+        <h2>Welcome, {{ request.session.player2.display_name }}</h2>
+        <div class="profile-info">
+            <img src="{{ request.session.player3.avatar_url }}" alt="Player 3 Avatar" class="avatar">
+            <h3>Player 3 Profile</h3>
+            <p><strong>Wins:</strong> {{ request.session.player3.wins }}</p>
+            <p><strong>Losses:</strong> {{ request.session.player3.losses }}</p>
+            <p><strong>ID:</strong> {{ request.session.player3.profile.id }}</p>
+        </div>
     {% endif %}
 </div>
 

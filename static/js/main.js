@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
         alert(data.message);  // Show the success message
         window.location.href = '/login/';  // Redirect to login page after successful registration
     });
-    
+
     function handleFormTournamentSubmission(formId, endpoint, onSuccess) {
         const form = document.getElementById(formId);
         if (!form) return;
@@ -73,7 +73,57 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+
+    function onPlayerSuccess(playerNumber, data) {
+     
+        document.getElementById(`${playerNumber}-player-display-name`).innerHTML = `<strong>Display Name:</strong> ${data[`${playerNumber}_display_name`]}`;
+        handleChangeName('first-player-form', '/tournament_name_user/1/', function (data) {
+        onPlayerSuccess('player1', data);
+    });
+
+    handleChangeName('second-player-form', '/tournament_name_user/2/', function (data) {
+        onPlayerSuccess('player2', data);
+    });
+
+    handleChangeName('third-player-form', '/tournament_name_user/3/', function (data) {
+        onPlayerSuccess('player3', data);
+    });
+
+    handleChangeName('fourth-player-form', '/tournament_name_user/4/', function (data) {
+        onPlayerSuccess('player4', data);
+    });
+
+    function handleChangeName(formId, endpoint, onSuccess) {
+        const form = document.getElementById(formId);
+        if (!form) return;
     
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();  // Prevent default form submission
+            const formData = new FormData(form);
+            const csrfToken = getCSRFToken();  // Get the CSRF token
+    
+            fetch(endpoint, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken || ''  // Ensure no error if token is missing
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    onSuccess(data);  // Call the success callback function
+                } else {
+                    alert(data.message || 'An error occurred.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing the request.');
+            });
+        });
+    }
     // Handle create tournament form
     handleFormTournamentSubmission('create-tournament-form', '/create_tournament/', function (data) {
         const tournamentDiv = document.getElementById('tournament-info');
@@ -145,12 +195,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle second player form
     handleSecondFormSubmission('second-player-form', '/second_player_tournament/', function (data) {
         alert(data.message);
-    
-        // Show the player profile and populate the data
-    
-        
-    
-            // Populate the data
             document.getElementById('second-player-display-name').innerHTML = `<strong>Display Name:</strong> ${data.player2_display_name}`;
             document.getElementById('second-player-wins').innerHTML = `<strong>Wins:</strong> ${data.player2_wins}`;
             document.getElementById('second-player-losses').innerHTML = `<strong>Losses:</strong> ${data.player2_losses}`;
@@ -160,28 +204,38 @@ document.addEventListener("DOMContentLoaded", function () {
             if (avatar) {
                 avatar.src = data.player2_avatar || '/media/avatars/default.png';  // Set default avatar if none
             }
-        
+            const form = document.getElementById('second-player-form');
+            if (form) form.style.display = 'none';
+    });
+    handleSecondFormSubmission('third-player-form', '/third_player_tournament/', function (data) {
+        alert(data.message);
+            document.getElementById('third-player-display-name').innerHTML = `<strong>Display Name:</strong> ${data.player3_display_name}`;
+            document.getElementById('third-player-wins').innerHTML = `<strong>Wins:</strong> ${data.player3_wins}`;
+            document.getElementById('third-player-losses').innerHTML = `<strong>Losses:</strong> ${data.player3_losses}`;
+            document.getElementById('third-player-id').innerHTML = `<strong>ID:</strong> ${data.player3_id}`;
     
-        // Hide the form after success
-       
+            const avatar = document.getElementById('player3-avatar');
+            if (avatar) {
+                avatar.src = data.player3_avatar || '/media/avatars/default.png';  // Set default avatar if none
+            }
+            const form = document.getElementById('third-player-form');
+            if (form) form.style.display = 'none';
     });
-
+    handleSecondFormSubmission('forth-player-form', '/forth_player_tournament/', function (data) {
+        alert(data.message);
+            document.getElementById('forth-player-display-name').innerHTML = `<strong>Display Name:</strong> ${data.player4_display_name}`;
+            document.getElementById('forth-player-wins').innerHTML = `<strong>Wins:</strong> ${data.player4_wins}`;
+            document.getElementById('forth-player-losses').innerHTML = `<strong>Losses:</strong> ${data.player4_losses}`;
+            document.getElementById('forth-player-id').innerHTML = `<strong>ID:</strong> ${data.player4_id}`;
+    
+            const avatar = document.getElementById('player4-avatar');
+            if (avatar) {
+                avatar.src = data.player4_avatar || '/media/avatars/default.png';  // Set default avatar if none
+            }
+            const form = document.getElementById('forth-player-form');
+            if (form) form.style.display = 'none';
+    });
     // Handle tournament name update (for both users)
-    handleFormSubmission('update-tournament-name', '/tournament_name_user/', function (data) {
-        alert(data.message);
-        const displayName = document.getElementById('display_name');
-        if (displayName) {
-            displayName.innerText = data.new_tournament_name;
-        }
-    });
-
-    handleFormSubmission('update-tournament-name-user2', '/tournament_name_user2/', function (data) {
-        alert(data.message);
-        const displayName = document.getElementById('display_name');
-        if (displayName) {
-            displayName.innerText = data.new_tournament_name;
-        }
-    });
 
     const container = document.getElementById("content");
 
