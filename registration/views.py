@@ -295,6 +295,7 @@ def tournament_name_user4(request):
 def tournament(request):
     player = Profile.objects.get(user=request.user)
     t_form = TournamentUpdateForm(request.POST, instance=player)
+    c_form = CreateTournamentForm(request.POST)
     existing_tournament = Tournament.objects.filter(creator=player, started=False).first()
     if existing_tournament:
         # If there is a not-started tournament, show it and allow the user to join
