@@ -3,7 +3,7 @@
 {% block content %}
     <div id="content">
         <h2>Login</h2>
-        <form method="post" action="{% url 'login' %}">
+        <form method="post" id="loginForm">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
@@ -16,4 +16,5 @@
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
+
 {% endblock %}

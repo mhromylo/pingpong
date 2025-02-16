@@ -44,6 +44,30 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    document.getElementById("loginForm").addEventListener("submit", async function(event) {
+        event.preventDefault(); // Prevent traditional form submission
+
+        let formData = new FormData(this);
+        let csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+        let response = await fetch("/login/", {
+            method: "POST",
+            body: formData,
+            headers: { "X-CSRFToken": csrfToken }
+        });
+
+        console.log(response);
+
+        if(response.status = 200)
+        {
+            loadPage("/index/");
+        }
+        else
+        {
+            loadPage("/login/");
+        }
+    });
+
     function handleFormSubmit(event) {
         event.preventDefault(); // Prevent normal form submission
         const form = event.target;

@@ -47,10 +47,10 @@ def user_login(request):
         if user is not None:
             login(request, user)
             messages.success(request, "You are now logged in")
-            return redirect("index")
+            return render(request, "registration/index.html")
         else:
             messages.error(request, "Invalid username or password")
-            return redirect("index")
+            return render(request, "registration/index.html")
     else:
         return render(request, 'registration/login.html', {})
 
