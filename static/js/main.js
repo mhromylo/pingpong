@@ -375,8 +375,128 @@ document.addEventListener("DOMContentLoaded", function () {
             type: "status_update",
             status: status
         }));
-}
+    }
 
+
+    function handleFormTournamentSubmission(formId, endpoint, onSuccess) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();  // Prevent default form submission
+            const formData = new FormData(form);
+            const csrfToken = getCSRFToken();
+
+            fetch(endpoint, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken || ''  // Ensure no error if token is missing
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    onSuccess(data);
+                } else {
+                    alert(data.message || 'An error occurred.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing the request.');
+            });
+        });
+    }
+
+    // Handle create tournament form
+    handleFormTournamentSubmission('create-tournament-form', '/create_tournament/', function (data) {
+        const tournamentDiv = document.getElementById('tournament-info');
+        if (!tournamentDiv) return;
+
+        tournamentDiv.innerHTML = `
+            <h3>Created Tournament: ${data.tournament_name}</h3>
+            <p><strong>Creator:</strong> ${data.creator}</p>
+            <p><strong>Players:</strong> ${data.player_count}</p>
+            <p><strong>Avatar:</strong> <img src="${data.player1_avatar}" alt="Player Avatar" class="avatar"></p>
+            <a href="/tournament/${data.tournament_id}/">View Tournament</a>
+        `;
+        tournamentDiv.style.display = 'block';
+    });
+
+    function handleSecondFormSubmission(formId, url, callback) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();  // Prevent default form submission
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken,  // Include CSRF token
+                    'Accept': 'application/json'  // Explicitly expect JSON response
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    callback(data);  // Pass the response data to the callback function
+                } else {
+                    alert('!Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('?An error occurred.');
+            });
+        });
+    }
+    
+    // Handle second player form
+    handleSecondFormSubmission('second-player-form', '/second_player_tournament/', function (data) {
+        alert(data.message);
+    
+        // Show the player profile and populate the data
+    
+        
+    
+            // Populate the data
+            document.getElementById('second-player-display-name').innerHTML = `<strong>Display Name:</strong> ${data.player2_display_name}`;
+            document.getElementById('second-player-wins').innerHTML = `<strong>Wins:</strong> ${data.player2_wins}`;
+            document.getElementById('second-player-losses').innerHTML = `<strong>Losses:</strong> ${data.player2_losses}`;
+            document.getElementById('second-player-id').innerHTML = `<strong>ID:</strong> ${data.player2_id}`;
+    
+            const avatar = document.getElementById('player2-avatar');
+            if (avatar) {
+                avatar.src = data.player2_avatar || '/media/avatars/default.png';  // Set default avatar if none
+            }
+        
+    
+        // Hide the form after success
+       
+    });
+
+    // Handle tournament name update (for both users)
+    handleFormSubmission('update-tournament-name', '/tournament_name_user/', function (data) {
+        alert(data.message);
+        const displayName = document.getElementById('display_name');
+        if (displayName) {
+            displayName.innerText = data.new_tournament_name;
+        }
+    });
+
+    handleFormSubmission('update-tournament-name-user2', '/tournament_name_user2/', function (data) {
+        alert(data.message);
+        const displayName = document.getElementById('display_name');
+        if (displayName) {
+            displayName.innerText = data.new_tournament_name;
+        }
+    });
 
 });
 
