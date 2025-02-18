@@ -22,6 +22,10 @@ def pvp(request, profile):
 def register_done(request):
     return render(request, "registration/register_done.html")
 
+def check_authentication(request):
+    if request.user.is_authenticated:
+        return JsonResponse({"authenticated": True})
+    return JsonResponse({"authenticated": False})
 
 def register(request):
     if request.method == 'POST':
@@ -29,13 +33,17 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Account created, you can now login")
-            return JsonResponse({'success': True, 'message': 'Account created, you can now login'})
+            return JsonResponse({'success': True,
+                                 'message': 'Account created, you can now login',
+                                 'redirect_url': '/login/'
+            }, status=200)
         else:
-            messages.error(request, "There was an error, please try again later")
-            return JsonResponse({'success': False, 'message': 'There was an error, please try again later'})
-    else:
-        form = RegistrationForm()
-        return render(request, 'registration/register.html', {'form': form})
+            messages.error(request, "Form not valid" )
+            return JsonResponse({'success': False, 'message': 'There was an error, please try again later'}, status=400) 
+
+    else: 
+        form = RegistrationForm()   
+        return render(request,'registration/register.html', {'form': form})
 
 
 
@@ -47,10 +55,16 @@ def user_login(request):
         if user is not None:
             login(request, user)
             messages.success(request, "You are now logged in")
-            return redirect("index")
+            return JsonResponse({'success': True,
+                                 'message': 'You are now logged in',
+                                 'redirect_url': '/index/'
+            }, status=200)
         else:
             messages.error(request, "Invalid username or password")
-            return redirect("index")
+            return JsonResponse({'success': False,
+                                 'message': 'Invalid username or password',
+                                 'redirect_url': '/login/'
+            }, status=200)
     else:
         return render(request, 'registration/login.html', {})
 

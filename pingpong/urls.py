@@ -31,6 +31,7 @@ urlpatterns = [
     path('', views.index, name='index'),
 
     path('register/', views.register, name='register'),
+    path('check-auth/', views.check_authentication, name='check-auth'),
 
     path('register_done/', views.register_done, name='register_done'),
 
