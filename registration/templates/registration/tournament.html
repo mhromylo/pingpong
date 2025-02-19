@@ -8,7 +8,7 @@
         <p><strong>Creator:</strong> {{ existing_tournament.creator.display_name }}</p>
     
         <!-- Button to join the tournament -->
-        <form id="create-tournament-form" method="POST">
+        <form id="create-tournament-form" method="POST" action="{% url 'create_tournament' %}">
             {% csrf_token %}
             {{ c_form.as_p }}  <!-- Display the form fields -->
             <button type="submit" class="btn btn-primary">Create Tournament</button>

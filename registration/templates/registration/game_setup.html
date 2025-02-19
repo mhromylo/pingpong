@@ -12,11 +12,12 @@
         <input type="password" id="password" name="password" required>
         <button type="submit">Log in second Player</button>
     </form>
-    {% if player2 %}
-        <h2>Player 2 Profile</h2>
-        <p>Display Name: {{ player2.display_name }}</p>
-        <p>Wins: {{ player2.wins }}</p>
-        <p>Losses: {{ player2.losses }}</p>
+    {% if request.session.player2 %}
+        <h3>Player 2 Profile</h3>
+        <p>Display Name: {{ request.session.player2.display_name }}</p>
+        <img id="player2-avatar" src="{{ request.session.player2.avatar.url }}" alt="User Avatar" class="avatar">
+        <p>Wins: {{ request.session.player2.wins }}</p>
+        <p>Losses: {{ request.session.player2.losses }}</p>
     {% endif %}
 
     <div class="menu-container">

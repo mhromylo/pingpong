@@ -54,13 +54,11 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, "You are now logged in")
             return JsonResponse({'success': True,
                                  'message': 'You are now logged in',
                                  'redirect_url': '/index/'
             }, status=200)
         else:
-            messages.error(request, "Invalid username or password")
             return JsonResponse({'success': False,
                                  'message': 'Invalid username or password',
                                  'redirect_url': '/login/'
@@ -85,11 +83,20 @@ def update_profile(request):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
-            messages.success(request, 'Your account has been updated!')
-            return redirect('index')
+            return JsonResponse({
+                'success': True,
+                'message': 'Your account has been updated!',
+                'redirect_url': '/index/'  # Optional: Tell the frontend where to redirect
+            }, status=200)
         else:
-            messages.error(request, 'There are errors updating your profile, please try again.')
-            return redirect('index')
+            return JsonResponse({
+                'success': False,
+                'message': 'Your account has not been updated!',
+                'errors': {
+                        **u_form.errors,  # Include user form errors
+                        **p_form.errors   # Include profile form errors
+                    }
+            }, status=200)
     else:
         u_form = UserUpdateForm(instance=user)
         p_form = ProfileUpdateForm(instance=profile)
@@ -109,11 +116,17 @@ def change_password(request):
         if form.is_valid():
             form.save()
             login(request, form.user)
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('index')
+            return JsonResponse({
+                'success': True,
+                'message': 'Your password was successfully updated!',
+                'redirect_url': '/index/'  # Optional: Tell the frontend where to redirect
+            }, status=200)
         else:
-            messages.error(request, 'Please correct the error in the form.')
-            return redirect('index')
+            return JsonResponse({
+                'success': False,
+                'message': 'Please correct the error in the form.!',
+                'errors': form.errors  # Include user form errors
+            }, status=200)
     else:
         form = PasswordChangeForm(user=request.user)
         return render(request, 'registration/change_password.html', {'form': form})
@@ -129,22 +142,34 @@ def add_friend(request):
             try:
                 friend_profile = get_object_or_404(Profile, display_name=friend_name)
                 if user_profile == friend_profile:
-                    messages.error(request, 'You cannot add yourself as a friend.')
-                    return redirect('index')
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'You cannot add yourself as a friend.'
+                        }, status=200)
                 elif friend_profile in user_profile.friends.all():
-                    messages.error(request, 'You are already friends.')
-                    return redirect('index')
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'You are already friends..'
+                        }, status=200)
                 else:
                     user_profile.friends.add(friend_profile)
                     user_profile.save()
-                    messages.success(request, 'You are now friends.')
-                    return redirect('index')
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'You are now friends',
+                        'redirect_url': '/add_friend/'
+                        }, status=200)
             except Exception as e:
-                messages.error(request, 'Something went wrong while adding friend.')
-                return redirect('index')
+                return JsonResponse({
+                        'success': False,
+                        'message': 'Something went wrong while adding friend.'
+                        }, status=200)
         else:
-            messages.error(request, 'Please correct the error in the form.')
-            return redirect('index')
+            return JsonResponse({
+                'success': False,
+                'message': 'Please correct the error in the form.!',
+                'errors': form.errors  # Include user form errors
+            }, status=200)
     else:
         form = AddFriendsForm()
         return render(request, 'registration/add_friend.html', {'form': form})
@@ -155,11 +180,17 @@ def delete_friend(request, f_id):
     if request.method == 'POST':
         friend = get_object_or_404(Profile, id=f_id)
         request.user.profile.friends.remove(friend)
-        messages.success(request, 'You are no longer friends.')
-        return redirect('index')
+        return JsonResponse({
+                        'success': True,
+                        'message': 'You are now not friends more',
+                        'redirect_url': '/add_friend/'
+                        }, status=200)
     else:
-        messages.error(request, 'Invalid request.')
-        return redirect('index')
+        return JsonResponse({
+                        'success': False,
+                        'message': 'Wrong request',
+                        'redirect_url': '/add_friend/'
+                        }, status=400)
 
 
 @login_required
@@ -188,10 +219,16 @@ def game_setup(request):
                 'losses': player2.losses,
                 'id': player2.id,
             }
-            return redirect('index')
+            return JsonResponse({
+                        'success': True,
+                        'message': 'Second player logined',
+                        'redirect_url': '/game_setup/'
+                        }, status=200)
         else:
-            messages.error(request, "Wrong credentials for Player 2")
-            return redirect('index')
+            return JsonResponse({
+                        'success': False,
+                        'message': 'Wrong credentials for Player 2',
+                        }, status=200)
     return render(request, 'registration/game_setup.html', {})
 
 
@@ -365,7 +402,8 @@ def second_player_tournament(request):
                 'player2_wins': player2.wins,
                 'player2_losses': player2.losses,
                 'player2_id': player2.id,
-                'player2_avatar': player2.avatar.url if player2.avatar else ''
+                'player2_avatar': player2.avatar.url if player2.avatar else '',
+                'redirect_url': '/tournament/'
             })
         else:
             messages.error(request, "Wrong credentials for Player 2")
@@ -397,7 +435,8 @@ def third_player_tournament(request):
                 'player3_wins': player3.wins,
                 'player3_losses': player3.losses,
                 'player3_id': player3.id,
-                'player3_avatar': player3.avatar.url if player3.avatar else ''
+                'player3_avatar': player3.avatar.url if player3.avatar else '',
+                'redirect_url': '/tournament/'
             })
         else:
             messages.error(request, "Wrong credentials for Player 3")
@@ -429,7 +468,8 @@ def forth_player_tournament(request):
                 'player4_wins': player4.wins,
                 'player4_losses': player4.losses,
                 'player4_id': player4.id,
-                'player4_avatar': player4.avatar.url if player4.avatar else ''
+                'player4_avatar': player4.avatar.url if player4.avatar else '',
+                'redirect_url': '/tournament/'
             })
         else:
             messages.error(request, "Wrong credentials for Player 24")
@@ -447,22 +487,23 @@ def create_tournament(request):
             tournament.save()  # Save the tournament instance
             tournament.players.add(player1)
             tournament.creator = player1
-
-            messages.success(request, "Tournament created successfully!")
-            
             return JsonResponse({
                 'success': True,
+                'existing_tournament': tournament.name,
                 'tournament_name': tournament.name,
                 'tournament_id': tournament.id,
                 'creator': tournament.creator.display_name,
                 'player1_avatar': player1.avatar.url if player1.avatar else '',
                 'player_count': tournament.players.count(),
+                'redirect_url': '/tournament/'
             })
-
     else:
         form = CreateTournamentForm()
-
-    return render(request, 'registration/tournament.html', {'player': player1, 'form': form})
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid request method',
+            'redirect_url': '/tournament/'
+        })
 
 def get_tournament_data(request, tournament_id):
     try:

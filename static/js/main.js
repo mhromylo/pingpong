@@ -17,7 +17,7 @@ async function checkAuth() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-
+    attachFormEventListeners();
     checkAuth();
 
     function getCSRFToken() {
@@ -128,53 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    function handleFormSubmission(formId, endpoint, onSuccess) {
-        const form = document.getElementById(formId);
-        if (!form) return;
-
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(form);
-            const csrfToken = getCSRFToken();
-
-            fetch(endpoint, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfToken || ''
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    onSuccess(data);
-                } else {
-                    alert(data.message || 'An error occurred.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while processing the request.');
-            });
-        });
-    }
-
-    // Example usage of handleFormSubmission
-    handleFormSubmission('create-tournament-form', '/create_tournament/', function (data) {
-        const tournamentDiv = document.getElementById('tournament-info');
-        if (!tournamentDiv) return;
-
-        tournamentDiv.innerHTML = `
-            <h3>Created Tournament: ${data.tournament_name}</h3>
-            <p><strong>Creator:</strong> ${data.creator}</p>
-            <p><strong>Players:</strong> ${data.player_count}</p>
-            <p><strong>Avatar:</strong> <img src="${data.player1_avatar}" alt="Player Avatar" class="avatar"></p>
-            <a href="/tournament/${data.tournament_id}/">View Tournament</a>
-        `;
-        tournamentDiv.style.display = 'block';
-    });
-
     function loadMyCanvasScript() {
         var existingScript = document.querySelector('script[src="/static/js/myCanvas.js"]');
         if (existingScript) {
@@ -187,4 +140,5 @@ document.addEventListener("DOMContentLoaded", function () {
         document.head.appendChild(script);
     }
     loadPage(window.location.pathname);
+
 });

@@ -4,7 +4,7 @@
 
 <div id="content">
     <h2>Update profile</h2>
-    <form method="POST" action="update_profile/" enctype="multipart/form-data">
+    <form method="POST" action="{% url 'update_profile' %}" enctype="multipart/form-data">
         {% csrf_token %}
         {{ u_form.as_p }}
         {{ p_form.as_p }}
