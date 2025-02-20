@@ -5,6 +5,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
@@ -70,7 +71,11 @@ def user_login(request):
 @login_required
 def user_logout(request):
     logout(request)
-    return redirect("index")
+    return JsonResponse({
+                'success': True,
+                'message': 'See you later! ',
+                'redirect_url': '/index/'  # Optional: Tell the frontend where to redirect
+            }, status=200)
 
 
 @login_required
@@ -273,238 +278,228 @@ def save_game_result(request):
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
-@login_required
+@csrf_exempt
 def tournament_name_user(request, player_number):
     if request.method == 'POST':
-        form = CreateTournamentForm(request.POST)
-        user = request.user
-        profile = Profile.objects.get(user=user)
-        t_form = TournamentUpdateForm(request.POST, instance=profile)
-        if t_form.is_valid():
-            display_name = request.POST.get('display_name')
-            t_form.save()
-            if player_number == 1:
-                player_key = 'player1'
-            elif player_number == 2:
-                player_key = 'player2'
-            elif player_number == 3:
-                player_key = 'player3'
-            elif player_number == 4:
-                player_key = 'player4'
-            else:
-                return JsonResponse({'success': False, 'message': 'Invalid player number.'})
+        display_name = request.POST.get('display_name')
+        if not display_name:
             return JsonResponse({
-                'success': True,
-                f'{player_key}_display_name': display_name,
-                f'{player_key}_id': profile.id,
-            })
+                'success': False,
+                'message': 'Display name is required.',
+            }, status=400)
+
+        # Update the display name for the specified player
+        if player_number == 1:
+            profile = request.user.profile
+        elif player_number == 2:
+            profile = Profile.objects.get(id=request.session.get('player2_id'))
+        elif player_number == 3:
+            profile = Profile.objects.get(id=request.session.get('player3_id'))
+        elif player_number == 4:
+            profile = Profile.objects.get(id=request.session.get('player4_id'))
         else:
-            errors = {field: msgs for field, msgs in t_form.errors.items()}
-            return JsonResponse({'success': False, 'errors': errors})
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-@login_required
-def tournament_name_user2(request):
-    if request.method == 'POST':
-        user = request.user
-        player2_data = request.session.get("player2")
-        profile = Profile.objects.get(user=user)
-        profile2 = Profile.objects.get(id=player2_data["id"])
-        t_form = TournamentUpdateForm(request.POST, instance=profile2)
-        if t_form.is_valid():
-            display_name = request.POST.get('display_name')
-            t_form.save()
-            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, 't_form': t_form})
-        else:
-            errors = {field: msgs for field, msgs in t_form.errors.items()}
-            return JsonResponse({'success': False, 'errors': errors})
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-@login_required
-def tournament_name_user3(request):
-    if request.method == 'POST':
-        user = request.user
-        player2_data = request.session.get("player2")
-        player3_data = request.session.get("player3")
-        profile = Profile.objects.get(user=user)
-        profile2 = Profile.objects.get(id=player2_data["id"])
-        profile3 = Profile.objects.get(id=player3_data["id"])
-        t_form = TournamentUpdateForm(request.POST, instance=profile3)
-        if t_form.is_valid():
-            display_name = request.POST.get('display_name')
-            t_form.save()
-            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, ' player3': profile3,'t_form': t_form})
-        else:
-            errors = {field: msgs for field, msgs in t_form.errors.items()}
-            return JsonResponse({'success': False, 'errors': errors})
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-@login_required
-def tournament_name_user4(request):
-    if request.method == 'POST':
-        user = request.user
-        player2_data = request.session.get("player2")
-        player3_data = request.session.get("player3")
-        player4_data = request.session.get("player4")
-        profile = Profile.objects.get(user=user)
-        profile2 = Profile.objects.get(id=player2_data["id"])
-        profile3 = Profile.objects.get(id=player3_data["id"])
-        profile4 = Profile.objects.get(id=player4_data["id"])
-        t_form = TournamentUpdateForm(request.POST, instance=profile3)
-        if t_form.is_valid():
-            display_name = request.POST.get('display_name')
-            t_form.save()
-            return render(request, 'registration/tournament.html', {'player': profile,' player2': profile2, ' player3': profile3,' player4': profile4, 't_form': t_form})
-        else:
-            errors = {field: msgs for field, msgs in t_form.errors.items()}
-            return JsonResponse({'success': False, 'errors': errors})
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-#return render(request, 'registration/tournament.html', {'player': profile, 't_form': t_form})
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid player number.',
+            }, status=400)
+
+        profile.display_name = display_name
+        profile.save()
+        return JsonResponse({
+            'success': True,
+            'message': 'Display name updated successfully.',
+            'new_display_name': profile.display_name,
+        })
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method.',
+    }, status=405)
 def tournament(request):
     player = Profile.objects.get(user=request.user)
     t_form = TournamentUpdateForm(request.POST, instance=player)
     c_form = CreateTournamentForm(request.POST)
-    existing_tournament = Tournament.objects.filter(creator=player, started=False).first()
-    if existing_tournament:
-        # If there is a not-started tournament, show it and allow the user to join
-        return render(request, 'registration/tournament.html', {
-            'existing_tournament': existing_tournament,
-            'player': player,
-        })
-    else:
-        c_form = CreateTournamentForm(request.POST)
-        return render(request, 'registration/tournament.html', {
-            'player': player, 'c_form': c_form
-        })
+    return render(request, 'registration/tournament.html', {
+        'player': player, 'c_form': c_form
+    })
 
-@login_required
+
+@csrf_exempt
 def second_player_tournament(request):
-
-    player = Profile.objects.get(user=request.user)
-    t_form = TournamentUpdateForm(request.POST, instance=player)
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user2 = authenticate(request, username=username, password=password)
-        if user2:
-            player2 = Profile.objects.get(user=user2)
-            if player == player2:
-                messages.error(request, "You cannot play against yourself.")
-                return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
-            request.session['player2'] = {
-                'display_name': player2.display_name,
-                'avatar_url': player2.avatar.url if player2.avatar else '',
-                'wins': player2.wins,
-                'losses': player2.losses,
-                'id': player2.id,
-            }
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            profile = Profile.objects.get(user=user)
             return JsonResponse({
                 'success': True,
-                'message': "Player 2 added successfully!",
-                'player2_display_name': player2.display_name,
-                'player2_wins': player2.wins,
-                'player2_losses': player2.losses,
-                'player2_id': player2.id,
-                'player2_avatar': player2.avatar.url if player2.avatar else '',
-                'redirect_url': '/tournament/'
+                'message': 'Player 2 logged in successfully.',
+                'player2_display_name': profile.display_name,
+                'player2_wins': profile.wins,
+                'player2_losses': profile.losses,
+                'player2_id': profile.id,
+                'player2_avatar': profile.avatar.url if profile.avatar else '',
             })
         else:
-            messages.error(request, "Wrong credentials for Player 2")
-            return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
-    return render(request, 'registration/tournament.html', {'player': player, 't_form': t_form})
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid username or password.',
+            }, status=400)
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method.',
+    }, status=405)
 
 @login_required
 def third_player_tournament(request):
-
-    player = Profile.objects.get(user=request.user)
-    t_form = TournamentUpdateForm(request.POST, instance=player)
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user3 = authenticate(request, username=username, password=password)
-        if user3:
-            player3 = Profile.objects.get(user=user3)
-            request.session['player3'] = {
-                'display_name': player3.display_name,
-                'avatar_url': player3.avatar.url if player3.avatar else '',
-                'wins': player3.wins,
-                'losses': player3.losses,
-                'id': player3.id,
-            }
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            profile = Profile.objects.get(user=user)
             return JsonResponse({
                 'success': True,
-                'message': "Player 3 added successfully!",
-                'player3_display_name': player3.display_name,
-                'player3_wins': player3.wins,
-                'player3_losses': player3.losses,
-                'player3_id': player3.id,
-                'player3_avatar': player3.avatar.url if player3.avatar else '',
-                'redirect_url': '/tournament/'
+                'message': 'Player 3 logged in successfully.',
+                'player3_display_name': profile.display_name,
+                'player3_wins': profile.wins,
+                'player3_losses': profile.losses,
+                'player3_id': profile.id,
+                'player3_avatar': profile.avatar.url if profile.avatar else '',
             })
         else:
-            messages.error(request, "Wrong credentials for Player 3")
-            return redirect(index)
-    return redirect(index)
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid username or password.',
+            }, status=400)
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method.',
+    }, status=405)
 
 @login_required
 def forth_player_tournament(request):
-
-    player = Profile.objects.get(user=request.user)
-    t_form = TournamentUpdateForm(request.POST, instance=player)
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user4 = authenticate(request, username=username, password=password)
-        if user4:
-            player4 = Profile.objects.get(user=user4)
-            request.session['player4'] = {
-                'display_name': player4.display_name,
-                'avatar_url': player4.avatar.url if player4.avatar else '',
-                'wins': player4.wins,
-                'losses': player4.losses,
-                'id': player4.id,
-            }
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            profile = Profile.objects.get(user=user)
             return JsonResponse({
                 'success': True,
-                'message': "Player 4 added successfully!",
-                'player4_display_name': player4.display_name,
-                'player4_wins': player4.wins,
-                'player4_losses': player4.losses,
-                'player4_id': player4.id,
-                'player4_avatar': player4.avatar.url if player4.avatar else '',
-                'redirect_url': '/tournament/'
+                'message': 'Player 4 logged in successfully.',
+                'player4_display_name': profile.display_name,
+                'player4_wins': profile.wins,
+                'player4_losses': profile.losses,
+                'player4_id': profile.id,
+                'player4_avatar': profile.avatar.url if profile.avatar else '',
             })
         else:
-            messages.error(request, "Wrong credentials for Player 24")
-            return redirect(index)
-    return redirect(index)
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid username or password.',
+            }, status=400)
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method.',
+    }, status=405)
 
 @login_required
 def create_tournament(request):
     if request.method == 'POST':
         player1 = Profile.objects.get(user=request.user)
-        form = CreateTournamentForm(request.POST)
-        t_form = TournamentUpdateForm(request.POST, instance=player1)
-        if form.is_valid():
-            tournament = form.save(commit=False)  # Don't save yet
-            tournament.save()  # Save the tournament instance
-            tournament.players.add(player1)
-            tournament.creator = player1
+        
+        # Check if the user already has a "not started" tournament
+        existing_tournament = Tournament.objects.filter(creator=player1, status = 'not_started').first()
+
+        if existing_tournament:
+            # Return the existing tournament data
             return JsonResponse({
                 'success': True,
-                'existing_tournament': tournament.name,
-                'tournament_name': tournament.name,
-                'tournament_id': tournament.id,
-                'creator': tournament.creator.display_name,
-                'player1_avatar': player1.avatar.url if player1.avatar else '',
-                'player_count': tournament.players.count(),
-                'redirect_url': '/tournament/'
+                'tournament_name': existing_tournament.name,
+                'tournament_id': existing_tournament.id,
+                'creator': existing_tournament.creator.display_name,
+                'player1_avatar': existing_tournament.creator.avatar.url if existing_tournament.creator.avatar else '',
+                'player_count': existing_tournament.players.count(),
+                'message': 'Existing tournament loaded.',
+                'redirect_url': f'/tournament/{existing_tournament.id}/'  # Optional: Redirect to the tournament page
             })
+        else:
+            # Create a new tournament
+            form = CreateTournamentForm(request.POST)
+            if form.is_valid():
+                tournament = form.save(commit=False)  # Don't save yet
+                tournament.creator = player1
+                tournament.started = False  # Set initial status
+                tournament.save()  # Save the tournament instance
+                tournament.players.add(player1)  # Add the creator as the first player
+
+                # Return JSON response for AJAX requests
+                return JsonResponse({
+                    'success': True,
+                    'tournament_name': tournament.name,
+                    'tournament_id': tournament.id,
+                    'creator': tournament.creator.display_name,
+                    'player1_avatar': tournament.creator.avatar.url if tournament.creator.avatar else '',
+                    'player_count': tournament.players.count(),
+                    'message': 'Tournament created successfully!',
+                    'redirect_url': f'/tournament/{tournament.id}/'  # Optional: Redirect to the tournament page
+                })
+            else:
+                # Return form errors for AJAX requests
+                return JsonResponse({
+                    'success': False,
+                    'message': 'There was an error creating the tournament.',
+                    'errors': form.errors  # Include form errors for debugging
+                }, status=400)
     else:
-        form = CreateTournamentForm()
+        # Handle non-POST requests (e.g., GET)
         return JsonResponse({
             'success': False,
-            'message': 'Invalid request method',
-            'redirect_url': '/tournament/'
-        })
+            'message': 'Invalid request method.',
+            'redirect_url': '/tournament/'  # Redirect to the tournament page
+        }, status=405)
 
+@login_required
+def join_tournament(request, tournament_id):
+    tournament = Tournament.objects.get(id=tournament_id)
+    player = Profile.objects.get(user=request.user)
+
+    if tournament.players.count() < 4 and player not in tournament.players.all():
+        tournament.players.add(player)
+        return JsonResponse({
+            'success': True,
+            'message': f'{player.display_name} has joined the tournament.',
+            'player_count': tournament.players.count(),
+            'player_name': player.display_name,
+            'player_avatar': player.avatar.url if player.avatar else ''
+        })
+    else:
+        return JsonResponse({
+            'success': False,
+            'message': 'Tournament is full or you have already joined.'
+        }, status=400)
+    
+@login_required
+def start_tournament(request, tournament_id):
+    tournament = Tournament.objects.get(id=tournament_id)
+    if tournament.creator.user == request.user and tournament.players.count() == 4:
+        tournament.status = 'in_progress'
+        tournament.save()
+        return JsonResponse({
+            'success': True,
+            'message': 'Tournament has started!',
+            'tournament_id': tournament.id
+        })
+    else:
+        return JsonResponse({
+            'success': False,
+            'message': 'You are not the creator or the tournament is not full.'
+        }, status=400)
+    
 def get_tournament_data(request, tournament_id):
     try:
         tournament = Tournament.objects.get(id=tournament_id)

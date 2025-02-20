@@ -50,13 +50,18 @@ class Tournament(models.Model):
     name = models.CharField(max_length=100)
     players = models.ManyToManyField(Profile, related_name='tournaments')
     created_at = models.DateTimeField(default=timezone.now)
-    creator = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="tournaments_create", null=True, blank=True)
-    started = models.BooleanField(default=False)
+    creator = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="tournaments_create", null=True, blank=True)
+    status = models.CharField(max_length=20, choices=[
+        ('not_started', 'Not Started'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed')
+    ], default='not_started')
 
     class Meta:
         db_table = 'registration_tournament'
 
     def __str__(self):
-        """Check if the tournament already has 3 players."""
         return self.name
+    def is_full(self):
+        return self.players.count() >= 4
 
