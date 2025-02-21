@@ -38,7 +38,7 @@
     <div class="row mb-4">
         <!-- Player 1 Profile -->
         <div class="col-md-3">
-            <div class="card">
+            <div id="player1-profile" class="card">
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ user.username }}</h5>
                     <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
@@ -66,10 +66,10 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">Player 2</h5>
                     <img id="player2-avatar" src="{{ request.session.player2.avatar.url }}" alt="Player 2 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
-                    <p id="player2-display-name"><strong>Display Name:</strong> {{ player2.display_name }}</p>
-                    <p id="player2-wins"><strong>Wins:</strong> {{ player2.wins }}</p>
-                    <p id="player2-losses"><strong>Losses:</strong> {{ player2.losses }}</p>
-                    <p id="player2-id"><strong>ID:</strong> {{ player2.id }}</p>
+                    <p id="player2-display-name"><strong>Display Name:</strong> {{ request.session.player2.display_name }}</p>
+                    <p id="player2-wins"><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
+                    <p id="player2-losses"><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
+                    <p id="player2-id"><strong>ID:</strong> {{ request.session.player2.id }}</p>
 
                     <!-- Login Form for Player 2 -->
                     <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
@@ -104,12 +104,12 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">Player 3</h5>
                     <img id="player3-avatar" src="{{ request.session.player3.avatar.url }}" alt="Player 3 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
-                    <p id="player3-display-name"><strong>Display Name:</strong> {{ player3.display_name }}</p>
-                    <p id="player3-wins"><strong>Wins:</strong> {{ player3.wins }}</p>
-                    <p id="player3-losses"><strong>Losses:</strong> {{ player3.losses }}</p>
-                    <p id="player3-id"><strong>ID:</strong> {{ player3.id }}</p>
+                    <p id="player3-display-name"><strong>Display Name:</strong> {{ request.session.player3.display_name }}</p>
+                    <p id="player3-wins"><strong>Wins:</strong> {{ request.session.player3.wins }}</p>
+                    <p id="player3-losses"><strong>Losses:</strong> {{ request.session.player3.losses }}</p>
+                    <p id="player3-id"><strong>ID:</strong> {{ request.session.player3.id }}</p>
 
-                    <!-- Login Form for Player 2 -->
+                    <!-- Login Form for Player 3 -->
                     <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -137,15 +137,15 @@
         </div>
  
 
-        <div class="col-md-3">
+        <div class="col-md-3"> 
             <div id="player4-profile" class="card">
                 <div class="card-body text-center">
                     <h5 class="card-title">Player 4</h5>
                     <img id="player4-avatar" src="{{ request.session.player4.avatar.url }}" alt="Player 4 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
-                    <p id="player4-display-name"><strong>Display Name:</strong> {{ player4.display_name }}</p>
-                    <p id="player4-wins"><strong>Wins:</strong> {{ player4.wins }}</p>
-                    <p id="player4-losses"><strong>Losses:</strong> {{ player4.losses }}</p>
-                    <p id="player4-id"><strong>ID:</strong> {{ player4.id }}</p>
+                    <p id="player4-display-name"><strong>Display Name:</strong> {{ request.session.player4.display_name }}</p>
+                    <p id="player4-wins"><strong>Wins:</strong> {{ request.session.player4.wins }}</p>
+                    <p id="player4-losses"><strong>Losses:</strong> {{ request.session.player4.losses }}</p>
+                    <p id="player4-id"><strong>ID:</strong> {{ request.session.player4.id }}</p>
 
                     <!-- Login Form for Player 2 -->
                     <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" class="mb-3">
@@ -162,7 +162,7 @@
                     </form>
 
                     <!-- Update Display Name Form for Player 2 -->
-                    <form id="update-tournament-name-user2" method="POST" action="/tournament_name_user/4/" class="mb-3">
+                    <form id="update-tournament-name-user4" method="POST" action="/tournament_name_user/4/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="display_name" class="form-label">Player 4 Display Name:</label>

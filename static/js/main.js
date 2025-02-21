@@ -17,7 +17,7 @@ async function checkAuth() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    attachFormEventListeners();
+
     checkAuth();
 
     function getCSRFToken() {
@@ -69,44 +69,32 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleFormSubmit(event) {
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
-        const formData = new FormData(form); // Use FormData to handle form data
+        const formData = new FormData(form);
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
+
         fetch(form.action, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest' // Indicate this is an AJAX request
             },
-            body: formData // Send FormData directly
+            body: formData
         })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     alert(data.message); // Show success message
-    
-                    // Update the tournament info dynamically
-                    const tournamentInfo = document.getElementById('tournament-info');
-                    if (tournamentInfo) {
-                        tournamentInfo.innerHTML = `
-                            <h3>Tournament: ${data.tournament_name}</h3>
-                            <p><strong>Creator:</strong> ${data.creator}</p>
-                            <p><strong>Players:</strong> ${data.player_count}</p>
-                            <p><strong>Avatar:</strong> <img src="${data.player1_avatar}" alt="Player Avatar" class="avatar"></p>
-                            <a href="/tournament/${data.tournament_id}/">View Tournament</a>
-                        `;
-                        tournamentInfo.style.display = 'block';
+                    if (data.goal){
+                        updatePlayerProfile(data);
                     }
-    
-                    // Optionally, redirect to the tournament page
                     if (data.redirect_url) {
-                        loadPage(data.redirect_url); // Dynamically load the tournament page
+                        loadPage(data.redirect_url); // Dynamically load the login page
                     }
                 } else {
                     // Display form errors
                     const errorMessage = data.message || 'There was an error, please try again later.';
                     alert(errorMessage);
-    
+
                     // Optionally, display form errors in the UI
                     if (data.errors) {
                         const errorContainer = document.createElement('div');
@@ -132,6 +120,16 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener('submit', handleFormSubmit);
         });
     }
+    
+    document.querySelectorAll('form').forEach(form => {
+        if (form.id === 'logout-form') {
+            form.addEventListener("submit", function (event) {
+                handleFormSubmit(event, true);
+            });
+        } else {
+            form.addEventListener("submit", handleFormSubmit);
+        }
+    });
 
     function loadMyCanvasScript() {
         var existingScript = document.querySelector('script[src="/static/js/myCanvas.js"]');
@@ -145,7 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.head.appendChild(script);
     }
     loadPage(window.location.pathname);
-
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {
             method: 'POST',
@@ -186,15 +183,15 @@ document.addEventListener("DOMContentLoaded", function () {
             playerCount.innerText = `Players: ${data.player_count}/4`;
         }
     }
+        // Function to handle player login
     function loginPlayer(formId, endpoint, playerNumber) {
         const form = document.getElementById(formId);
         if (!form) return;
-    
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(form);
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
+            console.log('Form Data:', Object.fromEntries(formData));
             fetch(endpoint, {
                 method: 'POST',
                 headers: {
@@ -206,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        console.log('Response:', data);
                         alert(data.message);
                         updatePlayerProfile(playerNumber, data);
                     } else {
@@ -219,35 +217,40 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     
-    // Function to update the player profile UI
-    function updatePlayerProfile(playerNumber, data) {
-        const profileElement = document.getElementById(`player${playerNumber}-profile`);
-        if (profileElement) {
-            profileElement.innerHTML = `
-                <h5 class="card-title">Player ${playerNumber}</h5>
-                <img id="player${playerNumber}-avatar" src="${data[`player${playerNumber}_avatar`]}" alt="Player ${playerNumber} Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
-                <p id="player${playerNumber}-display-name"><strong>Display Name:</strong> ${data[`player${playerNumber}_display_name`]}</p>
-                <p id="player${playerNumber}-wins"><strong>Wins:</strong> ${data[`player${playerNumber}_wins`]}</p>
-                <p id="player${playerNumber}-losses"><strong>Losses:</strong> ${data[`player${playerNumber}_losses`]}</p>
-                <p id="player${playerNumber}-id"><strong>ID:</strong> ${data[`player${playerNumber}_id`]}</p>
-            `;
+        // Function to update player profile UI
+    function updatePlayerProfile(data) {
+        let playerNumber = data.player_number;
+        const avatar = document.getElementById(`player${playerNumber}-avatar`);
+        if (avatar) {
+            avatar.src = data['player${playerNumber}_avatar'];
+        }
+        const display_name = document.getElementById(`player${playerNumber}-display-name`);
+        if (display_name) {
+            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
+        }
+        const wins = document.getElementById(`player${playerNumber}-wins`);
+        if (avatar) {
+            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
+        }
+        const losses = document.getElementById(`player${playerNumber}-losses`);
+        if (losses) {
+            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
+        }
+        const id = document.getElementById(`player${playerNumber}-id`);
+        if (id) {
+            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
         }
     }
     
-    // Attach login handlers for players 2, 3, and 4
-    loginPlayer('second-player-form', '/second_player_tournament/', 2);
-    loginPlayer('third-player-form', '/third_player_tournament/', 3);
-    loginPlayer('forth-player-form', '/forth_player_tournament/', 4);
 
+        // Function to handle display name updates
     function updateDisplayName(formId, endpoint, playerNumber) {
         const form = document.getElementById(formId);
         if (!form) return;
-    
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(form);
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
             fetch(endpoint, {
                 method: 'POST',
                 headers: {
@@ -275,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     
-    // Attach update display name handlers for players 1, 2, 3, and 4
+        // Attach update display name handlers for players 1, 2, 3, and 4
     updateDisplayName('update-tournament-name', '/tournament_name_user/1/', 1);
     updateDisplayName('update-tournament-name-user2', '/tournament_name_user/2/', 2);
     updateDisplayName('update-tournament-name-user3', '/tournament_name_user/3/', 3);

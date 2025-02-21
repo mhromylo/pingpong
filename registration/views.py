@@ -278,7 +278,7 @@ def save_game_result(request):
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
-@csrf_exempt
+@login_required
 def tournament_name_user(request, player_number):
     if request.method == 'POST':
         display_name = request.POST.get('display_name')
@@ -322,24 +322,31 @@ def tournament(request):
         'player': player, 'c_form': c_form
     })
 
-
-@csrf_exempt
+@login_required
 def second_player_tournament(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user:
-            login(request, user)
-            profile = Profile.objects.get(user=user)
+        user2 = authenticate(request, username=username, password=password)
+        if user2:
+            profile2 = Profile.objects.get(user=user2)
+            request.session['player2'] = {
+                'display_name': profile2.display_name,
+                'avatar_url': profile2.avatar.url if profile2.avatar else '',
+                'wins': profile2.wins,
+                'losses': profile2.losses,
+                'id': profile2.id,
+            }
             return JsonResponse({
                 'success': True,
                 'message': 'Player 2 logged in successfully.',
-                'player2_display_name': profile.display_name,
-                'player2_wins': profile.wins,
-                'player2_losses': profile.losses,
-                'player2_id': profile.id,
-                'player2_avatar': profile.avatar.url if profile.avatar else '',
+                'goal': 'Login',
+                'player_number': 2,
+                'player2_display_name': profile2.display_name,
+                'player2_wins': profile2.wins,
+                'player2_losses': profile2.losses,
+                'player2_id': profile2.id,
+                'player2_avatar': profile2.avatar.url if profile2.avatar else '',
             })
         else:
             return JsonResponse({
@@ -358,16 +365,24 @@ def third_player_tournament(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
-            login(request, user)
-            profile = Profile.objects.get(user=user)
+            profile3 = Profile.objects.get(user=user)
+            request.session['player3'] = {
+                'display_name': profile3.display_name,
+                'avatar_url': profile3.avatar.url if profile3.avatar else '',
+                'wins': profile3.wins,
+                'losses': profile3.losses,
+                'id': profile3.id,
+            }
             return JsonResponse({
                 'success': True,
                 'message': 'Player 3 logged in successfully.',
-                'player3_display_name': profile.display_name,
-                'player3_wins': profile.wins,
-                'player3_losses': profile.losses,
-                'player3_id': profile.id,
-                'player3_avatar': profile.avatar.url if profile.avatar else '',
+                'goal': 'Login',
+                'player_number': 3,
+                'player3_display_name': profile3.display_name,
+                'player3_wins': profile3.wins,
+                'player3_losses': profile3.losses,
+                'player3_id': profile3.id,
+                'player3_avatar': profile3.avatar.url if profile3.avatar else '',
             })
         else:
             return JsonResponse({
@@ -386,16 +401,24 @@ def forth_player_tournament(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
-            login(request, user)
-            profile = Profile.objects.get(user=user)
+            profile4 = Profile.objects.get(user=user)
+            request.session['player4'] = {
+                'display_name': profile4.display_name,
+                'avatar_url': profile4.avatar.url if profile4.avatar else '',
+                'wins': profile4.wins,
+                'losses': profile4.losses,
+                'id': profile4.id,
+            }
             return JsonResponse({
                 'success': True,
                 'message': 'Player 4 logged in successfully.',
-                'player4_display_name': profile.display_name,
-                'player4_wins': profile.wins,
-                'player4_losses': profile.losses,
-                'player4_id': profile.id,
-                'player4_avatar': profile.avatar.url if profile.avatar else '',
+                'goal': 'Login',
+                'player_number': 4,
+                'player4_display_name': profile4.display_name,
+                'player4_wins': profile4.wins,
+                'player4_losses': profile4.losses,
+                'player4_id': profile4.id,
+                'player4_avatar': profile4.avatar.url if profile4.avatar else '',
             })
         else:
             return JsonResponse({
