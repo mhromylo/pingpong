@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.translation import activate
 import json
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
@@ -17,6 +18,12 @@ from .models import Profile, Game, Tournament
 def index(request):
     return render(request, "registration/index.html")
 
+def set_language(request, language_code):
+    activate(language_code)
+    return JsonResponse({'success': True,
+                         'message': 'Language has been changed',
+                         'redirect_url': '/index/'
+    }, status=200)
 
 def pvp(request, profile):
     return render(request, "registration/index.html", {'profile': profile})
@@ -29,7 +36,7 @@ def check_authentication(request):
     if request.user.is_authenticated:
         return JsonResponse({"authenticated": True})
     return JsonResponse({"authenticated": False})
-
+ 
 @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({"csrf_token": get_token(request)})
