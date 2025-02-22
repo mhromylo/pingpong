@@ -48,7 +48,21 @@
                     <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
                     <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
                     <p><strong>ID:</strong> {{ user.profile.id }}</p>
-
+                    <div class="col-md-3">
+                        <label for="player1Colour" class="form-label">Colour:</label>
+                        <select id="player1Colour" class="form-select">
+                            <option value="red">Red</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="orange">Orange</option>
+                            <option value="purple">Purple</option>
+                            <option value="gold">Gold</option>
+                            <option value="black">Black</option>
+                        </select>
+                    </div>
+                    <p id="player1Type" type="hidden">"human"</p>
+                    <p id="chosenMap" type="hidden">"normal"</p>
+                    <p id="extrasAreOn" type="hidden">"OFF"</p>
                     <!-- Update Display Name Form -->
                     <form id="update-tournament-name" method="POST" action="/tournament_name_user/{{ user.profile.id }}/1/" class="mb-3">
                         {% csrf_token %}
@@ -80,7 +94,19 @@
                     <p id="player2-wins"><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
                     <p id="player2-losses"><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
                     <p id="player2-id"><strong>ID:</strong> {{ request.session.player2.id }}</p>
-
+                    <div class="col-md-3">
+                        <label for="player2Colour" class="form-label">Colour:</label>
+                        <select id="player2Colour" class="form-select">
+                            <option value="red">Red</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="orange">Orange</option>
+                            <option value="purple">Purple</option>
+                            <option value="gold">Gold</option>
+                            <option value="black">Black</option>
+                        </select>
+                    </div>
+                    <input id="player2Type" type="hidden">"human"</p>
                     <!-- Login Form for Player 2 -->
                     <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
@@ -126,7 +152,18 @@
                     <p id="player3-wins"><strong>Wins:</strong> {{ request.session.player3.wins }}</p>
                     <p id="player3-losses"><strong>Losses:</strong> {{ request.session.player3.losses }}</p>
                     <p id="player3-id"><strong>ID:</strong> {{ request.session.player3.id }}</p>
-
+                    <div class="col-md-3">
+                        <label for="player3Colour" class="form-label">Colour:</label>
+                        <select id="player3Colour" class="form-select">
+                            <option value="red">Red</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="orange">Orange</option>
+                            <option value="purple">Purple</option>
+                            <option value="gold">Gold</option>
+                            <option value="black">Black</option>
+                        </select>
+                    </div>
                     <!-- Login Form for Player 3 -->
                     <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
@@ -173,7 +210,18 @@
                     <p id="player4-wins"><strong>Wins:</strong> {{ request.session.player4.wins }}</p>
                     <p id="player4-losses"><strong>Losses:</strong> {{ request.session.player4.losses }}</p>
                     <p id="player4-id"><strong>ID:</strong> {{ request.session.player4.id }}</p>
-
+                    <div class="col-md-3">
+                        <label for="player4Colour" class="form-label">Colour:</label>
+                        <select id="player4Colour" class="form-select">
+                            <option value="red">Red</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="orange">Orange</option>
+                            <option value="purple">Purple</option>
+                            <option value="gold">Gold</option>
+                            <option value="black">Black</option>
+                        </select>
+                    </div>
                     <!-- Login Form for Player 2 -->
                     <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
@@ -222,18 +270,7 @@
                         <option value="ai">AI</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label for="player1Colour" class="form-label">Player 1 Colour:</label>
-                    <select id="player1Colour" class="form-select">
-                        <option value="red">Red</option>
-                        <option value="green">Green</option>
-                        <option value="blue">Blue</option>
-                        <option value="orange">Orange</option>
-                        <option value="purple">Purple</option>
-                        <option value="gold">Gold</option>
-                        <option value="black">Black</option>
-                    </select>
-                </div>
+                
                 <!-- Repeat for Player 2, Player 3, and Player 4 -->
             </div>
         </div>
