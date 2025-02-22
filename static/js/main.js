@@ -40,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById('content').innerHTML = newContent.innerHTML;
                 }
 
+                if (url === '/game_setup/' || url === '/tournament/')
+                    loadMyCanvasScript();
+
                 // Reattach event listeners for forms after loading new content
                 attachFormEventListeners();
                 checkAuth();
