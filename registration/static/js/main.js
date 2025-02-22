@@ -5,11 +5,11 @@ async function checkAuth() {
         let data = await response.json();
         console.log(data);
         if (data.authenticated) {
-            document.getElementById("auth-nav").style.display = "block";
+            document.getElementById("auth-nav").style.display = "flex";
             document.getElementById("guest-nav").style.display = "none";
         } else {
             document.getElementById("auth-nav").style.display = "none";
-            document.getElementById("guest-nav").style.display = "block";
+            document.getElementById("guest-nav").style.display = "flex";
         }
     } catch (error) {
         console.error("Error checking authentication:", error);
@@ -40,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById('content').innerHTML = newContent.innerHTML;
                 }
 
+                if (url === '/game_setup/' || url === '/tournament/')
+                    loadMyCanvasScript();
+
                 // Reattach event listeners for forms after loading new content
                 attachFormEventListeners();
                 checkAuth();
@@ -66,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    function handleFormSubmit(event) {
+    function handleFormSubmit(event) {1
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
         const formData = new FormData(form);
