@@ -5,11 +5,11 @@ async function checkAuth() {
         let data = await response.json();
         console.log(data);
         if (data.authenticated) {
-            document.getElementById("auth-nav").style.display = "block";
+            document.getElementById("auth-nav").style.display = "flex";
             document.getElementById("guest-nav").style.display = "none";
         } else {
             document.getElementById("auth-nav").style.display = "none";
-            document.getElementById("guest-nav").style.display = "block";
+            document.getElementById("guest-nav").style.display = "flex";
         }
     } catch (error) {
         console.error("Error checking authentication:", error);
