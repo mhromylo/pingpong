@@ -143,7 +143,9 @@ document.addEventListener("DOMContentLoaded", function () {
         script.onload = function() {};
         document.head.appendChild(script);
     }
+
     loadPage(window.location.pathname);
+    
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {
             method: 'POST',
