@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
@@ -27,6 +29,10 @@ def check_authentication(request):
     if request.user.is_authenticated:
         return JsonResponse({"authenticated": True})
     return JsonResponse({"authenticated": False})
+
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({"csrf_token": get_token(request)})
 
 def register(request):
     if request.method == 'POST':

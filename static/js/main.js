@@ -16,6 +16,21 @@ async function checkAuth() {
     }
 }
 
+function fetchNewCSRFToken() {
+    fetch("/get_csrf_token/")
+    .then(response => response.json())
+    .then(data => {
+        if (data.csrf_token) {
+            document.querySelector('meta[name="csrf-token"]').setAttribute("content", data.csrf_token);
+            var csrfInput = document.querySelector('#logout-form input[name="csrfmiddlewaretoken"]');
+            if (csrfInput) {
+                csrfInput.value = data.csrf_token;
+            }
+        }
+    })
+    .catch(error => console.error("CSRF Token Fetch Error:", error));
+}
+
 document.addEventListener("DOMContentLoaded", function () {
 
     checkAuth();
@@ -94,6 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         updateDisplayName(data);
                     }
                     if (data.redirect_url) {
+                        fetchNewCSRFToken();
                         loadPage(data.redirect_url); // Dynamically load the login page
                     }
                 } else {
@@ -126,16 +142,6 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener('submit', handleFormSubmit);
         });
     }
-    
-    document.querySelectorAll('form').forEach(form => {
-        if (form.id === 'logout-form') {
-            form.addEventListener("submit", function (event) {
-                handleFormSubmit(event, true);
-            });
-        } else {
-            form.addEventListener("submit", handleFormSubmit);
-        }
-    });
 
     function loadMyCanvasScript() {
         var existingScript = document.querySelector('script[src="/static/js/myCanvas.js"]');
