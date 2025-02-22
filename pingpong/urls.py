@@ -32,6 +32,7 @@ urlpatterns = [
 
     path('register/', views.register, name='register'),
     path('check-auth/', views.check_authentication, name='check-auth'),
+    path('get_csrf_token/', views.get_csrf_token, name='get_csrf_token'),
 
     path('register_done/', views.register_done, name='register_done'),
 
