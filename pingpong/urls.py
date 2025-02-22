@@ -31,6 +31,7 @@ urlpatterns = [
     path('', views.index, name='index'),
 
     path('register/', views.register, name='register'),
+    path('check-auth/', views.check_authentication, name='check-auth'),
 
     path('register_done/', views.register_done, name='register_done'),
 
@@ -50,12 +51,16 @@ path('logout/', views.user_logout, name='logout'),
 
     path('logout_player2/', views.logout_player2, name='logout_player2'),
     path('save_game_result/', views.save_game_result, name='save_game_result'),
-
-
-
+    path('tournament/', views.tournament, name='tournament'),
+    path('tournament_name_user/<int:player_id>/<int:player_number>/', views.tournament_name_user, name='tournament_name_user'),
+    path('second_player_tournament/', views.second_player_tournament, name='second_player_tournament'),
+    path('third_player_tournament/', views.third_player_tournament, name='third_player_tournament'),
+    path('forth_player_tournament/', views.forth_player_tournament, name='forth_player_tournament'),
+    path('create_tournament/', views.create_tournament, name='create_tournament'),
+    path('get_tournament_data/<int:tournament_id>/', views.get_tournament_data, name='get_tournament_data'),
+    path('tournament/<int:tournament_id>/', views.tournament_detail, name='tournament_detail'),
+    path('start_tournament/', views.start_tournament, name='start_tournament'),
 ]
-
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

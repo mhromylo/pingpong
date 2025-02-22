@@ -12,34 +12,38 @@
 </head>
 <body>
 
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand nav-item nav-link" href="/index">Transendence</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                        <input type="hidden" id="profileId" value="{{ user.profile.id }}" />
-                        <li class="nav-item"><a class="nav-link" href="/update_profile">Update Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/change_password">Change Password</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/add_friend">Add Friend</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/game_setup">Game Setup</a></li>
-                        <form action="{% url 'logout' %}" method="post" id="logout-form">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Log Out</button>
-                        </form>
-                    {% else %}
-                        <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-                    {% endif %}
-                </ul>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand nav-item nav-link" href="/index">Transcendence</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <!-- Elements for authenticated users -->
+                        <div id="auth-nav" style="display: none;">
+                            <input type="hidden" id="profileId" value="{{ user.profile.id }}" />
+                            <li class="nav-item"><a class="nav-link" href="/update_profile/">Update Profile</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/change_password/">Change Password</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/add_friend/">Add Friend</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/game_setup/">Game Setup</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/tournament/">Tournament</a></li>
+                            <form action="{% url 'logout' %}" method="post" id="logout-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Log Out</button>
+                            </form>
+                        </div>
+                        <!-- Elements for guests -->
+                        <div id="guest-nav" style="display: none;">
+                            <li class="nav-item"><a class="nav-link" href="/login/">Log In</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/register/">Register</a></li>
+                        </div>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
-</header>
+        </nav>
+    </header>
 
 <!-- Main Content -->
 <main class="container main-container">

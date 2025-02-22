@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -45,9 +46,22 @@ class Game(models.Model):
     def __str__(self):
         return f"Game ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')} - {self.game_type})"
 
-
-
-
-
 class Tournament(models.Model):
     name = models.CharField(max_length=100)
+    players = models.ManyToManyField(Profile, related_name='tournaments')
+    created_at = models.DateTimeField(default=timezone.now)
+    creator = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="tournaments_create", null=True, blank=True)
+    status = models.CharField(max_length=20, choices=[
+        ('not_started', 'Not Started'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed')
+    ], default='not_started')
+
+    class Meta:
+        db_table = 'registration_tournament'
+
+    def __str__(self):
+        return self.name
+    def is_full(self):
+        return self.players.count() >= 4
+
