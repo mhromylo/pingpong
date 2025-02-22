@@ -279,7 +279,7 @@ def save_game_result(request):
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
 @login_required
-def tournament_name_user(request, player_number):
+def tournament_name_user(request, player_id, player_number):
     if request.method == 'POST':
         display_name = request.POST.get('display_name')
         if not display_name:
@@ -287,37 +287,66 @@ def tournament_name_user(request, player_number):
                 'success': False,
                 'message': 'Display name is required.',
             }, status=400)
-
-        # Update the display name for the specified player
-        if player_number == 1:
-            profile = request.user.profile
-        elif player_number == 2:
-            profile = Profile.objects.get(id=request.session.get('player2_id'))
-        elif player_number == 3:
-            profile = Profile.objects.get(id=request.session.get('player3_id'))
-        elif player_number == 4:
-            profile = Profile.objects.get(id=request.session.get('player4_id'))
-        else:
+        try:
+            player_id = int(player_id)
+        except ValueError:
             return JsonResponse({
                 'success': False,
-                'message': 'Invalid player number.',
+                'message': 'Invalid player id format.',
             }, status=400)
-
+        try:
+            profile = Profile.objects.get(id=player_id)
+        except Profile.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'profile ID.',
+            }, status=400)
         profile.display_name = display_name
         profile.save()
+        if (player_number == 2 ):
+            request.session['player2'] = {
+                'display_name': profile.display_name,
+                'avatar_url': profile.avatar.url if profile.avatar else '',
+                'wins': profile.wins,
+                'losses': profile.losses,
+                'id': profile.id,
+            }
+        if (player_number == 3 ):
+            request.session['player3'] = {
+                'display_name': profile.display_name,
+                'avatar_url': profile.avatar.url if profile.avatar else '',
+                'wins': profile.wins,
+                'losses': profile.losses,
+                'id': profile.id,
+            }
+        if (player_number == 4 ):
+            request.session['player4'] = {
+                'display_name': profile.display_name,
+                'avatar_url': profile.avatar.url if profile.avatar else '',
+                'wins': profile.wins,
+                'losses': profile.losses,
+                'id': profile.id,
+            }
         return JsonResponse({
             'success': True,
             'message': 'Display name updated successfully.',
-            'new_display_name': profile.display_name,
+            'new_display_name': display_name,
+            'player_number': player_number,
+            'redirect_url': '/tournament/'
         })
-    return JsonResponse({
-        'success': False,
-        'message': 'Invalid request method.',
-    }, status=405)
+    else:    
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid request method.',
+        }, status=405)
+
 def tournament(request):
     player = Profile.objects.get(user=request.user)
-    t_form = TournamentUpdateForm(request.POST, instance=player)
     c_form = CreateTournamentForm(request.POST)
+    tournament = Tournament.objects.filter(creator=player, status = 'not_started').first()
+    if (tournament):
+        return render(request, 'registration/tournament.html', {'tournament': tournament
+    })
     return render(request, 'registration/tournament.html', {
         'player': player, 'c_form': c_form
     })
@@ -347,6 +376,7 @@ def second_player_tournament(request):
                 'player2_losses': profile2.losses,
                 'player2_id': profile2.id,
                 'player2_avatar': profile2.avatar.url if profile2.avatar else '',
+                'redirect_url': '/tournament/'  # Optional: Redirect to the tournament page
             })
         else:
             return JsonResponse({
@@ -383,6 +413,7 @@ def third_player_tournament(request):
                 'player3_losses': profile3.losses,
                 'player3_id': profile3.id,
                 'player3_avatar': profile3.avatar.url if profile3.avatar else '',
+                'redirect_url': '/tournament/'  # Optional: Redirect to the tournament page
             })
         else:
             return JsonResponse({
@@ -419,6 +450,7 @@ def forth_player_tournament(request):
                 'player4_losses': profile4.losses,
                 'player4_id': profile4.id,
                 'player4_avatar': profile4.avatar.url if profile4.avatar else '',
+                'redirect_url': '/tournament/'  # Optional: Redirect to the tournament page
             })
         else:
             return JsonResponse({
@@ -434,50 +466,29 @@ def forth_player_tournament(request):
 def create_tournament(request):
     if request.method == 'POST':
         player1 = Profile.objects.get(user=request.user)
-        
-        # Check if the user already has a "not started" tournament
-        existing_tournament = Tournament.objects.filter(creator=player1, status = 'not_started').first()
-
-        if existing_tournament:
-            # Return the existing tournament data
+        form = CreateTournamentForm(request.POST)
+        if form.is_valid():
+            tournament = form.save(commit=False)  # Don't save yet
+            tournament.creator = player1
+            tournament.status = 'not_started'  # Set initial status
+            tournament.save()  # Save the tournament instance
+            tournament.players.add(player1)  # Add the creator as the first player
             return JsonResponse({
                 'success': True,
-                'tournament_name': existing_tournament.name,
-                'tournament_id': existing_tournament.id,
-                'creator': existing_tournament.creator.display_name,
-                'player1_avatar': existing_tournament.creator.avatar.url if existing_tournament.creator.avatar else '',
-                'player_count': existing_tournament.players.count(),
-                'message': 'Existing tournament loaded.',
-                'redirect_url': f'/tournament/{existing_tournament.id}/'  # Optional: Redirect to the tournament page
+                'tournament_name': tournament.name,
+                'tournament_id': tournament.id,
+                'creator': tournament.creator.display_name,
+                'player1_avatar': tournament.creator.avatar.url if tournament.creator.avatar else '',
+                'player_count': tournament.players.count(),
+                'message': 'Tournament created successfully!',
+                'redirect_url': '/tournament/'  # Optional: Redirect to the tournament page
             })
         else:
-            # Create a new tournament
-            form = CreateTournamentForm(request.POST)
-            if form.is_valid():
-                tournament = form.save(commit=False)  # Don't save yet
-                tournament.creator = player1
-                tournament.started = False  # Set initial status
-                tournament.save()  # Save the tournament instance
-                tournament.players.add(player1)  # Add the creator as the first player
-
-                # Return JSON response for AJAX requests
-                return JsonResponse({
-                    'success': True,
-                    'tournament_name': tournament.name,
-                    'tournament_id': tournament.id,
-                    'creator': tournament.creator.display_name,
-                    'player1_avatar': tournament.creator.avatar.url if tournament.creator.avatar else '',
-                    'player_count': tournament.players.count(),
-                    'message': 'Tournament created successfully!',
-                    'redirect_url': f'/tournament/{tournament.id}/'  # Optional: Redirect to the tournament page
-                })
-            else:
-                # Return form errors for AJAX requests
-                return JsonResponse({
-                    'success': False,
-                    'message': 'There was an error creating the tournament.',
-                    'errors': form.errors  # Include form errors for debugging
-                }, status=400)
+           return JsonResponse({
+                'success': False,
+                'message': 'There was an error creating the tournament.',
+                'errors': form.errors  # Include form errors for debugging
+            }, status=400)
     else:
         # Handle non-POST requests (e.g., GET)
         return JsonResponse({

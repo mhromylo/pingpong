@@ -87,6 +87,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (data.goal){
                         updatePlayerProfile(data);
                     }
+                    if (data.new_display_name){
+                        updateDisplayName(data);
+                    }
                     if (data.redirect_url) {
                         loadPage(data.redirect_url); // Dynamically load the login page
                     }
@@ -222,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let playerNumber = data.player_number;
         const avatar = document.getElementById(`player${playerNumber}-avatar`);
         if (avatar) {
-            avatar.src = data['player${playerNumber}_avatar'];
+            avatar.src = data[`player${playerNumber}_avatar`];
         }
         const display_name = document.getElementById(`player${playerNumber}-display-name`);
         if (display_name) {
@@ -244,43 +247,12 @@ document.addEventListener("DOMContentLoaded", function () {
     
 
         // Function to handle display name updates
-    function updateDisplayName(formId, endpoint, playerNumber) {
-        const form = document.getElementById(formId);
-        if (!form) return;
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(form);
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        const displayNameElement = document.getElementById(`player${playerNumber}-display-name`);
-                        if (displayNameElement) {
-                            displayNameElement.innerHTML = `<strong>Display Name:</strong> ${data.new_display_name}`;
-                        }
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while processing the request.');
-                });
-        });
+    function updateDisplayName(data) {
+        let playerNumber = data.player_number;
+        const display_name = document.getElementById(`player${playerNumber}-display-name`);
+        if (display_name) {
+            display_name.innerHTML = `<strong>Display Name:</strong> ${data.new_display_name}`;
+        }
     }
     
-        // Attach update display name handlers for players 1, 2, 3, and 4
-    updateDisplayName('update-tournament-name', '/tournament_name_user/1/', 1);
-    updateDisplayName('update-tournament-name-user2', '/tournament_name_user/2/', 2);
-    updateDisplayName('update-tournament-name-user3', '/tournament_name_user/3/', 3);
-    updateDisplayName('update-tournament-name-user4', '/tournament_name_user/4/', 4);
 });
