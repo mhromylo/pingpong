@@ -21,8 +21,13 @@ document.addEventListener("DOMContentLoaded", function () {
     checkAuth();
 
     function getCSRFToken() {
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
-        return csrfToken ? csrfToken.value : '';
+        let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
+        if (!csrfToken) {
+            csrfToken = document.cookie.split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+        }
+        return csrfToken;
     }
 
     const container = document.getElementById("content");
@@ -73,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
         const formData = new FormData(form);
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfToken = getCSRFToken();
 
         fetch(form.action, {
             method: 'POST',
@@ -126,16 +131,6 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener('submit', handleFormSubmit);
         });
     }
-    
-    document.querySelectorAll('form').forEach(form => {
-        if (form.id === 'logout-form') {
-            form.addEventListener("submit", function (event) {
-                handleFormSubmit(event, true);
-            });
-        } else {
-            form.addEventListener("submit", handleFormSubmit);
-        }
-    });
 
     function loadMyCanvasScript() {
         var existingScript = document.querySelector('script[src="/static/js/myCanvas.js"]');

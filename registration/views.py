@@ -68,7 +68,6 @@ def user_login(request):
         return render(request, 'registration/login.html', {})
 
 
-@login_required
 def user_logout(request):
     logout(request)
     return JsonResponse({
@@ -498,9 +497,9 @@ def create_tournament(request):
         }, status=405)
 
 @login_required
-def join_tournament(request, tournament_id):
+def join_tournament(request, tournament_id, player_id):
     tournament = Tournament.objects.get(id=tournament_id)
-    player = Profile.objects.get(user=request.user)
+    player = Profile.objects.get(id=player_id)
 
     if tournament.players.count() < 4 and player not in tournament.players.all():
         tournament.players.add(player)
@@ -509,12 +508,33 @@ def join_tournament(request, tournament_id):
             'message': f'{player.display_name} has joined the tournament.',
             'player_count': tournament.players.count(),
             'player_name': player.display_name,
-            'player_avatar': player.avatar.url if player.avatar else ''
+            'player_avatar': player.avatar.url if player.avatar else '',
+            'redirect_url': '/tournament/'
         })
     else:
         return JsonResponse({
             'success': False,
             'message': 'Tournament is full or you have already joined.'
+        }, status=400)
+
+@login_required
+def quit_tournament(request, tournament_id, player_id):
+    tournament = Tournament.objects.get(id=tournament_id)
+    player = Profile.objects.get(id=player_id)
+    if tournament.status == 'not_started':
+        tournament.players.remove(player)
+        tournament.save()
+        return JsonResponse({
+            'success': True,
+            'message': f'{player.display_name} has quit the tournament.',
+            'player_count': tournament.players.count(),
+            'player_name': player.display_name,
+            'redirect_url': '/tournament/'
+        })
+    else:
+        return JsonResponse({
+            'success': False,
+            'message': 'Tournament already started.'
         }, status=400)
     
 @login_required

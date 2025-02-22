@@ -14,8 +14,7 @@
             <p class="card-text"><strong>Creator:</strong> {{ tournament.creator.display_name }}</p>
             <p class="card-text" id="player-count"><strong>Players:</strong> {{ tournament.players.count }}/4</p>
 
-            <!-- Join Tournament Button -->
-            <button onclick="joinTournament({{ tournament.id }})" class="btn btn-primary mb-2">Join Tournament</button>
+            
 
             <!-- Start Tournament Button (Visible Only to Creator) -->
             {% if tournament.creator.user == request.user %}
@@ -28,6 +27,9 @@
                 <li id="player-{{ player.display_name }}" class="list-group-item d-flex justify-content-between align-items-center">
                     <span class="player-name">{{ player.display_name }}</span>
                     <img src="{{ player.avatar.url }}" alt="{{ player.display_name }}" class="avatar rounded-circle" width="50" height="50">
+                    <form id="quit_tournament" method="POST" action="/quit_tournament/{{ tournament.id }}/{{ player.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">Quit Tournament</button>
                 </li>
                 {% endfor %}
             </ul>
@@ -56,6 +58,14 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Update</button>
                     </form>
+                    {% if tournament %}
+                    <form id="second-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ user.profile.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">
+                            Join Tournament
+                        </button>
+                    </form>
+                {% endif %}
                 </div>
             </div>
         </div>
@@ -94,6 +104,14 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Update</button>
                     </form>
+                    {% if tournament %}
+                    <form id="second-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player2.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">
+                            Join Tournament
+                        </button>
+                    </form>
+                {% endif %}
                 </div>
             </div>
         </div>
@@ -131,7 +149,16 @@
                             <input type="text" id="display_name" name="display_name" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Update</button>
+                        
                     </form>
+                    {% if tournament %}
+                    <form id="third-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player3.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">
+                            Join Tournament
+                        </button>
+                    </form>
+                {% endif %}
                 </div>
             </div>
         </div>
@@ -169,7 +196,16 @@
                             <input type="text" id="display_name" name="display_name" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Update</button>
+                       
                     </form>
+                    {% if tournament %}
+                    <form id="forth-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player4.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">
+                            Join Tournament
+                        </button>
+                    </form>
+                {% endif %}
                 </div>
             </div>
         </div>
