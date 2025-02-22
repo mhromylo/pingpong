@@ -60,6 +60,8 @@ path('logout/', views.user_logout, name='logout'),
     path('get_tournament_data/<int:tournament_id>/', views.get_tournament_data, name='get_tournament_data'),
     path('tournament/<int:tournament_id>/', views.tournament_detail, name='tournament_detail'),
     path('start_tournament/', views.start_tournament, name='start_tournament'),
+    path('join_tournament/<int:tournament_id>/<int:player_id>/', views.join_tournament, name='join_tournament'),
+     path('quit_tournament/<int:tournament_id>/<int:player_id>/', views.quit_tournament, name='quit_tournament'),
 ]
 
 if settings.DEBUG:
