@@ -346,8 +346,8 @@ $(document).ready(function ()
         const player1Colour = document.getElementById("player1Colour").value;
         const player2Colour = document.getElementById("player2Colour").value;
         const player2Type = document.getElementById("player2Type").value;
-	   const chosenMap = document.getElementById("chosenMap").value;
-	   const extrasOnOff = document.getElementById("extrasAreOn").value;
+        const chosenMap = document.getElementById("chosenMap").value;
+        const extrasOnOff = document.getElementById("extrasAreOn").value;
       
         console.log("Game Starting...");
         console.log("Player 1 Type:", player1Type);

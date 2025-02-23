@@ -8,6 +8,9 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.translation import activate
+from django.conf import settings
+from datetime import timedelta
 import json
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
@@ -15,8 +18,41 @@ from .models import Profile, Game, Tournament
 
 
 def index(request):
+    language_code = request.GET.get('language_code', None)
+    activate(language_code) 
     return render(request, "registration/index.html")
 
+def layout(request):
+    language_code = request.GET.get('language_code', None)
+    activate(language_code) 
+    return render(request, "layout.html")
+
+def set_language(request):
+    if request.method == "POST":
+        language_code = request.POST.get("language_code", None)
+        if language_code:
+            activate(language_code)
+            # Set the language in session
+            request.session['django_language'] = language_code
+            
+            # Set the language cookie with an expiration time
+            response = JsonResponse({
+                "success": True,
+                "message": "Language has been changed",
+                "redirect_url": "/index/",
+                "lang" : language_code
+            }, status=200)
+            
+            # Set a cookie that expires in 1 year
+            response.set_cookie(
+                settings.LANGUAGE_COOKIE_NAME, language_code,
+                max_age=timedelta(days=365),
+                expires=settings.SESSION_COOKIE_AGE
+            )
+            return response
+        else:
+            return JsonResponse({"success": False, "error": "Missing language_code"}, status=400)
+    return JsonResponse({"success": False, "error": "Invalid request"}, status=405)
 
 def pvp(request, profile):
     return render(request, "registration/index.html", {'profile': profile})
@@ -29,7 +65,7 @@ def check_authentication(request):
     if request.user.is_authenticated:
         return JsonResponse({"authenticated": True})
     return JsonResponse({"authenticated": False})
-
+ 
 @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({"csrf_token": get_token(request)})

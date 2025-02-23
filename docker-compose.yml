@@ -13,6 +13,7 @@ services:
     volumes:
       - ./media:/app/media
       - ./static:/app/static
+      - ./locale:/app/locale
     command: ["./start.sh"]
 
   nginx:

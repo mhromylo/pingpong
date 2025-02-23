@@ -47,7 +47,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const container = document.getElementById("content");
 
-    function loadPage(url, addToHistory = true) {
+    function loadPage(url, addToHistory = true, additionalParam = null) {
+        if (additionalParam) {
+            const urlObj = new URL(url, window.location.origin);
+            urlObj.searchParams.append('language_code', additionalParam);
+            url = urlObj.toString();
+        }
         fetch(url)
             .then(response => response.text())
             .then(html => {
@@ -71,6 +76,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (addToHistory) {
                     history.pushState({ path: url }, "", url);
                 }
+            })
+            .catch(error => console.error("Error loading page:", error));
+    }
+
+    function loadNavbar(url, additionalParam = null) {
+        if (additionalParam) {
+            const urlObj = new URL(url, window.location.origin);
+            urlObj.searchParams.append('language_code', additionalParam);
+            url = urlObj.toString();
+        }
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+
+                // Extract the content from the response
+                const newContent = tempDiv.querySelector('#navbarNav');
+                if (newContent) {
+                    document.getElementById('navbarNav').innerHTML = newContent.innerHTML;
+                }
+
+                checkAuth();
             })
             .catch(error => console.error("Error loading page:", error));
     }
@@ -99,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest' // Indicate this is an AJAX request
+                'X-Requested-With': 'XMLHttpRequest', // Indicate this is an AJAX request
             },
             body: formData
         })
@@ -235,8 +263,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
         });
     }
+
+    $(document).on("change", "#language-select", function () {
+        let selectedLanguage = this.value;
+        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        console.log(selectedLanguage);
+        fetch("/set_language/", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest' // Indicate this is an AJAX request
+            },
+            body: new URLSearchParams({
+                "language_code": selectedLanguage,
+                "next": window.location.pathname
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.success) {
+                loadNavbar("/layout/", selectedLanguage)
+                loadPage(data.redirect_url);
+            } else {
+                console.error("Language change failed.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
     
-        // Function to update player profile UI
+    // Function to update player profile UI
     function updatePlayerProfile(data) {
         let playerNumber = data.player_number;
         const avatar = document.getElementById(`player${playerNumber}-avatar`);
