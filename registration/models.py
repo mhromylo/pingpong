@@ -29,11 +29,14 @@ class Profile(models.Model):
         else:
             self.losses += 1
         self.save()
-
+    def is_online(self):
+        return self.is_online
+    
     class Meta:
         db_table = 'registration_profile'
 
 class Game(models.Model):
+    player1 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player1")
     player2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="games_as_Player2")
     player3 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player3")
     player4 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player4")
@@ -56,6 +59,7 @@ class Tournament(models.Model):
         ('in_progress', 'In Progress'),
         ('completed', 'Completed')
     ], default='not_started')
+    games = models.ManyToManyField(Game, related_name='games')
 
     class Meta:
         db_table = 'registration_tournament'

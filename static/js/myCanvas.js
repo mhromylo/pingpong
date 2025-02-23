@@ -5,7 +5,6 @@ var canvas = document.getElementById("myCanvas");
 var ctx;
 let mapObstacleSquares = [];
 let dartsFlying = [];
-let powerupsOnMap = [];
 let currentMap;
 let extrasAreOn;
 
@@ -35,8 +34,6 @@ $(document).ready(function ()
 
       const paddleHeight = 100; // Side paddle height
       const paddleWidth = 10; // Side paddle width
-
-	 const powerupHeight = 30;
 
       let interval;
 
@@ -109,15 +106,17 @@ $(document).ready(function ()
         } else if (x - ballRadius < 0) {
           player2.score++;
           resetBall();
-          if (player2.score >= 20) {
+          if (player2.score === 20) {
             alert("GAME OVER\n\nPLAYER 2 WINS");
+            saveGameResult(gameId, player2Id, player1Id);
             clearInterval(interval);
           }
         } else if (x + ballRadius > canvas.width) {
           player1.score++;
           resetBall();
-          if (player1.score >= 20) {
+          if (player1.score === 20) {
             alert("GAME OVER\n\nPLAYER 1 WINS");
+            saveGameResult(gameId, player1Id, player2Id);
             clearInterval(interval);
           }
         }
@@ -162,7 +161,7 @@ $(document).ready(function ()
 	 function dartsHitThings() {
 		let dartsToRemove = [];
 	 
-		for (let i = dartsFlying.length - 1; i >= 0; i--) {  //this can be rewritten to be in the other file if we have time, the classes are passed by reference in JavaScript
+		for (let i = dartsFlying.length - 1; i >= 0; i--) {
 		    if (dartsFlying[i].dartHitPlayer(player1.paddleX, player1.paddleY, player1.paddleWidth, player1.paddleHeight) && dartsFlying[i].player !== player1) {
 			   player1.score -= 0.5;
 			   dartsToRemove.push(i);
@@ -172,53 +171,10 @@ $(document).ready(function ()
 			   dartsToRemove.push(i);
 		    }
 		}
+	 
+		// Remove marked darts **after** loop (to avoid skipping elements)
 		for (let index of dartsToRemove) {
 		    dartsFlying.splice(index, 1);
-		}
-		dartsToRemove = [];
-
-		for (let i = 0; i < dartsFlying.length; i++)
-		{
-			let j = i+1;
-			while (j < dartsFlying.length)
-			{
-				if (dartsFlying[i].dartHitDart(dartsFlying[j]))
-				{
-					dartsToRemove.push(i);
-					dartsToRemove.push(j);
-					let temp = dartsFlying[i].player.score;
-					dartsFlying[i].player.score = dartsFlying[j].player.score;
-					dartsFlying[j].player.score = temp;
-					for (let k = dartsToRemove.length - 1; k >= 0; k--) {
-					    dartsFlying.splice(k, 1);
-					}
-					break;
-				}
-				j++;
-			}
-		}
-		dartsToRemove = [];
-
-		for (let i = dartsFlying.length - 1; i >= 0; i--)
-		{
-			for (let j = 0; j < mapObstacleSquares.length; j++)
-			{
-				if (dartsFlying[i].dartHitMapObstacle(mapObstacleSquares[j]))
-				{
-					dartsFlying.splice(i, 1);
-					break;
-				}
-			}
-		}
-
-		for (let i = dartsFlying.length - 1; i >= 0; i--)
-		{
-			if (dartsFlying[i].dartHitBall(x, y, ballRadius))
-			{
-				dartsFlying[i].player.score -= 0.5;
-				dartsFlying.splice(i, 1);
-			}
-		
 		}
 	 }
 	 
@@ -305,7 +261,6 @@ $(document).ready(function ()
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 	   mapObstacleSquares = [];
 	   dartsFlying = [];
-	   powerupsOnMap = [];
 
 
         x = canvas.width / 2;
@@ -340,6 +295,23 @@ $(document).ready(function ()
         interval = setInterval(draw, 10);
       }
 
+      
+      $(document).on("click", "#startTournamentGame", function () {
+        setupCanvas();
+        const gameId = $(this).data("game-id");
+        const player1Id = $(this).data("player1-id");
+        const player2Id = $(this).data("player2-id");
+       const gameCanvas = document.getElementById('myCanvas');
+       // Scroll to the canvas element  
+       gameCanvas.scrollIntoView({
+           behavior: 'smooth',  // Smooth scrolling
+           block: 'center',     // Scroll to the center of the canvas element
+           inline: 'center'     // Optionally, center horizontally as well
+       });
+
+        startGame("human", "red", "human", "red", "normal", "OFF");
+      });
+
       $(document).on("click", "#runButton", function () {
         setupCanvas();
         const player1Type = document.getElementById("player1Type").value;
@@ -357,7 +329,29 @@ $(document).ready(function ()
       
         startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff);
       });
-
+    function saveGameResult(game_id, winner_id, player2id){
+        fetch('/save_game_result/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            },
+            body: JSON.stringify({
+                game_id: game_id,
+                winner_id: winner_id,
+                player2id: player2id,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Game result saved:', data.message);
+            } else {
+                console.error('Error saving game result:', data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
   }
   
 })

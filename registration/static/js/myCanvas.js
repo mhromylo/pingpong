@@ -108,6 +108,7 @@ $(document).ready(function ()
           resetBall();
           if (player2.score === 20) {
             alert("GAME OVER\n\nPLAYER 2 WINS");
+            saveGameResult(gameId, player2Id, player1Id);
             clearInterval(interval);
           }
         } else if (x + ballRadius > canvas.width) {
@@ -115,6 +116,7 @@ $(document).ready(function ()
           resetBall();
           if (player1.score === 20) {
             alert("GAME OVER\n\nPLAYER 1 WINS");
+            saveGameResult(gameId, player1Id, player2Id);
             clearInterval(interval);
           }
         }
@@ -293,6 +295,23 @@ $(document).ready(function ()
         interval = setInterval(draw, 10);
       }
 
+      
+      $(document).on("click", "#startTournamentGame", function () {
+        setupCanvas();
+        const gameId = $(this).data("game-id");
+        const player1Id = $(this).data("player1-id");
+        const player2Id = $(this).data("player2-id");
+       const gameCanvas = document.getElementById('myCanvas');
+       // Scroll to the canvas element  
+       gameCanvas.scrollIntoView({
+           behavior: 'smooth',  // Smooth scrolling
+           block: 'center',     // Scroll to the center of the canvas element
+           inline: 'center'     // Optionally, center horizontally as well
+       });
+
+        startGame("human", "red", "human", "red", "normal", "OFF");
+      });
+
       $(document).on("click", "#runButton", function () {
         setupCanvas();
         const player1Type = document.getElementById("player1Type").value;
@@ -310,7 +329,29 @@ $(document).ready(function ()
       
         startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff);
       });
-
+    function saveGameResult(game_id, winner_id, player2id){
+        fetch('/save_game_result/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            },
+            body: JSON.stringify({
+                game_id: game_id,
+                winner_id: winner_id,
+                player2id: player2id,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Game result saved:', data.message);
+            } else {
+                console.error('Error saving game result:', data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
   }
   
 })

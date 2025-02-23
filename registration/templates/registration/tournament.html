@@ -5,7 +5,7 @@
 <div id="content" class="container mt-4">
     <form id="create-tournament-form" method="POST" action="{% url 'create_tournament' %}">
         {% csrf_token %}
-        {{ c_form.as_p }}  <!-- Display the form fields -->
+        {{ c_form.as_p }}  <!-- Display the form fields --> 
         <button type="submit" class="btn btn-primary">Create Tournament</button>
     </form>
     <div class="card mb-4">
@@ -15,24 +15,45 @@
             <p class="card-text" id="player-count"><strong>Players:</strong> {{ tournament.players.count }}/4</p>
 
             
-
-            <!-- Start Tournament Button (Visible Only to Creator) -->
-            {% if tournament.creator.user == request.user %}
-                <button onclick="startTournament({{ tournament.id }})" class="btn btn-success mb-2">Start Tournament</button>
+            {% if tournament.status == 'not_started' %}
+            <form id="start-tournament-form" method="POST" action="/start_tournament/{{ tournament.id }}/">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Start Tournament</button>
             {% endif %}
 
             <!-- List of Players -->
-            <ul id="players-list" class="list-group">
-                {% for player in tournament.players.all %}
-                <li id="player-{{ player.display_name }}" class="list-group-item d-flex justify-content-between align-items-center">
-                    <span class="player-name">{{ player.display_name }}</span>
-                    <img src="{{ player.avatar.url }}" alt="{{ player.display_name }}" class="avatar rounded-circle" width="50" height="50">
-                    <form id="quit_tournament" method="POST" action="/quit_tournament/{{ tournament.id }}/{{ player.id }}/" class="mb-3">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary mb-2">Quit Tournament</button>
-                </li>
-                {% endfor %}
-            </ul>
+            <div class="row">
+                <!-- Players List (Left Side) -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">Players</h5>
+                    <ul id="players-list" class="list-group">
+                        {% for player in tournament.players.all %}
+                        <li id="player-{{ player.display_name }}" class="list-group-item d-flex justify-content-between align-items-center p-2">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ player.avatar.url }}" alt="{{ player.display_name }}" class="avatar rounded-circle me-2" width="20" height="20">
+                                <span class="player-name small">{{ player.display_name }}</span>
+                            </div>
+                            <form id="quit_tournament" method="POST" action="/quit_tournament/{{ tournament.id }}/{{ player.id }}/">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">Quit</button>
+                            </form>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            
+                <!-- Game Results (Right Side) -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">Game Results</h5>
+                    <div id="games" class="p-3 border rounded bg-light">
+                        {% for game in tournament.games.all %}
+                        <p class="card-text"><strong>Game :</strong> {{ game.player1.display_name }} VS {{ game.player2.display_name }} 
+                        <button id="startTournamentGame" class="btn btn-primary" data-game-id="{{ game.id }}" data-player1-id="{{ game.player1.id }}" data-player2-id="{{ game.player2.id }}">Start Game</button> </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 
@@ -48,21 +69,6 @@
                     <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
                     <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
                     <p><strong>ID:</strong> {{ user.profile.id }}</p>
-                    <div class="col-md-3">
-                        <label for="player1Colour" class="form-label">Colour:</label>
-                        <select id="player1Colour" class="form-select">
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="orange">Orange</option>
-                            <option value="purple">Purple</option>
-                            <option value="gold">Gold</option>
-                            <option value="black">Black</option>
-                        </select>
-                    </div>
-                    <p id="player1Type" type="hidden">"human"</p>
-                    <p id="chosenMap" type="hidden">"normal"</p>
-                    <p id="extrasAreOn" type="hidden">"OFF"</p>
                     <!-- Update Display Name Form -->
                     <form id="update-tournament-name" method="POST" action="/tournament_name_user/{{ user.profile.id }}/1/" class="mb-3">
                         {% csrf_token %}
@@ -94,19 +100,6 @@
                     <p id="player2-wins"><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
                     <p id="player2-losses"><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
                     <p id="player2-id"><strong>ID:</strong> {{ request.session.player2.id }}</p>
-                    <div class="col-md-3">
-                        <label for="player2Colour" class="form-label">Colour:</label>
-                        <select id="player2Colour" class="form-select">
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="orange">Orange</option>
-                            <option value="purple">Purple</option>
-                            <option value="gold">Gold</option>
-                            <option value="black">Black</option>
-                        </select>
-                    </div>
-                    <input id="player2Type" type="hidden">"human"</p>
                     <!-- Login Form for Player 2 -->
                     <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
                         {% csrf_token %}

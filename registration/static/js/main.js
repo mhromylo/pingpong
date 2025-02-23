@@ -270,5 +270,13 @@ document.addEventListener("DOMContentLoaded", function () {
             display_name.innerHTML = `<strong>Display Name:</strong> ${data.new_display_name}`;
         }
     }
+    function updateTablo(data) {
+        let playerNumber = data.player_number;
+        const game1 = document.getElementById(`game1`);
+        if (game1) {
+            display_name.innerHTML = `<strong>Game 1:</strong>  ${data.new_display_name}`;
+        }
+    }
+
     
 });
