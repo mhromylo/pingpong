@@ -15,6 +15,9 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOCALE_PATHS = [
+                os.path.join(BASE_DIR, 'locale'),
+            ]
 
 
 # Quick-start development settings - unsuitable for production
@@ -51,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'registration.middleware.languages.SetDefaultLangMiddleware',
     'django.middleware.locale.LocaleMiddleware',
 ]
 
@@ -70,6 +74,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.csrf',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -120,12 +125,21 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGES = [
-    ('en', _('English')),
-    ('de', _('German')),
-    # Add other languages as needed
+    ('en', 'English'),
+    ('de', 'German'),
+    ('az', 'Azerbaijani'),
+    ('uk', 'Ukrainian'),
+    ('hr', 'Croatian'),
 ]
 
 LANGUAGE_CODE = 'en'  # Default language
+
+# Cookie settings for storing the language preference
+LANGUAGE_COOKIE_NAME = 'django_language'  # The cookie name
+LANGUAGE_COOKIE_AGE = 60 * 60 * 24 * 365  # 1 year (in seconds)
+
+# Session settings
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 360  # 1 year (in seconds), adjust as necessary
 
 TIME_ZONE = 'UTC'
 

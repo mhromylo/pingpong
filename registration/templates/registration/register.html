@@ -2,12 +2,13 @@
 
 {% block content %}
     <div id="content">
-        <h2>Sign up</h2>
-        <form method="post" action="{% url 'register' %}" >
+        {% load i18n %}
+        <h2>{% trans "Sign up" %}</h2>
+        <form method="post" action="{% url 'register' %}">
             {% csrf_token %}
             {{ form.as_p }}
             <div id="error-messages"></div> <!-- Error container -->
-            <button type="submit" class="btn btn-primary">Sign up</button>
+            <button type="submit" class="btn btn-primary">{% trans "Sign up" %}</button>
         </form>
     </div>
 {% endblock %}

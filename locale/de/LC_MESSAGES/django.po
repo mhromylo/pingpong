@@ -1,0 +1,500 @@
+# German translations for your Django project.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-23 16:47+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: German <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: registration/templates/layout.html:20
+msgid "Toggle navigation"
+msgstr "Navigation umschalten"
+
+#: registration/templates/layout.html:28
+msgid "Update Profile"
+msgstr "Profil aktualisieren"
+
+#: registration/templates/layout.html:29
+#: registration/templates/registration/change_password.html:11
+msgid "Change Password"
+msgstr "Passwort ändern"
+
+#: registration/templates/layout.html:30
+#: registration/templates/registration/add_friend.html:34
+#: registration/templates/registration/add_friend.html:38
+msgid "Add Friend"
+msgstr "Freund hinzufügen"
+
+#: registration/templates/layout.html:31
+msgid "Game Setup"
+msgstr "Spiel einrichten"
+
+#: registration/templates/layout.html:32
+msgid "Tournament"
+msgstr "Turnier"
+
+#: registration/templates/layout.html:35
+msgid "Log Out"
+msgstr "Abmelden"
+
+#: registration/templates/layout.html:40
+#: registration/templates/registration/login.html:7
+msgid "Log In"
+msgstr "Anmelden"
+
+#: registration/templates/layout.html:41
+msgid "Register"
+msgstr "Registrieren"
+
+#: registration/templates/registration/add_friend.html:7
+#: registration/templates/registration/index.html:16
+msgid "Friends:"
+msgstr "Freunde:"
+
+#: registration/templates/registration/add_friend.html:15
+msgid "Online"
+msgstr "Online"
+
+#: registration/templates/registration/add_friend.html:17
+msgid "Offline"
+msgstr "Offline"
+
+#: registration/templates/registration/add_friend.html:25
+msgid "Delete"
+msgstr "Löschen"
+
+#: registration/templates/registration/add_friend.html:30
+#: registration/templates/registration/index.html:20
+msgid "No friends added yet."
+msgstr "Noch keine Freunde hinzugefügt."
+
+#: registration/templates/registration/change_password.html:7
+msgid "Change password"
+msgstr "Passwort ändern"
+
+#: registration/templates/registration/game_result.html:7
+msgid "Game Result"
+msgstr "Spielergebnis"
+
+#: registration/templates/registration/game_result.html:10
+#, python-format
+msgid ""
+"\n"
+"    <h2>Winner:</h2>\n"
+"    "
+msgstr ""
+"\n"
+"    <h2>Gewinner:</h2>\n"
+"    "
+
+#: registration/templates/registration/game_result.html:13
+msgid "Start a New Game"
+msgstr "Neues Spiel starten"
+
+#: registration/templates/registration/game_setup.html:7
+msgid "Set Up Your Game"
+msgstr "Richten Sie Ihr Spiel ein"
+
+#: registration/templates/registration/game_setup.html:10
+#: registration/templates/registration/tournament.html:114
+msgid "Player 2 Username:"
+msgstr "Benutzername Spieler 2:"
+
+#: registration/templates/registration/game_setup.html:12
+#: registration/templates/registration/tournament.html:118
+msgid "Player 2 Password:"
+msgstr "Passwort Spieler 2:"
+
+#: registration/templates/registration/game_setup.html:14
+msgid "Log in second Player"
+msgstr "Zweiten Spieler anmelden"
+
+#: registration/templates/registration/game_setup.html:17
+#: registration/templates/registration/index.html:31
+msgid "Player 2 Profile"
+msgstr "Profil Spieler 2"
+
+#: registration/templates/registration/game_setup.html:18
+#: registration/templates/registration/index.html:11
+#: registration/templates/registration/profile.html:9
+#: registration/templates/registration/register_done.html:9
+#: registration/templates/registration/tournament.html:46
+#: registration/templates/registration/tournament.html:151
+#: registration/templates/registration/tournament.html:209
+msgid "Display Name:"
+msgstr "Anzeigename:"
+
+#: registration/templates/registration/game_setup.html:19
+#: registration/templates/registration/index.html:10
+msgid "User Avatar"
+msgstr "Benutzeravatar"
+
+#: registration/templates/registration/game_setup.html:20
+#: registration/templates/registration/index.html:13
+#: registration/templates/registration/index.html:32
+#: registration/templates/registration/index.html:47
+#: registration/templates/registration/profile.html:11
+#: registration/templates/registration/register_done.html:11
+#: registration/templates/registration/tournament.html:47
+#: registration/templates/registration/tournament.html:94
+#: registration/templates/registration/tournament.html:152
+#: registration/templates/registration/tournament.html:210
+msgid "Wins:"
+msgstr "Siege:"
+
+#: registration/templates/registration/game_setup.html:21
+#: registration/templates/registration/index.html:14
+#: registration/templates/registration/index.html:33
+#: registration/templates/registration/index.html:48
+#: registration/templates/registration/profile.html:12
+#: registration/templates/registration/register_done.html:12
+#: registration/templates/registration/tournament.html:48
+#: registration/templates/registration/tournament.html:95
+#: registration/templates/registration/tournament.html:153
+#: registration/templates/registration/tournament.html:211
+msgid "Losses:"
+msgstr "Niederlagen:"
+
+#: registration/templates/registration/game_setup.html:26
+#: registration/templates/registration/tournament.html:44
+#: registration/templates/registration/tournament.html:267
+msgid "Player 1:"
+msgstr "Spieler 1:"
+
+#: registration/templates/registration/game_setup.html:28
+#: registration/templates/registration/game_setup.html:59
+#: registration/templates/registration/tournament.html:269
+msgid "Human"
+msgstr "Mensch"
+
+#: registration/templates/registration/game_setup.html:29
+#: registration/templates/registration/game_setup.html:60
+#: registration/templates/registration/tournament.html:270
+msgid "AI"
+msgstr "KI"
+
+#: registration/templates/registration/game_setup.html:33
+msgid "Player 1 Colour:"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:35
+#: registration/templates/registration/game_setup.html:48
+#: registration/templates/registration/tournament.html:53
+#: registration/templates/registration/tournament.html:100
+#: registration/templates/registration/tournament.html:158
+#: registration/templates/registration/tournament.html:216
+msgid "Red"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:36
+#: registration/templates/registration/game_setup.html:47
+#: registration/templates/registration/tournament.html:54
+#: registration/templates/registration/tournament.html:101
+#: registration/templates/registration/tournament.html:159
+#: registration/templates/registration/tournament.html:217
+msgid "Green"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:37
+#: registration/templates/registration/game_setup.html:49
+#: registration/templates/registration/tournament.html:55
+#: registration/templates/registration/tournament.html:102
+#: registration/templates/registration/tournament.html:160
+#: registration/templates/registration/tournament.html:218
+msgid "Blue"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:38
+#: registration/templates/registration/game_setup.html:50
+#: registration/templates/registration/tournament.html:56
+#: registration/templates/registration/tournament.html:103
+#: registration/templates/registration/tournament.html:161
+#: registration/templates/registration/tournament.html:219
+msgid "Orange"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:39
+#: registration/templates/registration/game_setup.html:51
+#: registration/templates/registration/tournament.html:57
+#: registration/templates/registration/tournament.html:104
+#: registration/templates/registration/tournament.html:162
+#: registration/templates/registration/tournament.html:220
+msgid "Purple"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:40
+#: registration/templates/registration/game_setup.html:52
+#: registration/templates/registration/tournament.html:58
+#: registration/templates/registration/tournament.html:105
+#: registration/templates/registration/tournament.html:163
+#: registration/templates/registration/tournament.html:221
+msgid "Gold"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:41
+#: registration/templates/registration/game_setup.html:53
+#: registration/templates/registration/tournament.html:59
+#: registration/templates/registration/tournament.html:106
+#: registration/templates/registration/tournament.html:164
+#: registration/templates/registration/tournament.html:222
+msgid "Black"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:45
+msgid "Player 2 Colour:"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:57
+#: registration/templates/registration/tournament.html:91
+msgid "Player 2:"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:65
+msgid "Map:"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:67
+msgid "Normal"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:68
+msgid "Box"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:69
+msgid "Two Lines"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:73
+msgid "Extras:"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:75
+msgid "OFF"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:76
+msgid "ON"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:83
+#: registration/templates/registration/tournament.html:284
+msgid "Start Game"
+msgstr ""
+
+#: registration/templates/registration/game_setup.html:88
+msgid "Start 4 Player Game"
+msgstr ""
+
+#: registration/templates/registration/index.html:9
+#, python-format
+msgid "Welcome,"
+msgstr ""
+
+#: registration/templates/registration/index.html:12
+#: registration/templates/registration/profile.html:10
+#: registration/templates/registration/register_done.html:10
+msgid "Email:"
+msgstr ""
+
+#: registration/templates/registration/index.html:15
+#: registration/templates/registration/index.html:34
+#: registration/templates/registration/index.html:49
+#: registration/templates/registration/tournament.html:49
+#: registration/templates/registration/tournament.html:96
+#: registration/templates/registration/tournament.html:154
+#: registration/templates/registration/tournament.html:212
+msgid "ID:"
+msgstr ""
+
+#: registration/templates/registration/index.html:28
+#: registration/templates/registration/index.html:43
+#, python-format
+msgid "Welcome, %%(display_name)s"
+msgstr ""
+
+#: registration/templates/registration/index.html:30
+msgid "Player 2 Avatar"
+msgstr ""
+
+#: registration/templates/registration/index.html:37
+msgid "Log Out Player 2"
+msgstr ""
+
+#: registration/templates/registration/index.html:45
+msgid "Player 3 Avatar"
+msgstr ""
+
+#: registration/templates/registration/index.html:46
+msgid "Player 3 Profile"
+msgstr ""
+
+#: registration/templates/registration/login.html:11
+msgid "Username"
+msgstr ""
+
+#: registration/templates/registration/login.html:15
+msgid "Password"
+msgstr ""
+
+#: registration/templates/registration/login.html:18
+msgid "Login"
+msgstr ""
+
+#: registration/templates/registration/play_game.html:7
+#, python-format
+msgid ""
+"Game Between %(game.player1.user.username)s and "
+"%(game.player2.user.username)s"
+msgstr ""
+
+#: registration/templates/registration/play_game.html:10
+#: registration/templates/registration/play_game.html:12
+msgid "Score:"
+msgstr ""
+
+#: registration/templates/registration/play_game.html:14
+msgid "Submit Scores"
+msgstr ""
+
+#: registration/templates/registration/profile.html:8
+#, python-format
+msgid "Welcome, %(user.username)s"
+msgstr ""
+
+#: registration/templates/registration/register.html:7
+#: registration/templates/registration/register.html:12
+msgid "Sign up"
+msgstr ""
+
+#: registration/templates/registration/register_done.html:8
+#, python-format
+msgid "Welcome, %(user.username)s!"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:9
+msgid "Create Tournament"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:13
+#, python-format
+msgid "Tournament:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:14
+msgid "Creator:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:15
+msgid "Players:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:19
+msgid "Start Tournament"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:30
+msgid "Quit Tournament"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:51
+#: registration/templates/registration/tournament.html:98
+#: registration/templates/registration/tournament.html:156
+#: registration/templates/registration/tournament.html:214
+msgid "Colour:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:69
+#: registration/templates/registration/tournament.html:128
+msgid "Player Display Name:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:72
+#: registration/templates/registration/tournament.html:131
+#: registration/templates/registration/tournament.html:188
+#: registration/templates/registration/tournament.html:246
+#: registration/templates/registration/update_profile.html:12
+msgid "Update"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:78
+#: registration/templates/registration/tournament.html:137
+#: registration/templates/registration/tournament.html:195
+#: registration/templates/registration/tournament.html:253
+msgid "Join Tournament"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:121
+msgid "Log in Player 2"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:149
+msgid "Player 3"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:171
+msgid "Player 3 Username:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:175
+msgid "Player 3 Password:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:178
+msgid "Log in Player 3"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:185
+msgid "Player 3 Display Name:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:207
+msgid "Player 4"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:229
+msgid "Player 4 Username:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:233
+msgid "Player 4 Password:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:236
+msgid "Log in Player 4"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:243
+msgid "Player 4 Display Name:"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:264
+msgid "Game Settings"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:282
+msgid "Game Canvas"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:291
+msgid "4-Player Game"
+msgstr ""
+
+#: registration/templates/registration/tournament.html:293
+msgid "Start 4-Player Game"
+msgstr ""
+
+#: registration/templates/registration/update_profile.html:7
+msgid "Update profile"
+msgstr ""

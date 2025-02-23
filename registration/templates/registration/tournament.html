@@ -3,22 +3,22 @@
 {% block content %}
 
 <div id="content" class="container mt-4">
+    {% load i18n %}
+
     <form id="create-tournament-form" method="POST" action="{% url 'create_tournament' %}">
         {% csrf_token %}
         {{ c_form.as_p }}  <!-- Display the form fields -->
-        <button type="submit" class="btn btn-primary">Create Tournament</button>
+        <button type="submit" class="btn btn-primary">{% trans "Create Tournament" %}</button>
     </form>
     <div class="card mb-4">
         <div class="card-body">
-            <h2 class="card-title">Tournament: {{ tournament.name }}</h2>
-            <p class="card-text"><strong>Creator:</strong> {{ tournament.creator.display_name }}</p>
-            <p class="card-text" id="player-count"><strong>Players:</strong> {{ tournament.players.count }}/4</p>
-
-            
+            <h2 class="card-title">{% trans "Tournament:" %} {{ tournament.name }}</h2>
+            <p class="card-text"><strong>{% trans "Creator:" %}</strong> {{ tournament.creator.display_name }}</p>
+            <p class="card-text" id="player-count"><strong>{% trans "Players:" %}</strong> {{ tournament.players.count }}/4</p>
 
             <!-- Start Tournament Button (Visible Only to Creator) -->
             {% if tournament.creator.user == request.user %}
-                <button onclick="startTournament({{ tournament.id }})" class="btn btn-success mb-2">Start Tournament</button>
+                <button onclick="startTournament({{ tournament.id }})" class="btn btn-success mb-2">{% trans "Start Tournament" %}</button>
             {% endif %}
 
             <!-- List of Players -->
@@ -29,7 +29,8 @@
                     <img src="{{ player.avatar.url }}" alt="{{ player.display_name }}" class="avatar rounded-circle" width="50" height="50">
                     <form id="quit_tournament" method="POST" action="/quit_tournament/{{ tournament.id }}/{{ player.id }}/" class="mb-3">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary mb-2">Quit Tournament</button>
+                        <button type="submit" class="btn btn-primary mb-2">{% trans "Quit Tournament" %}</button>
+                    </form>
                 </li>
                 {% endfor %}
             </ul>
@@ -42,22 +43,22 @@
         <div class="col-md-3">
             <div id="player1-profile" class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title">{{ user.username }}</h5>
+                    <h5 class="card-title">{% trans "Player 1:" %}</h5>
                     <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
-                    <p id="display_name"><strong>Display Name:</strong> {{ user.profile.display_name }}</p>
-                    <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
-                    <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
-                    <p><strong>ID:</strong> {{ user.profile.id }}</p>
+                    <p id="display_name"><strong>{% trans "Display Name:" %}</strong> {{ user.profile.display_name }}</p>
+                    <p><strong>{% trans "Wins:" %}</strong> {{ user.profile.wins }}</p>
+                    <p><strong>{% trans "Losses:" %}</strong> {{ user.profile.losses }}</p>
+                    <p><strong>{% trans "ID:" %}</strong> {{ user.profile.id }}</p>
                     <div class="col-md-3">
-                        <label for="player1Colour" class="form-label">Colour:</label>
+                        <label for="player1Colour" class="form-label">{% trans "Colour:" %}</label>
                         <select id="player1Colour" class="form-select">
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="orange">Orange</option>
-                            <option value="purple">Purple</option>
-                            <option value="gold">Gold</option>
-                            <option value="black">Black</option>
+                            <option value="red">{% trans "Red" %}</option>
+                            <option value="green">{% trans "Green" %}</option>
+                            <option value="blue">{% trans "Blue" %}</option>
+                            <option value="orange">{% trans "Orange" %}</option>
+                            <option value="purple">{% trans "Purple" %}</option>
+                            <option value="gold">{% trans "Gold" %}</option>
+                            <option value="black">{% trans "Black" %}</option>
                         </select>
                     </div>
                     <p id="player1Type" type="hidden">"human"</p>
@@ -67,43 +68,44 @@
                     <form id="update-tournament-name" method="POST" action="/tournament_name_user/{{ user.profile.id }}/1/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="display_name" class="form-label">Player Display Name:</label>
+                            <label for="display_name" class="form-label">{% trans "Player Display Name:" %}</label>
                             <input type="text" id="display_name" name="display_name" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                     </form>
                     {% if tournament %}
                     <form id="second-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ user.profile.id }}/" class="mb-3">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary mb-2">
-                            Join Tournament
+                            {% trans "Join Tournament" %}
                         </button>
                     </form>
-                {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
+<!-- here -->
 
         <!-- Player 2 Profile -->
         <div class="col-md-3">
             <div id="player2-profile" class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title">Player 2</h5>
+                    <h5 class="card-title">{% trans "Player 2:" %}</h5>
                     <img id="player2-avatar" src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
                     <p id="player2-display-name"><strong>Display Name:</strong> {{ request.session.player2.display_name }}</p>
-                    <p id="player2-wins"><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
-                    <p id="player2-losses"><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
-                    <p id="player2-id"><strong>ID:</strong> {{ request.session.player2.id }}</p>
+                    <p id="player2-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player2.wins }}</p>
+                    <p id="player2-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player2.losses }}</p>
+                    <p id="player2-id"><strong>{% trans "ID:" %}</strong> {{ request.session.player2.id }}</p>
                     <div class="col-md-3">
-                        <label for="player2Colour" class="form-label">Colour:</label>
+                        <label for="player2Colour" class="form-label">{% trans "Colour:" %}</label>
                         <select id="player2Colour" class="form-select">
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="orange">Orange</option>
-                            <option value="purple">Purple</option>
-                            <option value="gold">Gold</option>
-                            <option value="black">Black</option>
+                            <option value="red">{% trans "Red" %}</option>
+                            <option value="green">{% trans "Green" %}</option>
+                            <option value="blue">{% trans "Blue" %}</option>
+                            <option value="orange">{% trans "Orange" %}</option>
+                            <option value="purple">{% trans "Purple" %}</option>
+                            <option value="gold">{% trans "Gold" %}</option>
+                            <option value="black">{% trans "Black" %}</option>
                         </select>
                     </div>
                     <input id="player2Type" type="hidden">"human"</p>
@@ -111,30 +113,30 @@
                     <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="username" class="form-label">Player 2 Username:</label>
+                            <label for="username" class="form-label">{% trans "Player 2 Username:" %}</label>
                             <input type="text" id="username" name="username" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Player 2 Password:</label>
+                            <label for="password" class="form-label">{% trans "Player 2 Password:" %}</label>
                             <input type="password" id="password" name="password" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Log in Player 2</button>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 2" %}</button>
                     </form>
 
                     <!-- Update Display Name Form for Player 2 -->
                     <form id="update-tournament-name-user2" method="POST" action="/tournament_name_user/{{ request.session.player2.id }}/2/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="display_name" class="form-label">Player Display Name:</label>
+                            <label for="display_name" class="form-label">{% trans "Player Display Name:" %}</label>
                             <input type="text" id="display_name" name="display_name" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                     </form>
                     {% if tournament %}
                     <form id="second-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player2.id }}/" class="mb-3">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary mb-2">
-                            Join Tournament
+                            {% trans "Join Tournament" %}
                         </button>
                     </form>
                 {% endif %}
@@ -146,53 +148,53 @@
         <div class="col-md-3">
             <div id="player3-profile" class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title">Player 3</h5>
+                    <h5 class="card-title">{% trans "Player 3" %}</h5>
                     <img id="player3-avatar" src="{{ request.session.player3.avatar_url }}" alt="Player 3 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
-                    <p id="player3-display-name"><strong>Display Name:</strong> {{ request.session.player3.display_name }}</p>
-                    <p id="player3-wins"><strong>Wins:</strong> {{ request.session.player3.wins }}</p>
-                    <p id="player3-losses"><strong>Losses:</strong> {{ request.session.player3.losses }}</p>
-                    <p id="player3-id"><strong>ID:</strong> {{ request.session.player3.id }}</p>
+                    <p id="player3-display-name"><strong>{% trans "Display Name:" %}</strong> {{ request.session.player3.display_name }}</p>
+                    <p id="player3-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player3.wins }}</p>
+                    <p id="player3-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player3.losses }}</p>
+                    <p id="player3-id"><strong>{% trans "ID:" %}</strong> {{ request.session.player3.id }}</p>
                     <div class="col-md-3">
-                        <label for="player3Colour" class="form-label">Colour:</label>
+                        <label for="player3Colour" class="form-label">{% trans "Colour:" %}</label>
                         <select id="player3Colour" class="form-select">
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="orange">Orange</option>
-                            <option value="purple">Purple</option>
-                            <option value="gold">Gold</option>
-                            <option value="black">Black</option>
+                            <option value="red">{% trans "Red" %}</option>
+                            <option value="green">{% trans "Green" %}</option>
+                            <option value="blue">{% trans "Blue" %}</option>
+                            <option value="orange">{% trans "Orange" %}</option>
+                            <option value="purple">{% trans "Purple" %}</option>
+                            <option value="gold">{% trans "Gold" %}</option>
+                            <option value="black">{% trans "Black" %}</option>
                         </select>
                     </div>
                     <!-- Login Form for Player 3 -->
                     <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="username" class="form-label">Player 3 Username:</label>
+                            <label for="username" class="form-label">{% trans "Player 3 Username:" %}</label>
                             <input type="text" id="username" name="username" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Player 3 Password:</label>
+                            <label for="password" class="form-label">{% trans "Player 3 Password:" %}</label>
                             <input type="password" id="password" name="password" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Log in Player 3</button>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 3" %}</button>
                     </form>
 
                     <!-- Update Display Name Form for Player 2 -->
                     <form id="update-tournament-name-user3" method="POST" action="/tournament_name_user/{{ request.session.player3.id }}/3/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="display_name" class="form-label">Player 3 Display Name:</label>
+                            <label for="display_name" class="form-label">{% trans "Player 3 Display Name:" %}</label>
                             <input type="text" id="display_name" name="display_name" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                         
                     </form>
                     {% if tournament %}
                     <form id="third-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player3.id }}/" class="mb-3">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary mb-2">
-                            Join Tournament
+                            {% trans "Join Tournament" %}
                         </button>
                     </form>
                 {% endif %}
@@ -204,53 +206,53 @@
         <div class="col-md-3"> 
             <div id="player4-profile" class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title">Player 4</h5>
+                    <h5 class="card-title">{% trans "Player 4" %}</h5>
                     <img id="player4-avatar" src="{{ request.session.player4.avatar_url }}" alt="Player 4 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
-                    <p id="player4-display-name"><strong>Display Name:</strong> {{ request.session.player4.display_name }}</p>
-                    <p id="player4-wins"><strong>Wins:</strong> {{ request.session.player4.wins }}</p>
-                    <p id="player4-losses"><strong>Losses:</strong> {{ request.session.player4.losses }}</p>
-                    <p id="player4-id"><strong>ID:</strong> {{ request.session.player4.id }}</p>
+                    <p id="player4-display-name"><strong>{% trans "Display Name:" %}</strong> {{ request.session.player4.display_name }}</p>
+                    <p id="player4-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player4.wins }}</p>
+                    <p id="player4-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player4.losses }}</p>
+                    <p id="player4-id"><strong>{% trans "ID:" %}</strong> {{ request.session.player4.id }}</p>
                     <div class="col-md-3">
-                        <label for="player4Colour" class="form-label">Colour:</label>
+                        <label for="player4Colour" class="form-label">{% trans "Colour:" %}</label>
                         <select id="player4Colour" class="form-select">
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="orange">Orange</option>
-                            <option value="purple">Purple</option>
-                            <option value="gold">Gold</option>
-                            <option value="black">Black</option>
+                            <option value="red">{% trans "Red" %}</option>
+                            <option value="green">{% trans "Green" %}</option>
+                            <option value="blue">{% trans "Blue" %}</option>
+                            <option value="orange">{% trans "Orange" %}</option>
+                            <option value="purple">{% trans "Purple" %}</option>
+                            <option value="gold">{% trans "Gold" %}</option>
+                            <option value="black">{% trans "Black" %}</option>
                         </select>
                     </div>
                     <!-- Login Form for Player 2 -->
                     <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="username" class="form-label">Player 4 Username:</label>
+                            <label for="username" class="form-label">{% trans "Player 4 Username:" %}</label>
                             <input type="text" id="username" name="username" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Player 4 Password:</label>
+                            <label for="password" class="form-label">{% trans "Player 4 Password:" %}</label>
                             <input type="password" id="password" name="password" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Log in Player 4</button>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 4" %}</button>
                     </form>
 
                     <!-- Update Display Name Form for Player 2 -->
                     <form id="update-tournament-name-user4" method="POST" action="/tournament_name_user/{{ request.session.player4.id }}/4/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="display_name" class="form-label">Player 4 Display Name:</label>
+                            <label for="display_name" class="form-label">{% trans "Player 4 Display Name:" %}</label>
                             <input type="text" id="display_name" name="display_name" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                        
                     </form>
                     {% if tournament %}
                     <form id="forth-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player4.id }}/" class="mb-3">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary mb-2">
-                            Join Tournament
+                            {% trans "Join Tournament" %}
                         </button>
                     </form>
                 {% endif %}
@@ -261,13 +263,13 @@
     <!-- Game Settings Section -->
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">Game Settings</h5>
+            <h5 class="card-title">{% trans "Game Settings" %}</h5>
             <div class="row">
                 <div class="col-md-3">
-                    <label for="player1Type" class="form-label">Player 1:</label>
+                    <label for="player1Type" class="form-label">{% trans "Player 1:" %}</label>
                     <select id="player1Type" class="form-select">
-                        <option value="human">Human</option>
-                        <option value="ai">AI</option>
+                        <option value="human">{% trans "Human" %}</option>
+                        <option value="ai">{% trans "AI" %}</option>
                     </select>
                 </div>
                 
@@ -279,18 +281,18 @@
     <!-- Game Canvas Section -->
     <div class="card mb-4">
         <div class="card-body text-center">
-            <h5 class="card-title">Game Canvas</h5>
+            <h5 class="card-title">{% trans "Game Canvas" %}</h5>
             <canvas id="myCanvas" width="720" height="480" class="mb-3"></canvas>
-            <button id="runButton" class="btn btn-primary">Start Game</button>
+            <button id="runButton" class="btn btn-primary">{% trans "Start Game" %}</button>
         </div>
     </div>
 
     <!-- 4-Player Game Canvas Section -->
     <div class="card mb-4">
         <div class="card-body text-center">
-            <h5 class="card-title">4-Player Game</h5>
+            <h5 class="card-title">{% trans "4-Player Game" %}</h5>
             <canvas id="fourPlayer" width="480" height="480" class="mb-3"></canvas>
-            <button id="runButton4" class="btn btn-primary">Start 4-Player Game</button>
+            <button id="runButton4" class="btn btn-primary">{% trans "Start 4-Player Game" %}</button>
         </div>
     </div>
 </div>

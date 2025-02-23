@@ -1,22 +1,22 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    
 <div id="content">
+    {% load i18n %}
     {% if user.is_authenticated %}
         <div id="profile" class="profile-info">
-            <h2>Welcome, {{ user.username }}</h2>
-            <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar">
-            <p><strong>Display Name:</strong> {{ user.profile.display_name }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
-            <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
-            <p><strong>ID:</strong> {{ user.profile.id }}</p>
-            <p><strong>Friends:</strong> 
+            <h2>{% trans "Welcome," %} {{ user.username }}</h2>
+            <img src="{{ user.profile.avatar.url }}" alt="{% trans 'User Avatar' %}" class="avatar">
+            <p><strong>{% trans 'Display Name:' %}</strong> {{ user.profile.display_name }}</p>
+            <p><strong>{% trans 'Email:' %}</strong> {{ user.email }}</p>
+            <p><strong>{% trans 'Wins:' %}</strong> {{ user.profile.wins }}</p>
+            <p><strong>{% trans 'Losses:' %}</strong> {{ user.profile.losses }}</p>
+            <p><strong>{% trans 'ID:' %}</strong> {{ user.profile.id }}</p>
+            <p><strong>{% trans 'Friends:' %}</strong> 
                 {% for f in user.profile.friends.all %}
                     {{ f.display_name }}{% if not forloop.last %}, {% endif %}
                 {% empty %}
-                    No friends added yet.
+                    {% trans 'No friends added yet.' %}
                 {% endfor %}
             </p>
         </div>
@@ -24,30 +24,29 @@
     
     {% if request.session.player2 %}
         <input type="hidden" id="player2Id" value="{{ request.session.player2.id }}" />
-        <h2>Welcome, {{ request.session.player2.display_name }}</h2>
+        <h2>{% trans "Welcome," %} {{ request.session.player2.display_name }}</h2>
         <div class="profile-info">
-            <img src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar">
-            <h3>Player 2 Profile</h3>
-            <p><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
-            <p><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
-            <p><strong>ID:</strong> {{ request.session.player2.profile.id }}</p>
+            <img src="{{ request.session.player2.avatar_url }}" alt="{% trans 'Player 2 Avatar' %}" class="avatar">
+            <h3>{% trans 'Player 2 Profile' %}</h3>
+            <p><strong>{% trans 'Wins:' %}</strong> {{ request.session.player2.wins }}</p>
+            <p><strong>{% trans 'Losses:' %}</strong> {{ request.session.player2.losses }}</p>
+            <p><strong>{% trans 'ID:' %}</strong> {{ request.session.player2.profile.id }}</p>
             <form action="{% url 'logout_player2' %}" method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Log Out Player 2</button>
+                <button type="submit" class="btn btn-danger">{% trans 'Log Out Player 2' %}</button>
             </form>
         </div>
     {% endif %}
     {% if request.session.player3 %}
         <input type="hidden" id="player3Id" value="{{ request.session.player3.id }}" />
-        <h2>Welcome, {{ request.session.player2.display_name }}</h2>
+        <h2>{% trans "Welcome," %} {{ request.session.player2.display_name }}</h2>
         <div class="profile-info">
-            <img src="{{ request.session.player3.avatar_url }}" alt="Player 3 Avatar" class="avatar">
-            <h3>Player 3 Profile</h3>
-            <p><strong>Wins:</strong> {{ request.session.player3.wins }}</p>
-            <p><strong>Losses:</strong> {{ request.session.player3.losses }}</p>
-            <p><strong>ID:</strong> {{ request.session.player3.profile.id }}</p>
+            <img src="{{ request.session.player3.avatar_url }}" alt="{% trans 'Player 3 Avatar' %}" class="avatar">
+            <h3>{% trans 'Player 3 Profile' %}</h3>
+            <p><strong>{% trans 'Wins:' %}</strong> {{ request.session.player3.wins }}</p>
+            <p><strong>{% trans 'Losses:' %}</strong> {{ request.session.player3.losses }}</p>
+            <p><strong>{% trans 'ID:' %}</strong> {{ request.session.player3.profile.id }}</p>
         </div>
     {% endif %}
 </div>
-
 {% endblock %}
