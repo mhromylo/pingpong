@@ -3,7 +3,7 @@ let upDownAlternate =    ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 export default class Player
 {
 
-	constructor(name, isAI, paddleColour, paddleWidth, paddleHeight, paddleSpeed, paddleX, paddleY, moveUp, moveDown, canvasHeight, canvasWidth)
+	constructor(name, isAI, paddleColour, paddleWidth, paddleHeight, paddleSpeed, paddleX, paddleY, moveUp, moveDown, canvasHeight, canvasWidth, game_id, player_id)
 	{
 		this.name = name;
 		this.isAI = isAI;
@@ -22,6 +22,9 @@ export default class Player
 		this.DownPressed = false;
 		this.canvasHeight = canvasHeight;
 		this.canvasWidth = canvasWidth;
+
+        this.game_id = game_id;
+        this.player_id = player_id;
 
 		this.testValueDeleteLater_calculatedYforAI = "";
 

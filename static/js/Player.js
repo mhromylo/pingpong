@@ -1,12 +1,9 @@
-import { MapObstacleSquare, Dart } from "./powersAndMaps.js";
-
-
 let upDownButtonsGiven = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "ArrowUp", "ArrowDown", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Up",           "Down"];
 let upDownAlternate =    ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Up",           "Down", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "ArrowUp", "ArrowDown"];
 export default class Player
 {
 
-	constructor(name, isAI, paddleColour, paddleWidth, paddleHeight, paddleSpeed, paddleX, paddleY, moveUp, moveDown, canvasHeight, canvasWidth, shootButton)
+	constructor(name, isAI, paddleColour, paddleWidth, paddleHeight, paddleSpeed, paddleX, paddleY, moveUp, moveDown, canvasHeight, canvasWidth, game_id, player_id)
 	{
 		this.name = name;
 		this.isAI = isAI;
@@ -19,23 +16,17 @@ export default class Player
 		this.score = 0;
 		this.moveUp = moveUp;
 		this.moveDown = moveDown;
-		this.shootButton = shootButton;
 		this.alternateMoveUp = upDownAlternate[upDownButtonsGiven.indexOf(moveUp)];
 		this.alternateMoveDown =  upDownAlternate[upDownButtonsGiven.indexOf(moveDown)];
-		this.alternateShootButton = upDownAlternate[upDownButtonsGiven.indexOf(shootButton)];
 		this.UpPressed = false;
 		this.DownPressed = false;
 		this.canvasHeight = canvasHeight;
 		this.canvasWidth = canvasWidth;
-		this.lastFiredDart = performance.now() - 15000;
+
+        this.game_id = game_id;
+        this.player_id = player_id;
 
 		this.testValueDeleteLater_calculatedYforAI = "";
-
-		if (this.paddleX < canvasWidth / 2)
-			this.ballTowardsUs = -1;
-		else
-			this.ballTowardsUs = 1;
-
 
 		if (this.moveUp === this.moveDown || this.alternateMoveUp === this.alternateMoveDown || this.moveUp === this.alternateMoveDown || this.moveDown === this.alternateMoveUp)
 		{
@@ -48,6 +39,10 @@ export default class Player
 			this.lowerAIpaddleCenterPosition = canvasHeight / 2 + (paddleHeight / 2);
 			this.AIcalculatedImpactSpot = canvasHeight / 2;
 
+			if (this.paddleX < canvasWidth / 2)
+				this.ballTowardsUs = -1;
+			else
+				this.ballTowardsUs = 1;
 
 			this.dangerZone = 0.25;
 		}
@@ -57,14 +52,14 @@ export default class Player
 	{
 		ctx.beginPath();
 		ctx.rect(this.paddleX, this.paddleY, this.paddleWidth, this.paddleHeight);
-		//console.log("Player Paddle Colour:", this.paddleColour); delete later, just for tests
+		console.log("Player Paddle Colour:", this.paddleColour);
 		ctx.fillStyle = this.paddleColour.toString();
-		//console.log("Player Paddle Colour:", ctx.fillStyle); delete later, just for tests
-		ctx.fill(); 
+		console.log("Player Paddle Colour:", ctx.fillStyle);
+		ctx.fill();
 		ctx.closePath();
 	}
 
-	 keyDownHandler(e, dartsFlying, extrasAreOn) {
+	 keyDownHandler(e) {
 		if (e.key === this.moveUp || e.key === this.alternateMoveUp) {
 		  this.UpPressed = true;
 		  e.preventDefault();
@@ -72,13 +67,7 @@ export default class Player
 		  this.DownPressed = true;
 		  e.preventDefault();
 		}
-		if ((e.key === this.shootButton || e.key === this.alternateShootButton) && extrasAreOn && (performance.now() - this.lastFiredDart) >= 15000)
-		{
-			let dartUpperLeftX = this.paddleX <  this.canvasWidth / 2 ? this.paddleX + this.paddleWidth : this.paddleX - 25 -this.paddleWidth;
-			dartsFlying.push(new Dart(this.paddleY + (this.paddleHeight / 2) - 2, dartUpperLeftX, 25, 5, this));
-			this.lastFiredDart = performance.now();
-		}
-	}
+	   }
 	   
 	 keyUpHandler(e) {
 		if (e.key === this.moveUp || e.key === this.alternateMoveUp) {

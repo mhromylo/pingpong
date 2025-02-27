@@ -257,27 +257,40 @@ def save_game_result(request):
         try:
             data = json.loads(request.body)
             game_id = data.get('game_id')
-            winner_id = data.get('winner_id')
-            player2id = data.get('player2id')
-            player2 = Profile.objects.get(id = player2id)
-            player2.update_stats(won = 0)
-            winner = Profile.objects.get(id = winner_id)
-            winner.update_stats(won = 1)
+            player1_id = data.get('player1_id')
+            player2_id = data.get('player2_id')
+            player1_score = data.get('player1_score')
+            player2_score = data.get('player2_score')
+
+            # Get player profiles
+            player1 = Profile.objects.get(id=player1_id)
+            player2 = Profile.objects.get(id=player2_id)
+
+
+            # Update the existing game
             game = Game.objects.get(id=game_id)
-            game.winner = winner
-            return JsonResponse({'success': True, 
-                                 'message': 'Game result saved successfully!'
-								 })
-            player2 = Profile.objects.get(id=player2id)
-            winner = Profile.objects.get(id=winner_id)
-            
-            player2.update_stats(won=0)
-            winner.update_stats(won=1)
-            
-            Game.objects.create(game_type=game_type, winner=winner, player2=player2)
-            return JsonResponse({'success': True, 'message': 'Game result saved successfully!'})
+            if player1_score > player2_score:
+                player1.update_stats(won=1)
+                player2.update_stats(won=0)
+                game.winner = player1
+            else:
+                game.winner = player2
+                player2.update_stats(won=1)
+                player1.update_stats(won=0)
+            game.player1_score = player1_score
+            game.player2_score = player2_score
+            game.save()  # Save changes
+
+            if (game.tournament_id != 0):
+                tournament = Tournament.objects.get(id=game.tournament_id)
+                tournament.first_tour_winners.add(game.winner)
+                tournament.first_tour_lossers.add()
+
+            return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/tournament/'})
+
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
+
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
 @login_required
@@ -570,10 +583,14 @@ def start_tournament(request, tournament_id):
         # Randomly shuffle players to generate matchups
         players = list(tournament.players.all())
         shuffle(players)
-        game1 = Game.objects.create(game_type="tournament_game", player1=players[0], player2=players[1])
-        game2 = Game.objects.create(game_type="tournament_game", player1=players[2], player2=players[3])
+        game1 = Game.objects.create(game_type="tournament_game", player1=players[0], player2=players[1], tournament_id=tournament_id)
+        game2 = Game.objects.create(game_type="tournament_game", player1=players[2], player2=players[3], tournament_id=tournament_id)
+        game3 = Game.objects.create(game_type="tournament_final")
+        game4 = Game.objects.create(game_type="tournament_3or4")
         tournament.games.add(game1)
         tournament.games.add(game2)
+        tournament.games.add(game3)
+        tournament.games.add(game4)
         tournament.status = 'in_progress'
         tournament.save()
         
