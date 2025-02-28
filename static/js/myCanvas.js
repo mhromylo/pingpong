@@ -115,8 +115,8 @@ $(document).ready(function ()
                 player1_score: player1.score,
                 player2_score: player2.score,
             });
-            saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
             clearInterval(interval);
+            saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
           }
         } else if (x + ballRadius > canvas.width) {
           player1.score++;
@@ -130,8 +130,8 @@ $(document).ready(function ()
                 player1_score: player1.score,
                 player2_score: player2.score,
             });
-            saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
             clearInterval(interval);
+            saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
           }
         }
 
@@ -353,51 +353,73 @@ $(document).ready(function ()
     //     startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
     // });
 
-    document.querySelectorAll('.startTournamentGame').forEach(button => {
-        button.addEventListener('click', function () {
-            console.log('Button clicked!'); // Check if this logs when the button is clicked
+//     document.querySelectorAll('.startTournamentGame').forEach(button => {
+//         button.addEventListener('click', function () {
+//             console.log('Button clicked!'); // Check if this logs when the button is clicked
 
-            const game_id = this.getAttribute('data-game-id');
-            const player1_id = this.getAttribute('data-player1-id');
-            const player2_id = this.getAttribute('data-player2-id');
+//             const game_id = this.getAttribute('data-game-id');
+//             const player1_id = this.getAttribute('data-player1-id');
+//             const player2_id = this.getAttribute('data-player2-id');
+
+//             console.log('game:', game_id);
+//             console.log('player1:', player1_id);
+//             console.log('player2:', player2_id);
+
+//             // Call your function
+//             const gameCanvas = document.getElementById('myCanvas');
+//    // Scroll to the canvas element  
+//             gameCanvas.scrollIntoView({
+//                 behavior: 'smooth',  // Smooth scrolling
+//                 block: 'center',     // Scroll to the center of the canvas element
+//                 inline: 'center'     // Optionally, center horizontally as well
+//                 });
+
+//     // Call your function
+//             startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
+//         });
+//     });
+
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("startTournamentGame")) {
+            console.log('Button clicked!');
+
+            const game_id = event.target.getAttribute('data-game-id');
+            const player1_id = event.target.getAttribute('data-player1-id');
+            const player2_id = event.target.getAttribute('data-player2-id');
 
             console.log('game:', game_id);
             console.log('player1:', player1_id);
             console.log('player2:', player2_id);
 
-            // Call your function
             const gameCanvas = document.getElementById('myCanvas');
-   // Scroll to the canvas element  
-            gameCanvas.scrollIntoView({
-                behavior: 'smooth',  // Smooth scrolling
-                block: 'center',     // Scroll to the center of the canvas element
-                inline: 'center'     // Optionally, center horizontally as well
-                });
+            if (gameCanvas) {
+                gameCanvas.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+            } else {
+                console.error("Canvas element not found!");
+            }
 
-    // Call your function
             startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
-        });
+        }
     });
     
-      $(document).on("click", "#runButton", function () {
-        setupCanvas();
-        const player1Type = document.getElementById("player1Type").value;
-        const player1Colour = document.getElementById("player1Colour").value;
-        const player2Colour = document.getElementById("player2Colour").value;
-        const player2Type = document.getElementById("player2Type").value;
-	   const chosenMap = document.getElementById("chosenMap").value;
-	   const extrasOnOff = document.getElementById("extrasAreOn").value;
+    //   $(document).on("click", "#runButton", function () {
+    //     setupCanvas();
+    //     const player1Type = document.getElementById("player1Type").value;
+    //     const player1Colour = document.getElementById("player1Colour").value;
+    //     const player2Colour = document.getElementById("player2Colour").value;
+    //     const player2Type = document.getElementById("player2Type").value;
+	//    const chosenMap = document.getElementById("chosenMap").value;
+	//    const extrasOnOff = document.getElementById("extrasAreOn").value;
       
-        console.log("Game Starting...");
-        console.log("Player 1 Type:", player1Type);
-        console.log("Player 1 Colour:", player1Colour);
-        console.log("Player 2 Colour:", player2Colour);
-        console.log("Player 2 Type:", player2Type);
+    //     console.log("Game Starting...");
+    //     console.log("Player 1 Type:", player1Type);
+    //     console.log("Player 1 Colour:", player1Colour);
+    //     console.log("Player 2 Colour:", player2Colour);
+    //     console.log("Player 2 Type:", player2Type);
       
-        startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 1, 1, 2);
-      });
+    //     startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 1, 1, 2);
+    //   });
     
-  }
   function getCSRFToken() {
     let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]')?.value;
     if (!csrfToken) {
@@ -405,11 +427,19 @@ $(document).ready(function ()
             .find(row => row.startsWith('csrftoken='))
             ?.split('=')[1];
     }
+    if (!csrfToken) {
+        console.error("CSRF token not found!");
+    }
     return csrfToken;
-}
+    }
+
   function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_score){
     const csrfToken = getCSRFToken();
 
+    if (!game_id || !player1_id || !player2_id) {
+        console.error("Missing game/player IDs!");
+        return;
+    }
 
     const payload = {
         game_id: game_id,
@@ -446,4 +476,5 @@ $(document).ready(function ()
     .catch(error => console.error('Error:', error));
 }
 
-})
+  }
+  })

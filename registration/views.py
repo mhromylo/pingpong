@@ -255,7 +255,11 @@ def logout_player2(request):
 def save_game_result(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
+
             game_id = data.get('game_id')
             player1_id = data.get('player1_id')
             player2_id = data.get('player2_id')
@@ -263,29 +267,53 @@ def save_game_result(request):
             player2_score = data.get('player2_score')
 
             # Get player profiles
-            player1 = Profile.objects.get(id=player1_id)
-            player2 = Profile.objects.get(id=player2_id)
-
+            player1 = get_object_or_404(Profile, id=player1_id)
+            player2 = get_object_or_404(Profile, id=player2_id)
 
             # Update the existing game
-            game = Game.objects.get(id=game_id)
+            game = get_object_or_404(Game, id=game_id)
+            if (game.tournament_id != 0):
+                tournament = get_object_or_404(Tournament, id=game.tournament_id)
             if player1_score > player2_score:
                 player1.update_stats(won=1)
                 player2.update_stats(won=0)
                 game.winner = player1
+                game.loser = player2
+                if (tournament and (tournament.first_tour_winners.count() < 2)):
+                    tournament.first_tour_winners.add(player1)
+                    tournament.first_tour_lossers.add(player2)
             else:
                 game.winner = player2
+                game.loser = player1
                 player2.update_stats(won=1)
                 player1.update_stats(won=0)
+                if (tournament and (tournament.first_tour_winners.count() < 2)):
+                    tournament.first_tour_winners.add(player2)
+                    tournament.first_tour_lossers.add(player1)
             game.player1_score = player1_score
             game.player2_score = player2_score
             game.save()  # Save changes
+            if tournament:
+                if game.game_type == Game.TOURNAMENT_GAME and tournament.first_tour_winners.count() == 2:
+                    final = get_object_or_404(Game, tournament_id=tournament.id, game_type=Game.TOURNAMENT_FINAL)
+                    finalists = list(tournament.first_tour_winners.all())
+                    final.players.add(*finalists)
 
-            if (game.tournament_id != 0):
-                tournament = Tournament.objects.get(id=game.tournament_id)
-                tournament.first_tour_winners.add(game.winner)
-                tournament.first_tour_lossers.add()
+                    tournament_3or4 = get_object_or_404(Game, tournament_id=tournament.id, game_type=Game.TOURNAMENT_3OR4)
+                    losers = list(tournament.first_tour_lossers.all())
+                    tournament_3or4.players.add(*losers)
 
+                elif game.game_type == Game.TOURNAMENT_FINAL:
+                    tournament.winner = game.winner
+                    tournament.second = game.loser
+
+                elif game.game_type == Game.TOURNAMENT_3OR4:
+                    tournament.third = game.winner
+                    tournament.fourth = game.loser
+
+                if tournament.winner and tournament.third:
+                    tournament.status = 'completed'
+                    tournament.save()
             return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/tournament/'})
 
         except Exception as e:
@@ -583,10 +611,10 @@ def start_tournament(request, tournament_id):
         # Randomly shuffle players to generate matchups
         players = list(tournament.players.all())
         shuffle(players)
-        game1 = Game.objects.create(game_type="tournament_game", player1=players[0], player2=players[1], tournament_id=tournament_id)
-        game2 = Game.objects.create(game_type="tournament_game", player1=players[2], player2=players[3], tournament_id=tournament_id)
-        game3 = Game.objects.create(game_type="tournament_final")
-        game4 = Game.objects.create(game_type="tournament_3or4")
+        game1 = Game.objects.create(game_type=Game.TOURNAMENT_GAME, player1=players[0], player2=players[1], tournament_id=tournament_id)
+        game2 = Game.objects.create(game_type=Game.TOURNAMENT_GAME, player1=players[2], player2=players[3], tournament_id=tournament_id)
+        game3 = Game.objects.create(game_type=Game.TOURNAMENT_FINAL)
+        game4 = Game.objects.create(game_type=Game.TOURNAMENT_3OR4)
         tournament.games.add(game1)
         tournament.games.add(game2)
         tournament.games.add(game3)

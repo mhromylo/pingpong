@@ -41,8 +41,18 @@ class Game(models.Model):
     player3 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player3")
     player4 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Player4")
     winner = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="games_won", null=True, blank=True)
+    loser = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="games_lost", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    game_type = models.CharField(max_length=50)
+    TOURNAMENT_GAME = 'tournament_game'
+    TOURNAMENT_FINAL = 'tournament_final'
+    TOURNAMENT_3OR4 = 'tournament_3or4'
+
+    GAME_TYPE_CHOICES = [
+        (TOURNAMENT_GAME, 'Tournament Game'),
+        (TOURNAMENT_FINAL, 'Tournament Final'),
+        (TOURNAMENT_3OR4, 'Tournament 3rd/4th Place'),
+    ]
+    game_type = models.CharField(max_length=50, choices=GAME_TYPE_CHOICES)
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
     tournament_id = models.IntegerField(default=0)
@@ -65,6 +75,10 @@ class Tournament(models.Model):
         ('completed', 'Completed')
     ], default='not_started')
     games = models.ManyToManyField(Game, related_name='games')
+    winner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="tournaments_win", null=True, blank=True)
+    second = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="tournaments_2place", null=True, blank=True)
+    third = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="tournaments_3place", null=True, blank=True)
+    fourth = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="tournaments_4place", null=True, blank=True)
 
     class Meta:
         db_table = 'registration_tournament'

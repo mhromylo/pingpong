@@ -3,24 +3,38 @@
 {% block content %}
 
 <div id="content" class="container mt-4">
+    {% if  not tournament %}
     <form id="create-tournament-form" method="POST" action="{% url 'create_tournament' %}">
         {% csrf_token %}
         {{ c_form.as_p }}  <!-- Display the form fields --> 
         <button type="submit" class="btn btn-primary">Create Tournament</button>
     </form>
+    {% endif %}
     <div class="card mb-4">
         <div class="card-body">
-            <h2 class="card-title">Tournament: {{ tournament.name }}</h2>
-            <p class="card-text"><strong>Creator:</strong> {{ tournament.creator.display_name }}</p>
-            <p class="card-text" id="player-count"><strong>Players:</strong> {{ tournament.players.count }}/4</p>
+            <div class="row">
+                <!-- Players List (Left Side) -->
+                <div class="col-md-6">
+                    <h2 class="card-title">Tournament: {{ tournament.name }}</h2>
+                    <p class="card-text"><strong>Status:</strong> {{ tournament.status }}</p>
+                    <p class="card-text" id="player-count"><strong>Players:</strong> {{ tournament.players.count }}/4</p>
 
-            
-            {% if tournament.status == 'not_started' %}
-            <form id="start-tournament-form" method="POST" action="/start_tournament/{{ tournament.id }}/">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">Start Tournament</button>
-            {% endif %}
-
+                    
+                    {% if tournament.status == 'not_started' %}
+                    <form id="start-tournament-form" method="POST" action="/start_tournament/{{ tournament.id }}/">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Start Tournament</button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mb-3">Results</h5>
+                    <p class="card-text"><strong>Winner:</strong> {{ tournament.winner.display_name }}</p>
+                    <p class="card-text"><strong>2 Place:</strong> {{ tournament.second.display_name }}</p>
+                    <p class="card-text"><strong>3 Place:</strong> {{ tournament.third.display_name }}</p>
+                    <p class="card-text"><strong>4 Place:</strong> {{ tournament.forth.display_name }}</p>
+                </div>
+        
             <!-- List of Players -->
             <div class="row">
                 <!-- Players List (Left Side) -->
@@ -44,7 +58,7 @@
             
                 <!-- Game Results (Right Side) -->
                 <div class="col-md-6">
-                    <h5 class="mb-3">Game Results</h5>
+                    <h5 class="mb-3">Games</h5>
                     <div id="games" class="p-3 border rounded bg-light">
                         {% for game in tournament.games.all %}
                             <p class="card-text">
@@ -69,7 +83,7 @@
             
         </div>
     </div>
-
+    {% if tournament.status == "not_started" %}
     <!-- Profiles Section -->
     <div class="row mb-4">
         <!-- Player 1 Profile -->
@@ -264,23 +278,7 @@
             </div>
         </div>
     </div>
-    <!-- Game Settings Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Game Settings</h5>
-            <div class="row">
-                <div class="col-md-3">
-                    <label for="player1Type" class="form-label">Player 1:</label>
-                    <select id="player1Type" class="form-select">
-                        <option value="human">Human</option>
-                        <option value="ai">AI</option>
-                    </select>
-                </div>
-                
-                <!-- Repeat for Player 2, Player 3, and Player 4 -->
-            </div>
-        </div>
-    </div>
+{% endif %}
 
     <!-- Game Canvas Section -->
     <div class="card mb-4">
