@@ -62,7 +62,7 @@
                     <div id="games" class="p-3 border rounded bg-light">
                         {% for game in tournament.games.all %}
                             <p class="card-text">
-                                <strong>Game :</strong> {{ game.player1.display_name }} VS {{ game.player2.display_name }}
+                                <strong>{{ game.game_type }} :</strong> {{ game.player1.display_name }} VS {{ game.player2.display_name }}
                                 <strong>Scores :</strong> {{ game.player1_score }} VS {{ game.player2_score }}
                                 {% if not game.winner %}
                                 <button class="startTournamentGame btn btn-primary" 

@@ -66,7 +66,7 @@ class Tournament(models.Model):
     name = models.CharField(max_length=100)
     players = models.ManyToManyField(Profile, related_name='tournaments')
     first_tour_winners = models.ManyToManyField(Profile, related_name='first_tour_winners')
-    first_tour_lossers = models.ManyToManyField(Profile, related_name='first_tour_lossers')
+    first_tour_losers = models.ManyToManyField(Profile, related_name='first_tour_losers')
     created_at = models.DateTimeField(default=timezone.now)
     creator = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="tournaments_create", null=True, blank=True)
     status = models.CharField(max_length=20, choices=[

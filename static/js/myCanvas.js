@@ -108,13 +108,6 @@ $(document).ready(function ()
           resetBall();
           if (player2.score === 3) {
             alert("GAME OVER\n\nPLAYER 2 WINS");
-            console.log('Saving game result with:', {
-                game_id: player1.game_id,
-                player1_id: player1.player_id,
-                player2_id: player2.player_id,
-                player1_score: player1.score,
-                player2_score: player2.score,
-            });
             clearInterval(interval);
             saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
           }
@@ -123,13 +116,6 @@ $(document).ready(function ()
           resetBall();
           if (player1.score === 3) {
             alert("GAME OVER\n\nPLAYER 1 WINS");
-            console.log('Saving game result with:', {
-                game_id: player1.game_id,
-                player1_id: player1.player_id,
-                player2_id: player2.player_id,
-                player1_score: player1.score,
-                player2_score: player2.score,
-            });
             clearInterval(interval);
             saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
           }
@@ -303,8 +289,8 @@ $(document).ready(function ()
 	
 
 
-        player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, game_id, player1_id);
-        player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, game_id, player2_id);
+        player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, game_id, player1_id, "r");
+        player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, game_id, player2_id, "l");
 
         // Start game loop
         interval = setInterval(draw, 10);
@@ -382,7 +368,6 @@ $(document).ready(function ()
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("startTournamentGame")) {
             console.log('Button clicked!');
-
             const game_id = event.target.getAttribute('data-game-id');
             const player1_id = event.target.getAttribute('data-player1-id');
             const player2_id = event.target.getAttribute('data-player2-id');
@@ -390,7 +375,7 @@ $(document).ready(function ()
             console.log('game:', game_id);
             console.log('player1:', player1_id);
             console.log('player2:', player2_id);
-
+            setupCanvas();
             const gameCanvas = document.getElementById('myCanvas');
             if (gameCanvas) {
                 gameCanvas.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
@@ -420,6 +405,11 @@ $(document).ready(function ()
     //     startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 1, 1, 2);
     //   });
     
+
+
+  }
+  })
+
   function getCSRFToken() {
     let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]')?.value;
     if (!csrfToken) {
@@ -468,6 +458,10 @@ $(document).ready(function ()
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            if (data.redirect_url) {
+                fetchNewCSRFToken();
+                loadPage(data.redirect_url); // Dynamically load the login page
+            }
             console.log('Game result saved:', data.message);
         } else {
             console.error('Error saving game result:', data.message);
@@ -475,6 +469,3 @@ $(document).ready(function ()
     })
     .catch(error => console.error('Error:', error));
 }
-
-  }
-  })
