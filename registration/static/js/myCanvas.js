@@ -106,14 +106,14 @@ $(document).ready(function ()
         } else if (x - ballRadius < 0) {
           player2.score++;
           resetBall();
-          if (player2.score === 20) {
+          if (player2.score === 3) {
             alert("GAME OVER\n\nPLAYER 2 WINS");
             clearInterval(interval);
           }
         } else if (x + ballRadius > canvas.width) {
           player1.score++;
           resetBall();
-          if (player1.score === 20) {
+          if (player1.score === 3) {
             alert("GAME OVER\n\nPLAYER 1 WINS");
             clearInterval(interval);
           }

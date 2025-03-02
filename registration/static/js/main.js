@@ -165,7 +165,6 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error submitting form", error);
-                alert('An error occurred while processing the request.');
             });
     }
 
@@ -209,7 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error joining tournament:", error);
-                alert('An error occurred while joining the tournament.');
             });
     }
     
@@ -259,7 +257,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while processing the request.');
                 });
         });
     }
