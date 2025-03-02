@@ -13,6 +13,7 @@ from django.conf import settings
 from datetime import timedelta
 from django.utils.translation import gettext as _
 import json
+from django.db import transaction
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
 from .models import Profile, Game, Tournament
@@ -209,7 +210,7 @@ def add_friend(request):
             except Exception as e:
                 return JsonResponse({
                         'success': False,
-                        'message': _("Something went wrong while adding friend.")
+                        'message': 'Something went wrong while adding friend, maybe wrong display_name'
                         }, status=200)
         else:
             return JsonResponse({
@@ -291,34 +292,83 @@ def logout_player2(request):
 def save_game_result(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            game_type = data.get('game_type')
-            winner_id = data.get('winner_id')
-            player2id = data.get('player2id')
-            player2 = Profile.objects.get(id = player2id)
-            player2.update_stats(won = 0)
-            winner = Profile.objects.get(id = winner_id)
-            winner.update_stats(won = 1)
-            game = Game.objects.create(game_type=game_type, winner=winner, player2=player2)
-            return JsonResponse({'success': True, 
-                                 'message': _("Game result saved successfully!"),
-                                 'player2' : {
-                                     'id': player2.id,
-                                     'wins': player2.wins,
-                                     'losses': player2.losses,
-								 }
-								 })
-            player2 = Profile.objects.get(id=player2id)
-            winner = Profile.objects.get(id=winner_id)
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
+
+            game_id = data.get('game_id')
+            player1_id = data.get('player1_id')
+            player2_id = data.get('player2_id')
+            player1_score = data.get('player1_score')
+            player2_score = data.get('player2_score')
+
+            # Get player profiles
+            player1 = get_object_or_404(Profile, id=player1_id)
+            player2 = get_object_or_404(Profile, id=player2_id)
+
+            # Update the existing game
+            game = get_object_or_404(Game, id=game_id)
+
+            if game.winner:
+                return JsonResponse({'success': False, 'message': 'Game result already recorded'}, status=400)
             
-            player2.update_stats(won=0)
-            winner.update_stats(won=1)
-            
-            Game.objects.create(game_type=game_type, winner=winner, player2=player2)
-            return JsonResponse({'success': True, 'message': _("Game result saved successfully!")})
+            tournament = None
+            if (game.tournament_id != 0):
+                tournament = get_object_or_404(Tournament, id=game.tournament_id)
+            with transaction.atomic():  
+                if player1_score > player2_score:
+                    player1.update_stats(won=1)
+                    player2.update_stats(won=0)
+                    game.winner = player1
+                    game.loser = player2
+                    if (tournament and (game.game_type == Game.TOURNAMENT_GAME)):
+                        if not tournament.first_tour_winners.filter(id=player1.id).exists():
+                            tournament.first_tour_winners.add(player1)
+                        if not tournament.first_tour_losers.filter(id=player2.id).exists():
+                            tournament.first_tour_losers.add(player2)
+                else:
+                    game.winner = player2
+                    game.loser = player1
+                    player2.update_stats(won=1)
+                    player1.update_stats(won=0)
+                    if (tournament and (game.game_type == Game.TOURNAMENT_GAME)):
+                        if not tournament.first_tour_winners.filter(id=player2.id).exists():
+                            tournament.first_tour_winners.add(player2)
+                        if not tournament.first_tour_losers.filter(id=player1.id).exists():
+                            tournament.first_tour_losers.add(player1)
+                if (tournament.first_tour_winners.count() == 2 and (game.game_type == Game.TOURNAMENT_GAME)):
+                            final = Game.objects.filter(tournament_id=tournament.id, game_type=Game.TOURNAMENT_FINAL).first()
+                            if not final:
+                                finalists = list(tournament.first_tour_winners.all())
+                                final = Game.objects.create(game_type=Game.TOURNAMENT_FINAL, player1=finalists[0], player2=finalists[1], tournament_id=game.tournament_id)
+                                final.save()
+                                tournament.games.add(final)
+                if (tournament.first_tour_losers.count() == 2 and (game.game_type == Game.TOURNAMENT_GAME)):
+                     third_place_match = Game.objects.filter(tournament_id=tournament.id, game_type=Game.TOURNAMENT_3OR4).first()
+                     if not third_place_match:
+                        losers = list(tournament.first_tour_losers.all())
+                        third_place_match = Game.objects.create(game_type=Game.TOURNAMENT_3OR4, player1=losers[0], player2=losers[1], tournament_id=game.tournament_id)
+                        third_place_match.save()
+                        tournament.games.add(third_place_match)
+                if (game.game_type == Game.TOURNAMENT_FINAL):
+                        tournament.winner = game.winner
+                        tournament.second = game.loser
+
+                if (game.game_type == Game.TOURNAMENT_3OR4):
+                    tournament.third = game.winner
+                    tournament.fourth = game.loser
+                game.player1_score = player1_score
+                game.player2_score = player2_score
+                game.save()  # Save changes
+                tournament.save()
+            return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/tournament/'})
+
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
-    return JsonResponse({'success': False, 'message': _("Invalid request")}, status=400)
+
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+
 
 @login_required
 def tournament_name_user(request, player_id, player_number):
@@ -385,6 +435,10 @@ def tournament_name_user(request, player_id, player_number):
 def tournament(request):
     player = Profile.objects.get(user=request.user)
     c_form = CreateTournamentForm(request.POST)
+    started_tournament = Tournament.objects.filter(creator=player, status = 'in_progress').first()
+    if (started_tournament):
+        return render(request, 'registration/tournament.html', {'tournament': started_tournament
+    })
     tournament = Tournament.objects.filter(creator=player, status = 'not_started').first()
     if (tournament):
         return render(request, 'registration/tournament.html', {'tournament': tournament
@@ -401,6 +455,7 @@ def second_player_tournament(request):
         user2 = authenticate(request, username=username, password=password)
         if user2:
             profile2 = Profile.objects.get(user=user2)
+            profile2.is_online = True
             request.session['player2'] = {
                 'display_name': profile2.display_name,
                 'avatar_url': profile2.avatar.url if profile2.avatar else '',
@@ -438,6 +493,7 @@ def third_player_tournament(request):
         user = authenticate(request, username=username, password=password)
         if user:
             profile3 = Profile.objects.get(user=user)
+            profile3.is_online = True
             request.session['player3'] = {
                 'display_name': profile3.display_name,
                 'avatar_url': profile3.avatar.url if profile3.avatar else '',
@@ -475,6 +531,7 @@ def forth_player_tournament(request):
         user = authenticate(request, username=username, password=password)
         if user:
             profile4 = Profile.objects.get(user=user)
+            profile4.is_online = True
             request.session['player4'] = {
                 'display_name': profile4.display_name,
                 'avatar_url': profile4.avatar.url if profile4.avatar else '',
@@ -556,9 +613,9 @@ def join_tournament(request, tournament_id, player_id):
         })
     else:
         return JsonResponse({
-            'success': False,
-            'message': _("Tournament is full or you have already joined.")
-        }, status=400)
+            'success': True,
+            'message': 'Tournament is full or you have already joined.'
+        }, status=200)
 
 @login_required
 def quit_tournament(request, tournament_id, player_id):
@@ -582,19 +639,63 @@ def quit_tournament(request, tournament_id, player_id):
     
 @login_required
 def start_tournament(request, tournament_id):
-    tournament = Tournament.objects.get(id=tournament_id)
-    if tournament.creator.user == request.user and tournament.players.count() == 4:
+    try:
+        tournament = Tournament.objects.get(id=tournament_id)
+
+        # Only start if there are enough players
+        if tournament.players.count() < 4:
+            return JsonResponse({
+                'success': False,
+                'message': 'Not enough players to start the tournament.'
+            }, status=200)
+        
+        all_players_online = all(player.is_online for player in tournament.players.all())
+
+        if not all_players_online:
+            return JsonResponse({
+                'success': False,
+                'message': 'Not all players are online.'
+            }, status=400)
+
+        # Randomly shuffle players to generate matchups
+        players = list(tournament.players.all())
+        shuffle(players)
+        game1 = Game.objects.create(game_type=Game.TOURNAMENT_GAME, player1=players[0], player2=players[1], tournament_id=tournament_id)
+        game2 = Game.objects.create(game_type=Game.TOURNAMENT_GAME, player1=players[2], player2=players[3], tournament_id=tournament_id)
+        tournament.games.add(game1)
+        tournament.games.add(game2)
         tournament.status = 'in_progress'
         tournament.save()
+        
         return JsonResponse({
             'success': True,
-            'message': _("Tournament has started!"),
-            'tournament_id': tournament.id
+            'message': 'Tournament started.',
+            'redirect_url': '/tournament/'
         })
-    else:
+
+    except Tournament.DoesNotExist:
         return JsonResponse({
             'success': False,
-            'message': _("You are not the creator or the tournament is not full.")
+            'message': 'Tournament not found.'
+        }, status=400)
+    
+@login_required
+def finish_tournament(request, tournament_id):
+    try:
+        tournament = Tournament.objects.get(id=tournament_id)
+
+        tournament.status = 'completed'
+        tournament.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Tournament finished.',
+            'redirect_url': '/tournament/'
+        })
+    except Tournament.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Tournament not found.'
         }, status=400)
     
 def get_tournament_data(request, tournament_id):
@@ -615,6 +716,3 @@ def tournament_detail(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     # Optionally, add players and other data
     return render(request, 'tournament_detail.html', {'tournament': tournament})
-
-def start_tournament(request):
-    return render(request, 'registration/tournament.html') 

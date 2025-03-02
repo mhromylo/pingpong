@@ -1,6 +1,7 @@
 import Player from "./Player.js";
 import { MapObstacleSquare, Dart } from "./powersAndMaps.js";
 import { loadPage } from './main.js';
+import { fetchNewCSRFToken } from './main.js';
 
 
 var canvas = document.getElementById("myCanvas");
@@ -17,6 +18,25 @@ function setupCanvas() {
       return;
   }
   ctx = canvas.getContext("2d");
+}
+
+function disableButtons() {
+    // Get the buttons by class or ID
+    const buttons = document.querySelectorAll('.startTournamentGame');
+    buttons.forEach((button) => {
+        button.disabled = true;  // Disable the button
+        button.classList.add('disabled');  // Add Bootstrap's 'disabled' class for styling
+    });
+}
+
+// Function to enable the buttons (e.g., when the game ends)
+function enableButtons() {
+    // Get the buttons by class or ID
+    const buttons = document.querySelectorAll('.startTournamentGame');
+    buttons.forEach((button) => {
+        button.disabled = false;  // Enable the button
+        button.classList.remove('disabled');  // Remove the 'disabled' class
+    });
 }
 
 $(document).ready(function ()
@@ -370,6 +390,9 @@ $(document).ready(function ()
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("startTournamentGame")) {
             console.log('Button clicked!');
+
+            disableButtons();
+
             const game_id = event.target.getAttribute('data-game-id');
             const player1_id = event.target.getAttribute('data-player1-id');
             const player2_id = event.target.getAttribute('data-player2-id');
@@ -461,6 +484,7 @@ function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_
         if (data.success) {
             if (data.redirect_url) {
                 fetchNewCSRFToken();
+                enableButtons();
                 loadPage(data.redirect_url); // Dynamically load the login page
             }
             console.log('Game result saved:', data.message);

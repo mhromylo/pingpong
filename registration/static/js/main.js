@@ -16,7 +16,7 @@ async function checkAuth() {
     }
 }
 
-function fetchNewCSRFToken() {
+export function fetchNewCSRFToken() {
     fetch("/get_csrf_token/")
     .then(response => response.json())
     .then(data => {
@@ -59,14 +59,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = html;
 
-                // Extract the content from the response
-                const newContent = tempDiv.querySelector('#content');
-                if (newContent) {
-                    document.getElementById('content').innerHTML = newContent.innerHTML;
-                }
+            // Extract the content from the response
+            const newContent = tempDiv.querySelector('#content');
+            if (newContent) {
+                document.getElementById('content').innerHTML = newContent.innerHTML;
+            }
 
-                if (url === '/game_setup/' || url === '/tournament/')
-                    loadMyCanvasScript();
+            if (url === '/game_setup/' || url === '/tournament/')
+                loadMyCanvasScript();
 
                 // Reattach event listeners for forms after loading new content
                 attachFormEventListeners();
@@ -103,21 +103,22 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error("Error loading page:", error));
     }
 
-    document.querySelectorAll("a.nav-link").forEach(link => {
-        link.addEventListener("click", function (event) {
-            event.preventDefault();
-            const url = this.getAttribute("href").replace("#", ""); // Remove #
-            loadPage(url);
+    function attachFormEventListeners() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', handleFormSubmit);
         });
-    });
-
-    window.addEventListener("popstate", function (event) {
-        if (event.state && event.state.path) {
-            loadPage(event.state.path, false);
+    }
+    function getCSRFToken() {
+        let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
+        if (!csrfToken) {
+            csrfToken = document.cookie.split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
         }
-    });
-
-    function handleFormSubmit(event) {1
+        return csrfToken;
+    }
+    function handleFormSubmit(event) {
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
         const formData = new FormData(form);
@@ -165,29 +166,8 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error submitting form", error);
-            });
-    }
-
-    function attachFormEventListeners() {
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', handleFormSubmit);
         });
     }
-
-    function loadMyCanvasScript() {
-        var existingScript = document.querySelector('script[src="/static/js/myCanvas.js"]');
-        if (existingScript) {
-            existingScript.remove();
-        }
-        var script = document.createElement('script');
-        script.type = 'module';
-        script.src = "/static/js/myCanvas.js";
-        script.onload = function() {};
-        document.head.appendChild(script);
-    }
-
-    loadPage(window.location.pathname);
     
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {
@@ -323,5 +303,31 @@ document.addEventListener("DOMContentLoaded", function () {
             display_name.innerHTML = `<strong>Display Name:</strong> ${data.new_display_name}`;
         }
     }
+
+        
+document.addEventListener("DOMContentLoaded", function () {
+
+    checkAuth();
+    loadPage(window.location.pathname);
+    attachFormEventListeners();
+
+
+    const container = document.getElementById("content");
+
+    document.querySelectorAll("a.nav-link").forEach(link => {
+        link.addEventListener("click", function (event) {
+            event.preventDefault();
+            const url = this.getAttribute("href").replace("#", ""); // Remove #
+            loadPage(url);
+        });
+    });
+
+    window.addEventListener("popstate", function (event) {
+        if (event.state && event.state.path) {
+            loadPage(event.state.path, false);
+        }
+    });
+
+ 
     
 });
