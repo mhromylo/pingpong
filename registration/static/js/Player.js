@@ -59,7 +59,7 @@ export default class Player
 		ctx.closePath();
 	}
 
-	 keyDownHandler(e) {
+	keyDownHandler(e) {
 		if (e.key === this.moveUp || e.key === this.alternateMoveUp) {
 		  this.UpPressed = true;
 		  e.preventDefault();
@@ -69,7 +69,7 @@ export default class Player
 		}
 	   }
 	   
-	 keyUpHandler(e) {
+	keyUpHandler(e) {
 		if (e.key === this.moveUp || e.key === this.alternateMoveUp) {
 		  this.UpPressed = false;
 		} else if (e.key === this.moveDown || e.key === this.alternateMoveDown) {

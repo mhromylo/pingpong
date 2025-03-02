@@ -16,7 +16,7 @@ async function checkAuth() {
     }
 }
 
-function fetchNewCSRFToken() {
+export function fetchNewCSRFToken() {
     fetch("/get_csrf_token/")
     .then(response => response.json())
     .then(data => {
@@ -31,10 +31,52 @@ function fetchNewCSRFToken() {
     .catch(error => console.error("CSRF Token Fetch Error:", error));
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+function loadMyCanvasScript() {
+    var existingScript = document.querySelector('script[src="/static/js/tournament.js"]');
+    if (existingScript) {
+        existingScript.remove();
+    }
+    var script = document.createElement('script');
+    script.type = 'module';
+    script.src = "/static/js/tournament.js";
+    script.onload = function() {};
+    document.head.appendChild(script);
+}
 
-    checkAuth();
+export function loadPage(url, addToHistory = true) {
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
 
+            // Extract the content from the response
+            const newContent = tempDiv.querySelector('#content');
+            if (newContent) {
+                document.getElementById('content').innerHTML = newContent.innerHTML;
+            }
+
+            if (url === '/game_setup/' || url === '/tournament/')
+                loadMyCanvasScript();
+
+            // Reattach event listeners for forms after loading new content
+            attachFormEventListeners();
+            checkAuth();
+            
+            // Add to browser history
+            if (addToHistory) {
+                history.pushState({ path: url }, "", url);
+            }
+        })
+        .catch(error => console.error("Error loading page:", error));
+}
+
+    function attachFormEventListeners() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', handleFormSubmit);
+        });
+    }
     function getCSRFToken() {
         let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
         if (!csrfToken) {
@@ -44,52 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return csrfToken;
     }
-
-    const container = document.getElementById("content");
-
-    function loadPage(url, addToHistory = true) {
-        fetch(url)
-            .then(response => response.text())
-            .then(html => {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-
-                // Extract the content from the response
-                const newContent = tempDiv.querySelector('#content');
-                if (newContent) {
-                    document.getElementById('content').innerHTML = newContent.innerHTML;
-                }
-
-                if (url === '/game_setup/' || url === '/tournament/')
-                    loadMyCanvasScript();
-
-                // Reattach event listeners for forms after loading new content
-                attachFormEventListeners();
-                checkAuth();
-                
-                // Add to browser history
-                if (addToHistory) {
-                    history.pushState({ path: url }, "", url);
-                }
-            })
-            .catch(error => console.error("Error loading page:", error));
-    }
-
-    document.querySelectorAll("a.nav-link").forEach(link => {
-        link.addEventListener("click", function (event) {
-            event.preventDefault();
-            const url = this.getAttribute("href").replace("#", ""); // Remove #
-            loadPage(url);
-        });
-    });
-
-    window.addEventListener("popstate", function (event) {
-        if (event.state && event.state.path) {
-            loadPage(event.state.path, false);
-        }
-    });
-
-    function handleFormSubmit(event) {1
+    function handleFormSubmit(event) {
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
         const formData = new FormData(form);
@@ -140,28 +137,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('An error occurred while processing the request.');
             });
     }
-
-    function attachFormEventListeners() {
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', handleFormSubmit);
-        });
-    }
-
-    function loadMyCanvasScript() {
-        var existingScript = document.querySelector('script[src="/static/js/myCanvas.js"]');
-        if (existingScript) {
-            existingScript.remove();
+    function updatePlayerProfile(data) {
+        let playerNumber = data.player_number;
+        const avatar = document.getElementById(`player${playerNumber}-avatar`);
+        if (avatar) {
+            avatar.src = data[`player${playerNumber}_avatar`];
         }
-        var script = document.createElement('script');
-        script.type = 'module';
-        script.src = "/static/js/myCanvas.js";
-        script.onload = function() {};
-        document.head.appendChild(script);
+        const display_name = document.getElementById(`player${playerNumber}-display-name`);
+        if (display_name) {
+            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
+        }
+        const wins = document.getElementById(`player${playerNumber}-wins`);
+        if (avatar) {
+            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
+        }
+        const losses = document.getElementById(`player${playerNumber}-losses`);
+        if (losses) {
+            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
+        }
+        const id = document.getElementById(`player${playerNumber}-id`);
+        if (id) {
+            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
+        }
     }
-
-    loadPage(window.location.pathname);
-    
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {
             method: 'POST',
@@ -237,29 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
         // Function to update player profile UI
-    function updatePlayerProfile(data) {
-        let playerNumber = data.player_number;
-        const avatar = document.getElementById(`player${playerNumber}-avatar`);
-        if (avatar) {
-            avatar.src = data[`player${playerNumber}_avatar`];
-        }
-        const display_name = document.getElementById(`player${playerNumber}-display-name`);
-        if (display_name) {
-            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
-        }
-        const wins = document.getElementById(`player${playerNumber}-wins`);
-        if (avatar) {
-            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
-        }
-        const losses = document.getElementById(`player${playerNumber}-losses`);
-        if (losses) {
-            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
-        }
-        const id = document.getElementById(`player${playerNumber}-id`);
-        if (id) {
-            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
-        }
-    }
+    
     
 
         // Function to handle display name updates
@@ -270,17 +246,31 @@ document.addEventListener("DOMContentLoaded", function () {
             display_name.innerHTML = `<strong>Display Name:</strong> ${data.new_display_name}`;
         }
     }
-    function updateTablo(data) {
-        let playerNumber = data.player_number;
-        const game1 = document.getElementById(`game1`);
-        if (game1) {
-            display_name.innerHTML = `<strong>Game 1:</strong>  ${data.new_display_name}`;
+
+        
+document.addEventListener("DOMContentLoaded", function () {
+
+    checkAuth();
+    loadPage(window.location.pathname);
+    attachFormEventListeners();
+
+
+    const container = document.getElementById("content");
+
+    document.querySelectorAll("a.nav-link").forEach(link => {
+        link.addEventListener("click", function (event) {
+            event.preventDefault();
+            const url = this.getAttribute("href").replace("#", ""); // Remove #
+            loadPage(url);
+        });
+    });
+
+    window.addEventListener("popstate", function (event) {
+        if (event.state && event.state.path) {
+            loadPage(event.state.path, false);
         }
-    }
+    });
 
  
-    
-
-
     
 });

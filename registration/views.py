@@ -174,7 +174,7 @@ def add_friend(request):
             except Exception as e:
                 return JsonResponse({
                         'success': False,
-                        'message': 'Something went wrong while adding friend.'
+                        'message': 'Something went wrong while adding friend, maybe wrong display_name'
                         }, status=200)
         else:
             return JsonResponse({
@@ -577,9 +577,9 @@ def join_tournament(request, tournament_id, player_id):
         })
     else:
         return JsonResponse({
-            'success': False,
+            'success': True,
             'message': 'Tournament is full or you have already joined.'
-        }, status=400)
+        }, status=200)
 
 @login_required
 def quit_tournament(request, tournament_id, player_id):

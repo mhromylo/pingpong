@@ -13,33 +13,36 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="row">
-                <!-- Players List (Left Side) -->
-                <div class="col-md-6">
-                    <h2 class="card-title">Tournament: {{ tournament.name }}</h2>
+                <!-- Tournament Details (Left Side) -->
+                <div class="col-md-6 mb-4">
+                    <h2 class="card-title">{{ tournament.name }}</h2>
                     <p class="card-text"><strong>Status:</strong> {{ tournament.status }}</p>
                     <p class="card-text" id="player-count"><strong>Players:</strong> {{ tournament.players.count }}/4</p>
-
-                    
+        
                     {% if tournament.status == 'not_started' %}
                     <form id="start-tournament-form" method="POST" action="/start_tournament/{{ tournament.id }}/">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Start Tournament</button>
+                        <button type="submit" class="btn btn-success btn-lg">Start Tournament</button>
                     </form>
                     {% endif %}
+                    
                     {% if tournament.status == 'in_progress' and tournament.winner %}
                     <form id="finish-tournament-form" method="POST" action="/finish_tournament/{{ tournament.id }}/">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Finish Tournament</button>
+                        <button type="submit" class="btn btn-danger btn-lg">Finish Tournament</button>
                     </form>
                     {% endif %}
                 </div>
-                <div class="col-md-6">
+        
+                <!-- Results (Right Side) -->
+                <div class="col-md-6 mb-4">
                     <h5 class="mb-3">Results</h5>
                     <p class="card-text"><strong>Winner:</strong> {{ tournament.winner.display_name }}</p>
-                    <p class="card-text"><strong>2 Place:</strong> {{ tournament.second.display_name }}</p>
-                    <p class="card-text"><strong>3 Place:</strong> {{ tournament.third.display_name }}</p>
-                    <p class="card-text"><strong>4 Place:</strong> {{ tournament.fourth.display_name }}</p>
+                    <p class="card-text"><strong>2nd Place:</strong> {{ tournament.second.display_name }}</p>
+                    <p class="card-text"><strong>3rd Place:</strong> {{ tournament.third.display_name }}</p>
+                    <p class="card-text"><strong>4th Place:</strong> {{ tournament.fourth.display_name }}</p>
                 </div>
+            </div>
         
             <!-- List of Players -->
             <div class="row">
@@ -50,7 +53,7 @@
                         {% for player in tournament.players.all %}
                         <li id="player-{{ player.display_name }}" class="list-group-item d-flex justify-content-between align-items-center p-2">
                             <div class="d-flex align-items-center">
-                                <img src="{{ player.avatar.url }}" alt="{{ player.display_name }}" class="avatar rounded-circle me-2" width="20" height="20">
+                                <img src="{{ player.avatar.url }}" alt="{{ player.display_name }}" class="avatar rounded-circle me-2" width="30" height="30">
                                 <span class="player-name small">{{ player.display_name }}</span>
                             </div>
                             <form id="quit_tournament" method="POST" action="/quit_tournament/{{ tournament.id }}/{{ player.id }}/">
@@ -61,27 +64,27 @@
                         {% endfor %}
                     </ul>
                 </div>
-            
+                
                 <!-- Game Results (Right Side) -->
                 <div class="col-md-6">
                     <h5 class="mb-3">Games</h5>
                     <div id="games" class="p-3 border rounded bg-light">
                         {% for game in tournament.games.all %}
-                            <p class="card-text">
-                                <strong>{{ game.game_type }} :</strong> {{ game.player1.display_name }} VS {{ game.player2.display_name }}
-                                <strong>Scores :</strong> {{ game.player1_score }} VS {{ game.player2_score }}
-                                {% if not game.winner %}
-                                <button class="startTournamentGame btn btn-primary" 
-                                        data-game-id="{{ game.id }}" 
-                                        data-player1-id="{{ game.player1.id }}" 
-                                        data-player2-id="{{ game.player2.id }}">
-                                    Start Game
-                                </button>
-                                {% endif %}
-                                {% if game.winner %}
-                                <p class="card-text" id="game-winner"><strong>Winner:</strong> {{ game.winner }}</p>
-                                {% endif %}
-                            </p>
+                        <p class="card-text">
+                            <strong>{{ game.game_type }}:</strong> {{ game.player1.display_name }} VS {{ game.player2.display_name }}
+                            <strong>Scores:</strong> {{ game.player1_score }} VS {{ game.player2_score }}
+                            {% if not game.winner %}
+                            <button class="startTournamentGame btn btn-primary mt-2"
+                                    data-game-id="{{ game.id }}" 
+                                    data-player1-id="{{ game.player1.id }}" 
+                                    data-player2-id="{{ game.player2.id }}">
+                                Start Game
+                            </button>
+                            {% endif %}
+                            {% if game.winner %}
+                            <p class="card-text mt-2" id="game-winner"><strong>Winner:</strong> {{ game.winner }}</p>
+                            {% endif %}
+                        </p>
                         {% endfor %}
                     </div>
                 </div>
@@ -101,7 +104,6 @@
                     <p id="display_name"><strong>Display Name:</strong> {{ user.profile.display_name }}</p>
                     <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
                     <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
-                    <p type="hidden"><strong>ID:</strong> {{ user.profile.id }}</p>
                     <!-- Update Display Name Form -->
                     <form id="update-tournament-name" method="POST" action="/tournament_name_user/{{ user.profile.id }}/1/" class="mb-3">
                         {% csrf_token %}
@@ -132,7 +134,6 @@
                     <p id="player2-display-name"><strong>Display Name:</strong> {{ request.session.player2.display_name }}</p>
                     <p id="player2-wins"><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
                     <p id="player2-losses"><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
-                    <p id="player2-id" type="hidden"><strong>ID:</strong> {{ request.session.player2.id }}</p>
                     <!-- Login Form for Player 2 -->
                     <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
@@ -148,6 +149,7 @@
                     </form>
 
                     <!-- Update Display Name Form for Player 2 -->
+                      {% if request.session.player2 %}
                     <form id="update-tournament-name-user2" method="POST" action="/tournament_name_user/{{ request.session.player2.id }}/2/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -156,6 +158,7 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Update</button>
                     </form>
+                    {% endif %}
                     {% if tournament %}
                     <form id="second-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player2.id }}/" class="mb-3">
                         {% csrf_token %}
@@ -177,7 +180,6 @@
                     <p id="player3-display-name"><strong>Display Name:</strong> {{ request.session.player3.display_name }}</p>
                     <p id="player3-wins"><strong>Wins:</strong> {{ request.session.player3.wins }}</p>
                     <p id="player3-losses"><strong>Losses:</strong> {{ request.session.player3.losses }}</p>
-                    <p id="player3-id" type="hidden"><strong>ID:</strong> {{ request.session.player3.id }}</p>
                     <!-- Login Form for Player 3 -->
                     <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
@@ -193,6 +195,7 @@
                     </form>
 
                     <!-- Update Display Name Form for Player 2 -->
+                    {% if request.session.player2 %}
                     <form id="update-tournament-name-user3" method="POST" action="/tournament_name_user/{{ request.session.player3.id }}/3/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -202,6 +205,7 @@
                         <button type="submit" class="btn btn-primary w-100">Update</button>
                         
                     </form>
+                    {% endif %}
                     {% if tournament %}
                     <form id="third-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player3.id }}/" class="mb-3">
                         {% csrf_token %}
@@ -223,8 +227,7 @@
                     <p id="player4-display-name"><strong>Display Name:</strong> {{ request.session.player4.display_name }}</p>
                     <p id="player4-wins"><strong>Wins:</strong> {{ request.session.player4.wins }}</p>
                     <p id="player4-losses"><strong>Losses:</strong> {{ request.session.player4.losses }}</p>
-                    <p id="player4-id" type="hidden"><strong>ID:</strong> {{ request.session.player4.id }}</p>
-                    <!-- Login Form for Player 2 -->
+                    <!-- Login Form for Player 4 -->
                     <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -237,8 +240,8 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Log in Player 4</button>
                     </form>
-
-                    <!-- Update Display Name Form for Player 2 -->
+                    {% if request.session.player4 %}
+                    <!-- Update Display Name Form for Player 4 -->
                     <form id="update-tournament-name-user4" method="POST" action="/tournament_name_user/{{ request.session.player4.id }}/4/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -248,6 +251,7 @@
                         <button type="submit" class="btn btn-primary w-100">Update</button>
                        
                     </form>
+                    {% endif %}
                     {% if tournament %}
                     <form id="forth-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player4.id }}/" class="mb-3">
                         {% csrf_token %}
@@ -267,19 +271,9 @@
         <div class="card-body text-center">
             <h5 class="card-title">Game Canvas</h5>
             <canvas id="myCanvas" width="720" height="480" class="mb-3"></canvas>
-            <button id="runButton" class="btn btn-primary">Start Game</button>
         </div>
     </div>
 
-    <!-- 4-Player Game Canvas Section -->
-    <div class="card mb-4">
-        <div class="card-body text-center">
-            <h5 class="card-title">4-Player Game</h5>
-            <canvas id="fourPlayer" width="480" height="480" class="mb-3"></canvas>
-            <button id="runButton4" class="btn btn-primary">Start 4-Player Game</button>
-        </div>
-    </div>
-</div>
 
 <script type="module" src="/static/js/tournament.js"></script>
 
