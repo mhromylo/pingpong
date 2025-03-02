@@ -20,104 +20,104 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 #: registration/templates/layout.html:20
 msgid "Toggle navigation"
-msgstr ""
+msgstr ""                        														# Figure Out Later
 
 #: registration/templates/layout.html:28
 msgid "Update Profile"
-msgstr ""
+msgstr "Ažuriraj Korisnički Račun"
 
 #: registration/templates/layout.html:29
 #: registration/templates/registration/change_password.html:10
 msgid "Change Password"
-msgstr ""
+msgstr "Promijeni Lozinku"
 
 #: registration/templates/layout.html:30
 #: registration/templates/registration/add_friend.html:33
 #: registration/templates/registration/add_friend.html:37
 msgid "Add Friend"
-msgstr ""
+msgstr "Dodaj Prijatelja"
 
 #: registration/templates/layout.html:31
 msgid "Game Setup"
-msgstr ""
+msgstr "Postavi Igru"
 
 #: registration/templates/layout.html:32
 msgid "Tournament"
-msgstr ""
+msgstr "Turnin"
 
 #: registration/templates/layout.html:35
 msgid "Log Out"
-msgstr ""
+msgstr "Izlogiraj Se"
 
 #: registration/templates/layout.html:40
 #: registration/templates/registration/login.html:6
 msgid "Log In"
-msgstr ""
+msgstr "Ulogiraj Se"
 
 #: registration/templates/layout.html:41
 msgid "Register"
-msgstr ""
+msgstr "Registracija"
 
 #: registration/templates/registration/add_friend.html:6
 #: registration/templates/registration/index.html:15
 msgid "Friends:"
-msgstr ""
+msgstr "Prijatelji:"
 
 #: registration/templates/registration/add_friend.html:14
 msgid "Online"
-msgstr ""
+msgstr "Na Mreži"
 
 #: registration/templates/registration/add_friend.html:16
 msgid "Offline"
-msgstr ""
+msgstr "Izvan Mreže"
 
 #: registration/templates/registration/add_friend.html:24
 msgid "Delete"
-msgstr ""
+msgstr "Izbriši"
 
 #: registration/templates/registration/add_friend.html:29
 #: registration/templates/registration/index.html:19
 msgid "No friends added yet."
-msgstr ""
+msgstr "Još nema dodanih prijatelja"
 
 #: registration/templates/registration/change_password.html:6
 msgid "Change password"
-msgstr ""
+msgstr "Promijeni Lozinku"
 
 #: registration/templates/registration/game_result.html:6
 msgid "Game Result"
-msgstr ""
+msgstr "Rezultat Igre"
 
 #: registration/templates/registration/game_result.html:9
 msgid "Winner"
-msgstr ""
+msgstr "Pobjednik"
 
 #: registration/templates/registration/game_result.html:10
 msgid "Start a New Game"
-msgstr ""
+msgstr "Pokreni Novu Igru"
 
 #: registration/templates/registration/game_setup.html:6
 msgid "Set Up Your Game"
-msgstr ""
+msgstr "Postavite Igru"
 
 #: registration/templates/registration/game_setup.html:9
 #: registration/templates/registration/tournament.html:116
 msgid "Player 2 Username:"
-msgstr ""
+msgstr "Ime Igrača br. 2:"
 
 #: registration/templates/registration/game_setup.html:11
 #: registration/templates/registration/tournament.html:120
 msgid "Player 2 Password:"
-msgstr ""
+msgstr "Lozinka Igrača br. 2:"
 
 #: registration/templates/registration/game_setup.html:13
 msgid "Log in second Player"
-msgstr ""
+msgstr "Ulogirajte drugog igrača"
 
 #: registration/templates/registration/game_setup.html:16
 #: registration/templates/registration/index.html:30
 msgid "Player 2 Profile"
-msgstr ""
+msgstr "Profil igrača br. 2"
 
 #: registration/templates/registration/game_setup.html:17
 #: registration/templates/registration/index.html:10
@@ -127,12 +127,12 @@ msgstr ""
 #: registration/templates/registration/tournament.html:153
 #: registration/templates/registration/tournament.html:211
 msgid "Display Name:"
-msgstr ""
+msgstr "Ime na Zaslonu"
 
 #: registration/templates/registration/game_setup.html:18
 #: registration/templates/registration/index.html:9
 msgid "User Avatar"
-msgstr ""
+msgstr "Korisnikova slika"
 
 #: registration/templates/registration/game_setup.html:19
 #: registration/templates/registration/index.html:12
@@ -145,7 +145,7 @@ msgstr ""
 #: registration/templates/registration/tournament.html:154
 #: registration/templates/registration/tournament.html:212
 msgid "Wins:"
-msgstr ""
+msgstr "Pobjede:"
 
 #: registration/templates/registration/game_setup.html:20
 #: registration/templates/registration/index.html:13
@@ -158,29 +158,29 @@ msgstr ""
 #: registration/templates/registration/tournament.html:155
 #: registration/templates/registration/tournament.html:213
 msgid "Losses:"
-msgstr ""
+msgstr "Porazi:"
 
 #: registration/templates/registration/game_setup.html:25
 #: registration/templates/registration/tournament.html:46
 #: registration/templates/registration/tournament.html:269
 msgid "Player 1:"
-msgstr ""
+msgstr "Igrač br. 1:"
 
 #: registration/templates/registration/game_setup.html:27
 #: registration/templates/registration/game_setup.html:58
 #: registration/templates/registration/tournament.html:271
 msgid "Human"
-msgstr ""
+msgstr "Osoba"
 
 #: registration/templates/registration/game_setup.html:28
 #: registration/templates/registration/game_setup.html:59
 #: registration/templates/registration/tournament.html:272
 msgid "AI"
-msgstr ""
+msgstr "UI"
 
 #: registration/templates/registration/game_setup.html:32
 msgid "Player 1 Colour:"
-msgstr ""
+msgstr "Igrač br. 1 Boja:"
 
 #: registration/templates/registration/game_setup.html:34
 #: registration/templates/registration/game_setup.html:47
@@ -189,7 +189,7 @@ msgstr ""
 #: registration/templates/registration/tournament.html:160
 #: registration/templates/registration/tournament.html:218
 msgid "Red"
-msgstr ""
+msgstr "Crvena"
 
 #: registration/templates/registration/game_setup.html:35
 #: registration/templates/registration/game_setup.html:46
@@ -198,7 +198,7 @@ msgstr ""
 #: registration/templates/registration/tournament.html:161
 #: registration/templates/registration/tournament.html:219
 msgid "Green"
-msgstr ""
+msgstr "Zelena"
 
 #: registration/templates/registration/game_setup.html:36
 #: registration/templates/registration/game_setup.html:48
@@ -207,7 +207,7 @@ msgstr ""
 #: registration/templates/registration/tournament.html:162
 #: registration/templates/registration/tournament.html:220
 msgid "Blue"
-msgstr ""
+msgstr "Modra"
 
 #: registration/templates/registration/game_setup.html:37
 #: registration/templates/registration/game_setup.html:49
@@ -216,7 +216,7 @@ msgstr ""
 #: registration/templates/registration/tournament.html:163
 #: registration/templates/registration/tournament.html:221
 msgid "Orange"
-msgstr ""
+msgstr "Narančasta"
 
 #: registration/templates/registration/game_setup.html:38
 #: registration/templates/registration/game_setup.html:50
@@ -225,7 +225,7 @@ msgstr ""
 #: registration/templates/registration/tournament.html:164
 #: registration/templates/registration/tournament.html:222
 msgid "Purple"
-msgstr ""
+msgstr "Ljubičasta"
 
 #: registration/templates/registration/game_setup.html:39
 #: registration/templates/registration/game_setup.html:51
@@ -234,7 +234,7 @@ msgstr ""
 #: registration/templates/registration/tournament.html:165
 #: registration/templates/registration/tournament.html:223
 msgid "Gold"
-msgstr ""
+msgstr "Zlatna"
 
 #: registration/templates/registration/game_setup.html:40
 #: registration/templates/registration/game_setup.html:52
@@ -243,65 +243,65 @@ msgstr ""
 #: registration/templates/registration/tournament.html:166
 #: registration/templates/registration/tournament.html:224
 msgid "Black"
-msgstr ""
+msgstr "Crna"
 
 #: registration/templates/registration/game_setup.html:44
 msgid "Player 2 Colour:"
-msgstr ""
+msgstr "Igrač br. 2 Boja:"
 
 #: registration/templates/registration/game_setup.html:56
 #: registration/templates/registration/tournament.html:93
 msgid "Player 2:"
-msgstr ""
+msgstr "Igrač br. 2:"
 
 #: registration/templates/registration/game_setup.html:64
 msgid "Map:"
-msgstr ""
+msgstr "Karta:"
 
 #: registration/templates/registration/game_setup.html:66
 msgid "Normal"
-msgstr ""
+msgstr "Obična"
 
 #: registration/templates/registration/game_setup.html:67
 msgid "Box"
-msgstr ""
+msgstr "Kutija"
 
 #: registration/templates/registration/game_setup.html:68
 msgid "Two Lines"
-msgstr ""
+msgstr "Dvije Crte"
 
 #: registration/templates/registration/game_setup.html:72
 msgid "Extras:"
-msgstr ""
+msgstr "Dodaci:"
 
 #: registration/templates/registration/game_setup.html:74
 msgid "OFF"
-msgstr ""
+msgstr "BEZ"
 
 #: registration/templates/registration/game_setup.html:75
 msgid "ON"
-msgstr ""
+msgstr "SA"
 
 #: registration/templates/registration/game_setup.html:82
 #: registration/templates/registration/tournament.html:286
 msgid "Start Game"
-msgstr ""
+msgstr "Pokreni Igru"
 
 #: registration/templates/registration/game_setup.html:87
 msgid "Start 4 Player Game"
-msgstr ""
+msgstr "Pokreni Igru za 4 Igrača"
 
 #: registration/templates/registration/index.html:8
 #: registration/templates/registration/index.html:27
 #: registration/templates/registration/index.html:42
 msgid "Welcome,"
-msgstr ""
+msgstr "Dobrodošli,"
 
 #: registration/templates/registration/index.html:11
 #: registration/templates/registration/profile.html:9
 #: registration/templates/registration/register_done.html:9
 msgid "Email:"
-msgstr ""
+msgstr "Email:"
 
 #: registration/templates/registration/index.html:14
 #: registration/templates/registration/index.html:33
@@ -311,102 +311,103 @@ msgstr ""
 #: registration/templates/registration/tournament.html:156
 #: registration/templates/registration/tournament.html:214
 msgid "ID:"
-msgstr ""
+msgstr "ID:"
 
 #: registration/templates/registration/index.html:29
 msgid "Player 2 Avatar"
-msgstr ""
+msgstr "Slika Igrača br. 2"
 
 #: registration/templates/registration/index.html:36
 msgid "Log Out Player 2"
-msgstr ""
+msgstr "Izlogiraj Igrača br. 2"
 
 #: registration/templates/registration/index.html:44
 msgid "Player 3 Avatar"
-msgstr ""
+msgstr "Slika Igrača br. 3"
 
 #: registration/templates/registration/index.html:45
 msgid "Player 3 Profile"
-msgstr ""
+msgstr "Korisnički Račun Igrača br. 3"
 
 #: registration/templates/registration/login.html:10
 msgid "Username"
-msgstr ""
+msgstr "Korisničko ime"
 
 #: registration/templates/registration/login.html:14
 msgid "Password"
-msgstr ""
+msgstr "Lozinka"
 
 #: registration/templates/registration/login.html:17
 msgid "Login"
-msgstr ""
+msgstr "Ulogiraj se"
 
 #: registration/templates/registration/play_game.html:6
 #, python-format
 msgid ""
 "Game Between %(game.player1.user.username)s and "
 "%(game.player2.user.username)s"
-msgstr ""
+msgstr "Igra Između %(game.player1.user.username)s i "
+"%(game.player2.user.username)s"
 
 #: registration/templates/registration/play_game.html:9
 #: registration/templates/registration/play_game.html:11
 msgid "Score:"
-msgstr ""
+msgstr "Rezultat:"
 
 #: registration/templates/registration/play_game.html:13
 msgid "Submit Scores"
-msgstr ""
+msgstr "Predaj Rezultat:"
 
 #: registration/templates/registration/profile.html:7
 #, python-format
 msgid "Welcome, %(user.username)s"
-msgstr ""
+msgstr "Dobrodošli, %(user.username)s"
 
 #: registration/templates/registration/register.html:6
 #: registration/templates/registration/register.html:11
 msgid "Sign up"
-msgstr ""
+msgstr "Prijavi se"
 
 #: registration/templates/registration/register_done.html:7
 #, python-format
 msgid "Welcome, %(user.username)s!"
-msgstr ""
+msgstr "Dobrodošli, %(user.username)s"
 
 #: registration/templates/registration/tournament.html:11
 msgid "Create Tournament"
-msgstr ""
+msgstr "Napravi Turnir"
 
 #: registration/templates/registration/tournament.html:15
 msgid "Tournament:"
-msgstr ""
+msgstr "Turnir:"
 
 #: registration/templates/registration/tournament.html:16
 msgid "Creator:"
-msgstr ""
+msgstr "Stvorio:"
 
 #: registration/templates/registration/tournament.html:17
 msgid "Players:"
-msgstr ""
+msgstr "Igrači:"
 
 #: registration/templates/registration/tournament.html:21
 msgid "Start Tournament"
-msgstr ""
+msgstr "Pokreni Turnir"
 
 #: registration/templates/registration/tournament.html:32
 msgid "Quit Tournament"
-msgstr ""
+msgstr "Napusti Turnir"
 
 #: registration/templates/registration/tournament.html:53
 #: registration/templates/registration/tournament.html:100
 #: registration/templates/registration/tournament.html:158
 #: registration/templates/registration/tournament.html:216
 msgid "Colour:"
-msgstr ""
+msgstr "Boja:"
 
 #: registration/templates/registration/tournament.html:71
 #: registration/templates/registration/tournament.html:130
 msgid "Player Display Name:"
-msgstr ""
+msgstr "Igračevo Ime na Zaslonu"
 
 #: registration/templates/registration/tournament.html:74
 #: registration/templates/registration/tournament.html:133
@@ -414,234 +415,234 @@ msgstr ""
 #: registration/templates/registration/tournament.html:248
 #: registration/templates/registration/update_profile.html:11
 msgid "Update"
-msgstr ""
+msgstr "Ažuriraj"
 
 #: registration/templates/registration/tournament.html:80
 #: registration/templates/registration/tournament.html:139
 #: registration/templates/registration/tournament.html:197
 #: registration/templates/registration/tournament.html:255
 msgid "Join Tournament"
-msgstr ""
+msgstr "Pridruži se Turniru"
 
 #: registration/templates/registration/tournament.html:123
 msgid "Log in Player 2"
-msgstr ""
+msgstr "Ulogiraj Igrača br. 2"
 
 #: registration/templates/registration/tournament.html:151
 msgid "Player 3"
-msgstr ""
+msgstr "Igrač br. 3"
 
 #: registration/templates/registration/tournament.html:173
 msgid "Player 3 Username:"
-msgstr ""
+msgstr "Korisničko Ime Igrača br. 3"
 
 #: registration/templates/registration/tournament.html:177
 msgid "Player 3 Password:"
-msgstr ""
+msgstr "Lozinka Igrača br. 3"
 
 #: registration/templates/registration/tournament.html:180
 msgid "Log in Player 3"
-msgstr ""
+msgstr "Ulogiraj Igrača 3"
 
 #: registration/templates/registration/tournament.html:187
 msgid "Player 3 Display Name:"
-msgstr ""
+msgstr "Igrač br. 3 Ime na Zaslonu"
 
 #: registration/templates/registration/tournament.html:209
 msgid "Player 4"
-msgstr ""
+msgstr "Igrač br. 4"
 
 #: registration/templates/registration/tournament.html:231
 msgid "Player 4 Username:"
-msgstr ""
+msgstr "Korisničko Ime Igrača br. 4"
 
 #: registration/templates/registration/tournament.html:235
 msgid "Player 4 Password:"
-msgstr ""
+msgstr "Lozinka Igrača br. 4"
 
 #: registration/templates/registration/tournament.html:238
 msgid "Log in Player 4"
-msgstr ""
+msgstr "Ulogiraj Igrača 4"
 
 #: registration/templates/registration/tournament.html:245
 msgid "Player 4 Display Name:"
-msgstr ""
+msgstr "Igrač br. 4 Ime na Zaslonu"
 
 #: registration/templates/registration/tournament.html:266
 msgid "Game Settings"
-msgstr ""
+msgstr "Postavke Igre"
 
 #: registration/templates/registration/tournament.html:284
 msgid "Game Canvas"
-msgstr ""
+msgstr "Platno Igre"
 
 #: registration/templates/registration/tournament.html:293
 msgid "4-Player Game"
-msgstr ""
+msgstr "Igra za 4 Igrača"
 
 #: registration/templates/registration/tournament.html:295
 msgid "Start 4-Player Game"
-msgstr ""
+msgstr "Pokreni Igru za 4 Igrača"
 
 #: registration/templates/registration/update_profile.html:6
 msgid "Update profile"
-msgstr ""
+msgstr "Ažuriraj korisnički račun"
 
 #: registration/views.py:42
 msgid "Language has been changed"
-msgstr ""
+msgstr "Promijenili ste jezik"
 
 #: registration/views.py:55
 msgid "Missing language_code"
-msgstr ""
+msgstr "Nedostaje language_code"
 
 #: registration/views.py:56 registration/views.py:321
 msgid "Invalid request"
-msgstr ""
+msgstr "Nevaljan zahtjev"
 
 #: registration/views.py:79 registration/views.py:81
 msgid "Account created, you can now login"
-msgstr ""
+msgstr "Račun je stvoren, možete se ulogirati"
 
 #: registration/views.py:86
 msgid "There was an error, please try again later"
-msgstr ""
+msgstr "Došlo je do greške, molimo pokušajte kasnije"
 
 #: registration/views.py:102
 msgid "You are now logged in"
-msgstr ""
+msgstr "Ulogirani ste"
 
 #: registration/views.py:107
 msgid "Invalid username or password"
-msgstr ""
+msgstr "Netočno korisničko ime ili lozinka"
 
 #: registration/views.py:118
 msgid "See you later!"
-msgstr ""
+msgstr "Vidimo se!"
 
 #: registration/views.py:135
 msgid "Your account has been updated!"
-msgstr ""
+msgstr "Vaš korisnički račun je ažuriran!"
 
 #: registration/views.py:141
 msgid "Your account has not been updated!"
-msgstr ""
+msgstr "Vaš korisnički račun NIJE ažuriran!"
 
 #: registration/views.py:168
 msgid "Your password was successfully updated!"
-msgstr ""
+msgstr "Uspješno ste ažurirali lozinku!"
 
 #: registration/views.py:174 registration/views.py:217
 msgid "Please correct the error in the form.!"
-msgstr ""
+msgstr "Molimo Vas da ispravite grešku u formularu."
 
 #: registration/views.py:194
 msgid "You cannot add yourself as a friend."
-msgstr ""
+msgstr "Ne možete sebe dodati za prijatelja."
 
 #: registration/views.py:199
 msgid "You are already friends.."
-msgstr ""
+msgstr "Već ste prijatelji."
 
 #: registration/views.py:206
 msgid "You are now friends"
-msgstr ""
+msgstr "Postali ste prijatelji"
 
 #: registration/views.py:212
 msgid "Something went wrong while adding friend."
-msgstr ""
+msgstr "Nešto je pošlo po krivu pri dodavanju prijatelja."
 
 #: registration/views.py:232
 msgid "You are now not friends more"
-msgstr ""
+msgstr "Više niste prijatelji"
 
 #: registration/views.py:238
 msgid "Wrong request"
-msgstr ""
+msgstr "Krivi zahtjev"
 
 #: registration/views.py:261
 msgid "You cannot play against yourself."
-msgstr ""
+msgstr "Ne možete igrati protiv sebe"
 
 #: registration/views.py:271
 msgid "Second player logined"
-msgstr ""
+msgstr "Drugi igrač ulogiran"
 
 #: registration/views.py:277
 msgid "Wrong credentials for Player 2"
-msgstr ""
+msgstr "Krivi podaci za Igrača br. 2"
 
 #: registration/views.py:285
 msgid "Player 2 has been logged out."
-msgstr ""
+msgstr "Igrač br. 2 se je izlogirao"
 
 #: registration/views.py:287
 msgid "No Player 2 is currently logged in."
-msgstr ""
+msgstr "Igrač br. 2 trenutno nije ulogiran"
 
 #: registration/views.py:304 registration/views.py:318
 msgid "Game result saved successfully!"
-msgstr ""
+msgstr "Rezultat uspješno spremljen"
 
 #: registration/views.py:330
 msgid "Display name is required."
-msgstr ""
+msgstr "Potrebno je unesti ime na zaslonu"
 
 #: registration/views.py:337
 msgid "Invalid player id format."
-msgstr ""
+msgstr "Nevaljan format identifikacije igrača"
 
 #: registration/views.py:374
 msgid "Display name updated successfully."
-msgstr ""
+msgstr "Uspješno ste ažurirali ime na zaslonu"
 
 #: registration/views.py:382 registration/views.py:430
 #: registration/views.py:467 registration/views.py:504
 #: registration/views.py:538
 msgid "Invalid request method."
-msgstr ""
+msgstr "Nevaljana metoda zahtjeva"
 
 #: registration/views.py:413
 msgid "Player 2 logged in successfully."
-msgstr ""
+msgstr "Igrač br. 2 se je uspješno ulogirao."
 
 #: registration/views.py:426 registration/views.py:463
 #: registration/views.py:500
 msgid "Invalid username or password."
-msgstr ""
+msgstr "Nevaljano korisničko ime ili lozinka."
 
 #: registration/views.py:450
 msgid "Player 3 logged in successfully."
-msgstr ""
+msgstr "Igrač br. 3 se je uspješno ulogirao."
 
 #: registration/views.py:487
 msgid "Player 4 logged in successfully."
-msgstr ""
+msgstr "Igrač br. 4 se je uspješno ulogirao."
 
 #: registration/views.py:525
 msgid "Tournament created successfully!"
-msgstr ""
+msgstr "Turnir uspješno stvoren"
 
 #: registration/views.py:531
 msgid "There was an error creating the tournament."
-msgstr ""
+msgstr "Došlo je do greške pri stvaranju turnira"
 
 #: registration/views.py:560
 msgid "Tournament is full or you have already joined."
-msgstr ""
+msgstr "Turnir je pun ili ste mu se već pridruži"
 
 #: registration/views.py:580
 msgid "Tournament already started."
-msgstr ""
+msgstr "Turnir je već započeo."
 
 #: registration/views.py:591
 msgid "Tournament has started!"
-msgstr ""
+msgstr "Turnir je već započeo!"
 
 #: registration/views.py:597
 msgid "You are not the creator or the tournament is not full."
-msgstr ""
+msgstr "Turnir niste stvorili Vi ili nije pun."
 
 #: registration/views.py:612
 msgid "Tournament not found"
-msgstr ""
+msgstr "Turnir nije pronađen"
