@@ -1,0 +1,93 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div id="content">
+    {% load i18n %}
+    <h1>{% trans "Set Up Your Game" %}</h1>
+    <form method="POST" action="{% url 'game_setup' %}">
+        {% csrf_token %}
+        <label for="username">{% trans "Player 2 Username:" %}</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">{% trans "Player 2 Password:" %}</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">{% trans "Log in second Player" %}</button>
+    </form>
+    {% if request.session.player2 %}
+        <h3>{% trans "Player 2 Profile" %}</h3>
+        <p>{% trans "Display Name:" %} {{ request.session.player2.display_name }}</p>
+        <img id="player2-avatar" src="{{ request.session.player2.avatar.url }}" alt="{% trans 'User Avatar' %}" class="avatar">
+        <p>{% trans "Wins:" %} {{ request.session.player2.wins }}</p>
+        <p>{% trans "Losses:" %} {{ request.session.player2.losses }}</p>
+    {% endif %}
+
+    <div class="menu-container">
+        <div class="menu">
+            <label for="player1Type">{% trans "Player 1:" %}</label>
+            <select id="player1Type">
+                <option value="human">{% trans "Human" %}</option>
+                <option value="ai">{% trans "AI" %}</option>
+            </select>
+        </div>
+        <div class="menu">
+            <label for="player1Colour">{% trans "Player 1 Colour:" %}</label>
+            <select id="player1Colour">
+                <option value="red">{% trans "Red" %}</option>
+                <option value="green">{% trans "Green" %}</option>
+                <option value="blue">{% trans "Blue" %}</option>
+                <option value="orange">{% trans "Orange" %}</option>
+                <option value="purple">{% trans "Purple" %}</option>
+                <option value="gold">{% trans "Gold" %}</option>
+                <option value="black">{% trans "Black" %}</option>
+            </select>
+        </div>
+        <div class="menu">
+            <label for="player2Colour">{% trans "Player 2 Colour:" %}</label>
+            <select id="player2Colour">
+                <option value="green">{% trans "Green" %}</option>
+                <option value="red">{% trans "Red" %}</option>
+                <option value="blue">{% trans "Blue" %}</option>
+                <option value="orange">{% trans "Orange" %}</option>
+                <option value="purple">{% trans "Purple" %}</option>
+                <option value="gold">{% trans "Gold" %}</option>
+                <option value="black">{% trans "Black" %}</option>
+            </select>
+        </div>
+        <div class="menu">
+            <label for="player2Type">{% trans "Player 2:" %}</label>
+            <select id="player2Type">
+                <option value="human">{% trans "Human" %}</option>
+                <option value="ai">{% trans "AI" %}</option>
+            </select>
+        </div>
+    </div>
+    <div class="menu">
+        <label for="chosenMap">{% trans "Map:" %}</label>
+        <select id="chosenMap">
+            <option value="normal">{% trans "Normal" %}</option>
+            <option value="box">{% trans "Box" %}</option>
+            <option value="twoLines">{% trans "Two Lines" %}</option>
+        </select>
+    </div>
+    <div class="menu">
+        <label for="extrasAreOn">{% trans "Extras:" %}</label>
+        <select id="extrasAreOn">
+            <option value="OFF">{% trans "OFF" %}</option>
+            <option value="ON">{% trans "ON" %}</option>
+        </select>
+    </div>
+
+    <!-- Game Canvas Section -->
+    <div class="game-canvas">
+        <canvas id="myCanvas" width="720" height="480"></canvas>
+        <button id="runButton" class="btn btn-primary">{% trans "Start Game" %}</button>
+    </div>
+
+    <div class="game-canvas">
+        <canvas id="fourPlayer" width="480" height="480"></canvas>
+        <button id="runButton4" class="btn btn-primary">{% trans "Start 4 Player Game" %}</button>
+    </div>
+</div>
+
+<script type="module" src="/static/js/myCanvas.js"></script>
+
+{% endblock %}

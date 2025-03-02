@@ -51,6 +51,7 @@ path('logout/', views.user_logout, name='logout'),
     path('delete_friend/<int:f_id>/', views.delete_friend, name='delete_friend'),
 
     path('game_setup/', views.game_setup, name='game_setup'),
+    path('multi_game_setup/', views.multi_game_setup, name='multi_game_setup'),
 
     path('logout_player2/', views.logout_player2, name='logout_player2'),
     path('save_game_result/', views.save_game_result, name='save_game_result'),

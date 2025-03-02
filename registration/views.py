@@ -279,6 +279,36 @@ def game_setup(request):
                         }, status=200)
     return render(request, 'registration/game_setup.html', {})
 
+@login_required
+def multi_game_setup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user2 = authenticate(request, username=username, password=password)
+        if user2:
+            player1 = Profile.objects.get(user=request.user)
+            player2 = Profile.objects.get(user=user2)
+            if player1 == player2:
+                return JsonResponse({'success': False, 'message': _("You cannot play against yourself.")})
+            request.session['player2'] = {
+                'display_name': player2.display_name,
+                'avatar_url': player2.avatar.url if player2.avatar else '',
+                'wins': player2.wins,
+                'losses': player2.losses,
+                'id': player2.id,
+            }
+            return JsonResponse({
+                        'success': True,
+                        'message': _("Second player logined"),
+                        'redirect_url': '/multi_game_setup/'
+                        }, status=200)
+        else:
+            return JsonResponse({
+                        'success': False,
+                        'message': _("Wrong credentials for Player 2"),
+                        }, status=200)
+    return render(request, 'registration/multi_game_setup.html', {})
+
 
 def logout_player2(request):
     if 'player2' in request.session:
