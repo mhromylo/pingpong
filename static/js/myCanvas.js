@@ -5,7 +5,6 @@ var canvas = document.getElementById("myCanvas");
 var ctx;
 let mapObstacleSquares = [];
 let dartsFlying = [];
-let powerupsOnMap = [];
 let currentMap;
 let extrasAreOn;
 
@@ -35,8 +34,6 @@ $(document).ready(function ()
 
       const paddleHeight = 100; // Side paddle height
       const paddleWidth = 10; // Side paddle width
-
-	 const powerupHeight = 30;
 
       let interval;
 
@@ -109,14 +106,14 @@ $(document).ready(function ()
         } else if (x - ballRadius < 0) {
           player2.score++;
           resetBall();
-          if (player2.score >= 20) {
+          if (player2.score === 3) {
             alert("GAME OVER\n\nPLAYER 2 WINS");
             clearInterval(interval);
           }
         } else if (x + ballRadius > canvas.width) {
           player1.score++;
           resetBall();
-          if (player1.score >= 20) {
+          if (player1.score === 3) {
             alert("GAME OVER\n\nPLAYER 1 WINS");
             clearInterval(interval);
           }
@@ -162,7 +159,7 @@ $(document).ready(function ()
 	 function dartsHitThings() {
 		let dartsToRemove = [];
 	 
-		for (let i = dartsFlying.length - 1; i >= 0; i--) {  //this can be rewritten to be in the other file if we have time, the classes are passed by reference in JavaScript
+		for (let i = dartsFlying.length - 1; i >= 0; i--) {
 		    if (dartsFlying[i].dartHitPlayer(player1.paddleX, player1.paddleY, player1.paddleWidth, player1.paddleHeight) && dartsFlying[i].player !== player1) {
 			   player1.score -= 0.5;
 			   dartsToRemove.push(i);
@@ -172,53 +169,10 @@ $(document).ready(function ()
 			   dartsToRemove.push(i);
 		    }
 		}
+	 
+		// Remove marked darts **after** loop (to avoid skipping elements)
 		for (let index of dartsToRemove) {
 		    dartsFlying.splice(index, 1);
-		}
-		dartsToRemove = [];
-
-		for (let i = 0; i < dartsFlying.length; i++)
-		{
-			let j = i+1;
-			while (j < dartsFlying.length)
-			{
-				if (dartsFlying[i].dartHitDart(dartsFlying[j]))
-				{
-					dartsToRemove.push(i);
-					dartsToRemove.push(j);
-					let temp = dartsFlying[i].player.score;
-					dartsFlying[i].player.score = dartsFlying[j].player.score;
-					dartsFlying[j].player.score = temp;
-					for (let k = dartsToRemove.length - 1; k >= 0; k--) {
-					    dartsFlying.splice(k, 1);
-					}
-					break;
-				}
-				j++;
-			}
-		}
-		dartsToRemove = [];
-
-		for (let i = dartsFlying.length - 1; i >= 0; i--)
-		{
-			for (let j = 0; j < mapObstacleSquares.length; j++)
-			{
-				if (dartsFlying[i].dartHitMapObstacle(mapObstacleSquares[j]))
-				{
-					dartsFlying.splice(i, 1);
-					break;
-				}
-			}
-		}
-
-		for (let i = dartsFlying.length - 1; i >= 0; i--)
-		{
-			if (dartsFlying[i].dartHitBall(x, y, ballRadius))
-			{
-				dartsFlying[i].player.score -= 0.5;
-				dartsFlying.splice(i, 1);
-			}
-		
 		}
 	 }
 	 
@@ -305,7 +259,6 @@ $(document).ready(function ()
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 	   mapObstacleSquares = [];
 	   dartsFlying = [];
-	   powerupsOnMap = [];
 
 
         x = canvas.width / 2;
@@ -346,8 +299,8 @@ $(document).ready(function ()
         const player1Colour = document.getElementById("player1Colour").value;
         const player2Colour = document.getElementById("player2Colour").value;
         const player2Type = document.getElementById("player2Type").value;
-        const chosenMap = document.getElementById("chosenMap").value;
-        const extrasOnOff = document.getElementById("extrasAreOn").value;
+	   const chosenMap = document.getElementById("chosenMap").value;
+	   const extrasOnOff = document.getElementById("extrasAreOn").value;
       
         console.log("Game Starting...");
         console.log("Player 1 Type:", player1Type);
