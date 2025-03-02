@@ -31,24 +31,33 @@ export function fetchNewCSRFToken() {
     .catch(error => console.error("CSRF Token Fetch Error:", error));
 }
 
-function loadMyCanvasScript() {
-    var existingScript = document.querySelector('script[src="/static/js/tournament.js"]');
-    if (existingScript) {
-        existingScript.remove();
-    }
-    var script = document.createElement('script');
-    script.type = 'module';
-    script.src = "/static/js/tournament.js";
-    script.onload = function() {};
-    document.head.appendChild(script);
-}
+document.addEventListener("DOMContentLoaded", function () {
 
-export function loadPage(url, addToHistory = true) {
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
+    checkAuth();
+
+    function getCSRFToken() {
+        let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
+        if (!csrfToken) {
+            csrfToken = document.cookie.split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+        }
+        return csrfToken;
+    }
+
+    const container = document.getElementById("content");
+
+    function loadPage(url, addToHistory = true, additionalParam = null) {
+        if (additionalParam) {
+            const urlObj = new URL(url, window.location.origin);
+            urlObj.searchParams.append('language_code', additionalParam);
+            url = urlObj.toString();
+        }
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
 
             // Extract the content from the response
             const newContent = tempDiv.querySelector('#content');
@@ -59,17 +68,40 @@ export function loadPage(url, addToHistory = true) {
             if (url === '/game_setup/' || url === '/tournament/')
                 loadMyCanvasScript();
 
-            // Reattach event listeners for forms after loading new content
-            attachFormEventListeners();
-            checkAuth();
-            
-            // Add to browser history
-            if (addToHistory) {
-                history.pushState({ path: url }, "", url);
-            }
-        })
-        .catch(error => console.error("Error loading page:", error));
-}
+                // Reattach event listeners for forms after loading new content
+                attachFormEventListeners();
+                checkAuth();
+                
+                // Add to browser history
+                if (addToHistory) {
+                    history.pushState({ path: url }, "", url);
+                }
+            })
+            .catch(error => console.error("Error loading page:", error));
+    }
+
+    function loadNavbar(url, additionalParam = null) {
+        if (additionalParam) {
+            const urlObj = new URL(url, window.location.origin);
+            urlObj.searchParams.append('language_code', additionalParam);
+            url = urlObj.toString();
+        }
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+
+                // Extract the content from the response
+                const newContent = tempDiv.querySelector('#navbarNav');
+                if (newContent) {
+                    document.getElementById('navbarNav').innerHTML = newContent.innerHTML;
+                }
+
+                checkAuth();
+            })
+            .catch(error => console.error("Error loading page:", error));
+    }
 
     function attachFormEventListeners() {
         const forms = document.querySelectorAll('form');
@@ -96,7 +128,7 @@ export function loadPage(url, addToHistory = true) {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest' // Indicate this is an AJAX request
+                'X-Requested-With': 'XMLHttpRequest', // Indicate this is an AJAX request
             },
             body: formData
         })
@@ -134,32 +166,9 @@ export function loadPage(url, addToHistory = true) {
             })
             .catch(error => {
                 console.error("Error submitting form", error);
-                alert('An error occurred while processing the request.');
-            });
+        });
     }
-    function updatePlayerProfile(data) {
-        let playerNumber = data.player_number;
-        const avatar = document.getElementById(`player${playerNumber}-avatar`);
-        if (avatar) {
-            avatar.src = data[`player${playerNumber}_avatar`];
-        }
-        const display_name = document.getElementById(`player${playerNumber}-display-name`);
-        if (display_name) {
-            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
-        }
-        const wins = document.getElementById(`player${playerNumber}-wins`);
-        if (avatar) {
-            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
-        }
-        const losses = document.getElementById(`player${playerNumber}-losses`);
-        if (losses) {
-            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
-        }
-        const id = document.getElementById(`player${playerNumber}-id`);
-        if (id) {
-            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
-        }
-    }
+    
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {
             method: 'POST',
@@ -179,7 +188,6 @@ export function loadPage(url, addToHistory = true) {
             })
             .catch(error => {
                 console.error("Error joining tournament:", error);
-                alert('An error occurred while joining the tournament.');
             });
     }
     
@@ -229,13 +237,62 @@ export function loadPage(url, addToHistory = true) {
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while processing the request.');
                 });
         });
     }
+
+    $(document).on("change", "#language-select", function () {
+        let selectedLanguage = this.value;
+        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        console.log(selectedLanguage);
+        fetch("/set_language/", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest' // Indicate this is an AJAX request
+            },
+            body: new URLSearchParams({
+                "language_code": selectedLanguage,
+                "next": window.location.pathname
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.success) {
+                loadNavbar("/layout/", selectedLanguage)
+                loadPage(data.redirect_url);
+            } else {
+                console.error("Language change failed.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
     
-        // Function to update player profile UI
-    
+    // Function to update player profile UI
+    function updatePlayerProfile(data) {
+        let playerNumber = data.player_number;
+        const avatar = document.getElementById(`player${playerNumber}-avatar`);
+        if (avatar) {
+            avatar.src = data[`player${playerNumber}_avatar`];
+        }
+        const display_name = document.getElementById(`player${playerNumber}-display-name`);
+        if (display_name) {
+            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
+        }
+        const wins = document.getElementById(`player${playerNumber}-wins`);
+        if (avatar) {
+            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
+        }
+        const losses = document.getElementById(`player${playerNumber}-losses`);
+        if (losses) {
+            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
+        }
+        const id = document.getElementById(`player${playerNumber}-id`);
+        if (id) {
+            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
+        }
+    }
     
 
         // Function to handle display name updates

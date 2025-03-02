@@ -1,22 +1,22 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    
 <div id="content">
+    {% load i18n %}
     {% if user.is_authenticated %}
         <div id="profile" class="profile-info">
-            <h2>Welcome, {{ user.username }}</h2>
-            <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar">
-            <p><strong>Display Name:</strong> {{ user.profile.display_name }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
-            <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
-            <p><strong>ID:</strong> {{ user.profile.id }}</p>
-            <p><strong>Friends:</strong> 
+            <h2>{% trans "Welcome," %} {{ user.username }}</h2>
+            <img src="{{ user.profile.avatar.url }}" alt="{% trans 'User Avatar' %}" class="avatar">
+            <p><strong>{% trans 'Display Name:' %}</strong> {{ user.profile.display_name }}</p>
+            <p><strong>{% trans 'Email:' %}</strong> {{ user.email }}</p>
+            <p><strong>{% trans 'Wins:' %}</strong> {{ user.profile.wins }}</p>
+            <p><strong>{% trans 'Losses:' %}</strong> {{ user.profile.losses }}</p>
+            <p><strong>{% trans 'ID:' %}</strong> {{ user.profile.id }}</p>
+            <p><strong>{% trans 'Friends:' %}</strong> 
                 {% for f in user.profile.friends.all %}
                     {{ f.display_name }}{% if not forloop.last %}, {% endif %}
                 {% empty %}
-                    No friends added yet.
+                    {% trans 'No friends added yet.' %}
                 {% endfor %}
             </p>
         </div>
@@ -24,5 +24,4 @@
     
 
 </div>
-
 {% endblock %}

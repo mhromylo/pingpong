@@ -1,0 +1,658 @@
+# Bəzi təsviri başlıq.
+# Müəlliflik hüququ (C) PAKETİN müəlliflik hüququ sahibi
+# Bu fayl PAKET paketi ilə eyni lisenziya altında paylanır.
+# İLK MÜƏLLİF <EMAIL@ADDRESS>, İL.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PAKET VERSİYASI\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-23 16:51+0000\n"
+"PO-Revision-Date: İL-AY-GÜN SAAT:DƏQ+ZONA\n"
+"Last-Translator: TAM AD <EMAIL@ADDRESS>\n"
+"Language-Team: DİL <LL@li.org>\n"
+"Language: az\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: registration/templates/layout.html:20
+msgid "Toggle navigation"
+msgstr "Navigasiyanı dəyişdir"
+
+#: registration/templates/layout.html:28
+msgid "Update Profile"
+msgstr "Profili yenilə"
+
+#: registration/templates/layout.html:29
+#: registration/templates/registration/change_password.html:11
+msgid "Change Password"
+msgstr "Şifrəni dəyiş"
+
+#: registration/templates/layout.html:30
+#: registration/templates/registration/add_friend.html:34
+#: registration/templates/registration/add_friend.html:38
+msgid "Add Friend"
+msgstr "Dost əlavə et"
+
+#: registration/templates/layout.html:31
+msgid "Game Setup"
+msgstr "Oyun quraşdırması"
+
+#: registration/templates/layout.html:32
+msgid "Tournament"
+msgstr "Turnir"
+
+#: registration/templates/layout.html:35
+msgid "Log Out"
+msgstr "Çıxış"
+
+#: registration/templates/layout.html:40
+#: registration/templates/registration/login.html:7
+msgid "Log In"
+msgstr "Giriş"
+
+#: registration/templates/layout.html:41
+msgid "Register"
+msgstr "Qeydiyyat"
+
+#: registration/templates/registration/add_friend.html:7
+#: registration/templates/registration/index.html:16
+msgid "Friends:"
+msgstr "Dostlar:"
+
+#: registration/templates/registration/add_friend.html:15
+msgid "Online"
+msgstr "Onlayn"
+
+#: registration/templates/registration/add_friend.html:17
+msgid "Offline"
+msgstr "Oflayn"
+
+#: registration/templates/registration/add_friend.html:25
+msgid "Delete"
+msgstr "Sil"
+
+#: registration/templates/registration/add_friend.html:30
+#: registration/templates/registration/index.html:20
+msgid "No friends added yet."
+msgstr "Hələ dost əlavə edilməyib."
+
+#: registration/templates/registration/change_password.html:7
+msgid "Change password"
+msgstr "Şifrəni dəyiş"
+
+#: registration/templates/registration/game_result.html:7
+msgid "Game Result"
+msgstr "Oyun nəticəsi"
+
+#: registration/templates/registration/game_result.html:10
+#, python-format
+msgid ""
+"\n"
+"    <h2>Winner:</h2>\n"
+"    "
+msgstr ""
+"\n"
+"    <h2>Qalib:</h2>\n"
+"    "
+
+#: registration/templates/registration/game_result.html:13
+msgid "Start a New Game"
+msgstr "Yeni oyuna başla"
+
+#: registration/templates/registration/game_setup.html:7
+msgid "Set Up Your Game"
+msgstr "Oyununuzu quraşdırın"
+
+#: registration/templates/registration/game_setup.html:10
+#: registration/templates/registration/tournament.html:114
+msgid "Player 2 Username:"
+msgstr "2-ci oyunçunun istifadəçi adı:"
+
+#: registration/templates/registration/game_setup.html:12
+#: registration/templates/registration/tournament.html:118
+msgid "Player 2 Password:"
+msgstr "2-ci oyunçunun şifrəsi:"
+
+#: registration/templates/registration/game_setup.html:14
+msgid "Log in second Player"
+msgstr "İkinci oyunçunu daxil edin"
+
+#: registration/templates/registration/game_setup.html:17
+#: registration/templates/registration/index.html:31
+msgid "Player 2 Profile"
+msgstr "2-ci oyunçunun profili"
+
+#: registration/templates/registration/game_setup.html:18
+#: registration/templates/registration/index.html:11
+#: registration/templates/registration/profile.html:9
+#: registration/templates/registration/register_done.html:9
+#: registration/templates/registration/tournament.html:46
+#: registration/templates/registration/tournament.html:151
+#: registration/templates/registration/tournament.html:209
+msgid "Display Name:"
+msgstr "Görünən ad:"
+
+#: registration/templates/registration/game_setup.html:19
+#: registration/templates/registration/index.html:10
+msgid "User Avatar"
+msgstr "İstifadəçi avatarı"
+
+#: registration/templates/registration/game_setup.html:20
+#: registration/templates/registration/index.html:13
+#: registration/templates/registration/index.html:32
+#: registration/templates/registration/index.html:47
+#: registration/templates/registration/profile.html:11
+#: registration/templates/registration/register_done.html:11
+#: registration/templates/registration/tournament.html:47
+#: registration/templates/registration/tournament.html:94
+#: registration/templates/registration/tournament.html:152
+#: registration/templates/registration/tournament.html:210
+msgid "Wins:"
+msgstr "Qələbələr:"
+
+#: registration/templates/registration/game_setup.html:21
+#: registration/templates/registration/index.html:14
+#: registration/templates/registration/index.html:33
+#: registration/templates/registration/index.html:48
+#: registration/templates/registration/profile.html:12
+#: registration/templates/registration/register_done.html:12
+#: registration/templates/registration/tournament.html:48
+#: registration/templates/registration/tournament.html:95
+#: registration/templates/registration/tournament.html:153
+#: registration/templates/registration/tournament.html:211
+msgid "Losses:"
+msgstr "Məğlubiyyətlər:"
+
+#: registration/templates/registration/game_setup.html:26
+#: registration/templates/registration/tournament.html:44
+#: registration/templates/registration/tournament.html:267
+msgid "Player 1:"
+msgstr "1-ci oyunçu:"
+
+#: registration/templates/registration/game_setup.html:28
+#: registration/templates/registration/game_setup.html:59
+#: registration/templates/registration/tournament.html:269
+msgid "Human"
+msgstr "İnsan"
+
+#: registration/templates/registration/game_setup.html:29
+#: registration/templates/registration/game_setup.html:60
+#: registration/templates/registration/tournament.html:270
+msgid "AI"
+msgstr "Süni intellekt"
+
+#: registration/templates/registration/game_setup.html:33
+msgid "Player 1 Colour:"
+msgstr "Oyunçu 1 Rəngi:"
+
+#: registration/templates/registration/game_setup.html:35
+#: registration/templates/registration/game_setup.html:48
+#: registration/templates/registration/tournament.html:53
+#: registration/templates/registration/tournament.html:100
+#: registration/templates/registration/tournament.html:158
+#: registration/templates/registration/tournament.html:216
+msgid "Red"
+msgstr "Qırmızı"
+
+#: registration/templates/registration/game_setup.html:36
+#: registration/templates/registration/game_setup.html:47
+#: registration/templates/registration/tournament.html:54
+#: registration/templates/registration/tournament.html:101
+#: registration/templates/registration/tournament.html:159
+#: registration/templates/registration/tournament.html:217
+msgid "Green"
+msgstr "Yaşıl"
+
+#: registration/templates/registration/game_setup.html:37
+#: registration/templates/registration/game_setup.html:49
+#: registration/templates/registration/tournament.html:55
+#: registration/templates/registration/tournament.html:102
+#: registration/templates/registration/tournament.html:160
+#: registration/templates/registration/tournament.html:218
+msgid "Blue"
+msgstr "Mavi"
+
+#: registration/templates/registration/game_setup.html:38
+#: registration/templates/registration/game_setup.html:50
+#: registration/templates/registration/tournament.html:56
+#: registration/templates/registration/tournament.html:103
+#: registration/templates/registration/tournament.html:161
+#: registration/templates/registration/tournament.html:219
+msgid "Orange"
+msgstr "Narıncı"
+
+#: registration/templates/registration/game_setup.html:39
+#: registration/templates/registration/game_setup.html:51
+#: registration/templates/registration/tournament.html:57
+#: registration/templates/registration/tournament.html:104
+#: registration/templates/registration/tournament.html:162
+#: registration/templates/registration/tournament.html:220
+msgid "Purple"
+msgstr "Bənövşəyi"
+
+#: registration/templates/registration/game_setup.html:40
+#: registration/templates/registration/game_setup.html:52
+#: registration/templates/registration/tournament.html:58
+#: registration/templates/registration/tournament.html:105
+#: registration/templates/registration/tournament.html:163
+#: registration/templates/registration/tournament.html:221
+msgid "Gold"
+msgstr "Qızılı"
+
+#: registration/templates/registration/game_setup.html:41
+#: registration/templates/registration/game_setup.html:53
+#: registration/templates/registration/tournament.html:59
+#: registration/templates/registration/tournament.html:106
+#: registration/templates/registration/tournament.html:164
+#: registration/templates/registration/tournament.html:222
+msgid "Black"
+msgstr "Qara"
+
+#: registration/templates/registration/game_setup.html:45
+msgid "Player 2 Colour:"
+msgstr "Oyunçu 2 Rəngi:"
+
+#: registration/templates/registration/game_setup.html:57
+#: registration/templates/registration/tournament.html:91
+msgid "Player 2:"
+msgstr "Oyunçu 2:"
+
+#: registration/templates/registration/game_setup.html:65
+msgid "Map:"
+msgstr "Xəritə:"
+
+#: registration/templates/registration/game_setup.html:67
+msgid "Normal"
+msgstr "Normal"
+
+#: registration/templates/registration/game_setup.html:68
+msgid "Box"
+msgstr "Qutu"
+
+#: registration/templates/registration/game_setup.html:69
+msgid "Two Lines"
+msgstr "İki Xətt"
+
+#: registration/templates/registration/game_setup.html:73
+msgid "Extras:"
+msgstr "Əlavələr:"
+
+#: registration/templates/registration/game_setup.html:75
+msgid "OFF"
+msgstr "SÖNÜK"
+
+#: registration/templates/registration/game_setup.html:76
+msgid "ON"
+msgstr "YANDIR"
+
+#: registration/templates/registration/game_setup.html:83
+#: registration/templates/registration/tournament.html:284
+msgid "Start Game"
+msgstr "Oyuna Başla"
+
+#: registration/templates/registration/game_setup.html:88
+msgid "Start 4 Player Game"
+msgstr "4 Oyunçulu Oyuna Başla"
+
+#: registration/templates/registration/index.html:9
+#: registration/templates/registration/index.html:28
+#: registration/templates/registration/index.html:43
+#, python-format
+msgid "Welcome,"
+msgstr "Xoş gəldiniz,"
+
+#: registration/templates/registration/index.html:12
+#: registration/templates/registration/profile.html:10
+#: registration/templates/registration/register_done.html:10
+msgid "Email:"
+msgstr "Email:"
+
+#: registration/templates/registration/index.html:15
+#: registration/templates/registration/index.html:34
+#: registration/templates/registration/index.html:49
+#: registration/templates/registration/tournament.html:49
+#: registration/templates/registration/tournament.html:96
+#: registration/templates/registration/tournament.html:154
+#: registration/templates/registration/tournament.html:212
+msgid "ID:"
+msgstr "ID:"
+
+#: registration/templates/registration/index.html:30
+msgid "Player 2 Avatar"
+msgstr "Oyunçu 2 Avatarı"
+
+#: registration/templates/registration/index.html:37
+msgid "Log Out Player 2"
+msgstr "Oyunçu 2-ni Çıxar"
+
+#: registration/templates/registration/index.html:45
+msgid "Player 3 Avatar"
+msgstr "Oyunçu 3 Avatarı"
+
+#: registration/templates/registration/index.html:46
+msgid "Player 3 Profile"
+msgstr "Oyunçu 3 Profili"
+
+#: registration/templates/registration/login.html:11
+msgid "Username"
+msgstr "İstifadəçi adı"
+
+#: registration/templates/registration/login.html:15
+msgid "Password"
+msgstr "Şifrə"
+
+#: registration/templates/registration/login.html:18
+
+#: registration/templates/registration/login.html:18
+msgid "Login"
+msgstr "Giriş"
+
+#: registration/templates/registration/play_game.html:7
+#, python-format
+msgid ""
+"Game Between %(game.player1.user.username)s and "
+"%(game.player2.user.username)s"
+msgstr "%(game.player1.user.username)s və %(game.player2.user.username)s arasında oyun"
+
+#: registration/templates/registration/play_game.html:10
+#: registration/templates/registration/play_game.html:12
+msgid "Score:"
+msgstr "Hesab:"
+
+#: registration/templates/registration/play_game.html:14
+msgid "Submit Scores"
+msgstr "Hesabları göndər"
+
+#: registration/templates/registration/profile.html:8
+#, python-format
+msgid "Welcome, %(user.username)s"
+msgstr "Xoş gəldiniz, %(user.username)s"
+
+#: registration/templates/registration/register.html:7
+#: registration/templates/registration/register.html:12
+msgid "Sign up"
+msgstr "Qeydiyyatdan keç"
+
+#: registration/templates/registration/register_done.html:8
+#, python-format
+msgid "Welcome, %(user.username)s!"
+msgstr "Xoş gəldiniz, %(user.username)s!"
+
+#: registration/templates/registration/tournament.html:9
+msgid "Create Tournament"
+msgstr "Turnir yarat"
+
+#: registration/templates/registration/tournament.html:13
+#, python-format
+msgid "Tournament:"
+msgstr "Turnir:"
+
+#: registration/templates/registration/tournament.html:14
+msgid "Creator:"
+msgstr "Yaradan:"
+
+#: registration/templates/registration/tournament.html:15
+msgid "Players:"
+msgstr "Oyunçular:"
+
+#: registration/templates/registration/tournament.html:19
+msgid "Start Tournament"
+msgstr "Turniri başlat"
+
+#: registration/templates/registration/tournament.html:30
+msgid "Quit Tournament"
+msgstr "Turnirdən çıx"
+
+#: registration/templates/registration/tournament.html:51
+#: registration/templates/registration/tournament.html:98
+#: registration/templates/registration/tournament.html:156
+#: registration/templates/registration/tournament.html:214
+msgid "Colour:"
+msgstr "Rəng:"
+
+#: registration/templates/registration/tournament.html:69
+#: registration/templates/registration/tournament.html:128
+msgid "Player Display Name:"
+msgstr "Oyunçunun görünən adı:"
+
+#: registration/templates/registration/tournament.html:72
+#: registration/templates/registration/tournament.html:131
+#: registration/templates/registration/tournament.html:188
+#: registration/templates/registration/tournament.html:246
+#: registration/templates/registration/update_profile.html:12
+msgid "Update"
+msgstr "Yenilə"
+
+#: registration/templates/registration/tournament.html:78
+#: registration/templates/registration/tournament.html:137
+#: registration/templates/registration/tournament.html:195
+#: registration/templates/registration/tournament.html:253
+msgid "Join Tournament"
+msgstr "Turnirə qoşul"
+
+#: registration/templates/registration/tournament.html:121
+msgid "Log in Player 2"
+msgstr "Oyunçu 2 daxil olsun"
+
+#: registration/templates/registration/tournament.html:149
+msgid "Player 3"
+msgstr "Oyunçu 3"
+
+#: registration/templates/registration/tournament.html:171
+msgid "Player 3 Username:"
+msgstr "Oyunçu 3 istifadəçi adı:"
+
+#: registration/templates/registration/tournament.html:175
+msgid "Player 3 Password:"
+msgstr "Oyunçu 3 şifrəsi:"
+
+#: registration/templates/registration/tournament.html:178
+msgid "Log in Player 3"
+msgstr "Oyunçu 3 daxil olsun"
+
+#: registration/templates/registration/tournament.html:185
+msgid "Player 3 Display Name:"
+msgstr "Oyunçu 3 görünən adı:"
+
+#: registration/templates/registration/tournament.html:207
+msgid "Player 4"
+msgstr "Oyunçu 4"
+
+#: registration/templates/registration/tournament.html:229
+msgid "Player 4 Username:"
+msgstr "Oyunçu 4 istifadəçi adı:"
+
+#: registration/templates/registration/tournament.html:233
+msgid "Player 4 Password:"
+msgstr "Oyunçu 4 şifrəsi:"
+
+#: registration/templates/registration/tournament.html:236
+msgid "Log in Player 4"
+msgstr "Oyunçu 4 daxil olsun"
+
+#: registration/templates/registration/tournament.html:243
+msgid "Player 4 Display Name:"
+msgstr "Oyunçu 4 görünən adı:"
+
+#: registration/templates/registration/tournament.html:264
+msgid "Game Settings"
+msgstr "Oyun parametrləri"
+
+#: registration/templates/registration/tournament.html:282
+msgid "Game Canvas"
+msgstr "Oyun sahəsi"
+
+#: registration/templates/registration/tournament.html:291
+msgid "4-Player Game"
+msgstr "4 oyunçulu oyun"
+
+#: registration/templates/registration/tournament.html:293
+msgid "Start 4-Player Game"
+msgstr "4 oyunçulu oyunu başlat"
+
+#: registration/templates/registration/update_profile.html:7
+msgid "Update profile"
+msgstr "Profili yenilə"
+
+#: registration/views.py:42
+msgid "Language has been changed"
+msgstr "Dil dəyişdirildi"
+
+#: registration/views.py:55
+msgid "Missing language_code"
+msgstr "Dil kodu çatışmır"
+
+#: registration/views.py:56 registration/views.py:321
+msgid "Invalid request"
+msgstr "Yanlış sorğu"
+
+#: registration/views.py:79 registration/views.py:81
+msgid "Account created, you can now login"
+msgstr "Hesab yaradıldı, indi daxil ola bilərsiniz"
+
+#: registration/views.py:86
+msgid "There was an error, please try again later"
+msgstr "Xəta baş verdi, zəhmət olmasa sonra yenidən cəhd edin"
+
+#: registration/views.py:102
+msgid "You are now logged in"
+msgstr "Siz uğurla daxil oldunuz"
+
+#: registration/views.py:107
+msgid "Invalid username or password"
+msgstr "Yanlış istifadəçi adı və ya şifrə"
+
+#: registration/views.py:118
+msgid "See you later!"
+msgstr "Sonra görüşərik!"
+
+#: registration/views.py:135
+msgid "Your account has been updated!"
+msgstr "Hesabınız yeniləndi!"
+
+#: registration/views.py:141
+msgid "Your account has not been updated!"
+msgstr "Hesabınız yenilənmədi!"
+
+#: registration/views.py:168
+msgid "Your password was successfully updated!"
+msgstr "Şifrəniz uğurla yeniləndi!"
+
+#: registration/views.py:174 registration/views.py:217
+msgid "Please correct the error in the form.!"
+msgstr "Zəhmət olmasa, formadakı xətanı düzəldin!"
+
+#: registration/views.py:194
+msgid "You cannot add yourself as a friend."
+msgstr "Özünüzü dost kimi əlavə edə bilməzsiniz."
+
+#: registration/views.py:199
+msgid "You are already friends.."
+msgstr "Siz artıq dostsunuz."
+
+#: registration/views.py:206
+msgid "You are now friends"
+msgstr "İndi dostsunuz"
+
+#: registration/views.py:212
+msgid "Something went wrong while adding friend."
+msgstr "Dost əlavə edərkən bir xəta baş verdi."
+
+#: registration/views.py:232
+msgid "You are now not friends more"
+msgstr "Siz artıq dost deyilsiniz"
+
+#: registration/views.py:238
+msgid "Wrong request"
+msgstr "Yanlış sorğu"
+
+#: registration/views.py:261
+msgid "You cannot play against yourself."
+msgstr "Özünüzə qarşı oynaya bilməzsiniz."
+
+#: registration/views.py:271
+msgid "Second player logined"
+msgstr "İkinci oyunçu daxil oldu"
+
+#: registration/views.py:277
+msgid "Wrong credentials for Player 2"
+msgstr "İkinci oyunçu üçün yalnış giriş məlumatları"
+
+#: registration/views.py:285
+msgid "Player 2 has been logged out."
+msgstr "İkinci oyunçu çıxış etdi."
+
+#: registration/views.py:287
+msgid "No Player 2 is currently logged in."
+msgstr "Hal-hazırda ikinci oyunçu daxil deyil."
+
+#: registration/views.py:304 registration/views.py:318
+msgid "Game result saved successfully!"
+msgstr "Oyun nəticəsi uğurla saxlanıldı!"
+
+#: registration/views.py:330
+msgid "Display name is required."
+msgstr "Göstərilən ad tələb olunur."
+
+#: registration/views.py:337
+msgid "Invalid player id format."
+msgstr "Yanlış oyunçu ID formatı."
+
+#: registration/views.py:374
+msgid "Display name updated successfully."
+msgstr "Göstərilən ad uğurla yeniləndi."
+
+#: registration/views.py:382 registration/views.py:430
+#: registration/views.py:467 registration/views.py:504
+#: registration/views.py:538
+msgid "Invalid request method."
+msgstr "Yanlış sorğu metodu."
+
+#: registration/views.py:413
+msgid "Player 2 logged in successfully."
+msgstr "İkinci oyunçu uğurla daxil oldu."
+
+#: registration/views.py:426 registration/views.py:463
+#: registration/views.py:500
+msgid "Invalid username or password."
+msgstr "Yanlış istifadəçi adı və ya şifrə."
+
+#: registration/views.py:450
+msgid "Player 3 logged in successfully."
+msgstr "Üçüncü oyunçu uğurla daxil oldu."
+
+#: registration/views.py:487
+msgid "Player 4 logged in successfully."
+msgstr "Dördüncü oyunçu uğurla daxil oldu."
+
+#: registration/views.py:525
+msgid "Tournament created successfully!"
+msgstr "Turnir uğurla yaradıldı!"
+
+#: registration/views.py:531
+msgid "There was an error creating the tournament."
+msgstr "Turnir yaradılarkən bir xəta baş verdi."
+
+#: registration/views.py:560
+msgid "Tournament is full or you have already joined."
+msgstr "Turnir doludur və ya artıq qoşulmusunuz."
+
+#: registration/views.py:580
+msgid "Tournament already started."
+msgstr "Turnir artıq başlayıb."
+
+#: registration/views.py:591
+msgid "Tournament has started!"
+msgstr "Turnir başladı!"
+
+#: registration/views.py:597
+msgid "You are not the creator or the tournament is not full."
+msgstr "Siz yaradıcı deyilsiniz və ya turnir tam dolmayıb."
+
+#: registration/views.py:612
+msgid "Tournament not found"
+msgstr "Turnir tapılmadı"

@@ -1,15 +1,16 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div id="content">
-        <h1>Game Between {{ game.player1.user.username }} and {{ game.player2.user.username }}</h1>
+<div id="content">
+    {% load i18n %}
+    <h1>{% blocktrans %}Game Between {{ game.player1.user.username }} and {{ game.player2.user.username }}{% endblocktrans %}</h1>
     <form method="POST">
         {% csrf_token %}
-        <label for="player1_score">{{ game.player1.user.username }} Score:</label>
+        <label for="player1_score">{{ game.player1.user.username }} {% trans "Score:" %}</label>
         <input type="number" id="player1_score" name="player1_score" required>
-        <label for="player2_score">{{ game.player2.user.username }} Score:</label>
+        <label for="player2_score">{{ game.player2.user.username }} {% trans "Score:" %}</label>
         <input type="number" id="player2_score" name="player2_score" required>
-        <button type="submit">Submit Scores</button>
+        <button type="submit">{% trans "Submit Scores" %}</button>
     </form>
-    </div>
+</div>
 {% endblock %}

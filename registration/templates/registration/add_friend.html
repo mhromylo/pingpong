@@ -1,37 +1,40 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-
 <div id="content">
-    <p>Friends:</p>
+    {% load i18n %}
+    <p>{% trans "Friends:" %}</p>
     <ul id="friend-list">
-       {% for f in user.profile.friends.all %}
-          <li id="friend-{{ f.id }}">
-                    <span class="friend-name">{{ f.display_name }}</span>
-                    <span class="status-indicator"
-                          style="color: {% if f.is_online %} green {% else %}red{% endif %};">
-                        {% if f.is_online %} Online {% else %}Offline{% endif %}
-                    </span>
-                    <form
-                        action="{% url 'delete_friend' f.id %}"
-                        method="post"
-                        style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="delete-button">Delete</button>
-                    </form>
-                    {% if not forloop.last %}, {% endif %}
-                </li>
-         {% empty %}
-            No friends added yet.
+        {% for f in user.profile.friends.all %}
+            <li id="friend-{{ f.id }}">
+                <span class="friend-name">{{ f.display_name }}</span>
+                <span class="status-indicator"
+                      style="color: {% if f.is_online %} green {% else %}red{% endif %};">
+                    {% if f.is_online %}
+                        {% trans "Online" %}
+                    {% else %}
+                        {% trans "Offline" %}
+                    {% endif %}
+                </span>
+                <form
+                    action="{% url 'delete_friend' f.id %}"
+                    method="post"
+                    style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-button">{% trans "Delete" %}</button>
+                </form>
+                {% if not forloop.last %}, {% endif %}
+            </li>
+        {% empty %}
+            {% trans "No friends added yet." %}
         {% endfor %}
     </ul>
     
-    <h2>Add Friend</h2>
+    <h2>{% trans "Add Friend" %}</h2>
     <form method="post" action="{% url 'add_friend' %}">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Add Friend</button>
+        <button type="submit">{% trans "Add Friend" %}</button>
     </form>
-    </div>
-
+</div>
 {% endblock %}

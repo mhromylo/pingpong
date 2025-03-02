@@ -8,7 +8,10 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
-from random import shuffle
+from django.utils.translation import activate
+from django.conf import settings
+from datetime import timedelta
+from django.utils.translation import gettext as _
 import json
 from django.db import transaction
 
@@ -17,8 +20,41 @@ from .models import Profile, Game, Tournament
 
 
 def index(request):
+    language_code = request.GET.get('language_code', None)
+    activate(language_code) 
     return render(request, "registration/index.html")
 
+def layout(request):
+    language_code = request.GET.get('language_code', None)
+    activate(language_code) 
+    return render(request, "layout.html")
+
+def set_language(request):
+    if request.method == "POST":
+        language_code = request.POST.get("language_code", None)
+        if language_code:
+            activate(language_code)
+            # Set the language in session
+            request.session['django_language'] = language_code
+            
+            # Set the language cookie with an expiration time
+            response = JsonResponse({
+                "success": True,
+                "message": _("Language has been changed"),
+                "redirect_url": "/index/",
+                "lang" : language_code
+            }, status=200)
+            
+            # Set a cookie that expires in 1 year
+            response.set_cookie(
+                settings.LANGUAGE_COOKIE_NAME, language_code,
+                max_age=timedelta(days=365),
+                expires=settings.SESSION_COOKIE_AGE
+            )
+            return response
+        else:
+            return JsonResponse({"success": False, "error": _("Missing language_code")}, status=400)
+    return JsonResponse({"success": False, "error": _("Invalid request")}, status=405)
 
 def pvp(request, profile):
     return render(request, "registration/index.html", {'profile': profile})
@@ -31,7 +67,7 @@ def check_authentication(request):
     if request.user.is_authenticated:
         return JsonResponse({"authenticated": True})
     return JsonResponse({"authenticated": False})
-
+ 
 @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({"csrf_token": get_token(request)})
@@ -41,14 +77,14 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Account created, you can now login")
+            messages.success(request, _("Account created, you can now login"))
             return JsonResponse({'success': True,
-                                 'message': 'Account created, you can now login',
+                                 'message': _("Account created, you can now login"),
                                  'redirect_url': '/login/'
             }, status=200)
         else:
             messages.error(request, "Form not valid" )
-            return JsonResponse({'success': False, 'message': 'There was an error, please try again later'}, status=400) 
+            return JsonResponse({'success': False, 'message': _("There was an error, please try again later")}, status=400) 
 
     else: 
         form = RegistrationForm()   
@@ -64,12 +100,12 @@ def user_login(request):
         if user is not None:
             login(request, user)
             return JsonResponse({'success': True,
-                                 'message': 'You are now logged in',
+                                 'message': _("You are now logged in"),
                                  'redirect_url': '/index/'
             }, status=200)
         else:
             return JsonResponse({'success': False,
-                                 'message': 'Invalid username or password',
+                                 'message': _("Invalid username or password"),
                                  'redirect_url': '/login/'
             }, status=200)
     else:
@@ -80,7 +116,7 @@ def user_logout(request):
     logout(request)
     return JsonResponse({
                 'success': True,
-                'message': 'See you later! ',
+                'message': _("See you later!"),
                 'redirect_url': '/index/'  # Optional: Tell the frontend where to redirect
             }, status=200)
 
@@ -97,13 +133,13 @@ def update_profile(request):
             p_form.save()
             return JsonResponse({
                 'success': True,
-                'message': 'Your account has been updated!',
+                'message': _("Your account has been updated!"),
                 'redirect_url': '/index/'  # Optional: Tell the frontend where to redirect
             }, status=200)
         else:
             return JsonResponse({
                 'success': False,
-                'message': 'Your account has not been updated!',
+                'message': _("Your account has not been updated!"),
                 'errors': {
                         **u_form.errors,  # Include user form errors
                         **p_form.errors   # Include profile form errors
@@ -130,13 +166,13 @@ def change_password(request):
             login(request, form.user)
             return JsonResponse({
                 'success': True,
-                'message': 'Your password was successfully updated!',
+                'message': _("Your password was successfully updated!"),
                 'redirect_url': '/index/'  # Optional: Tell the frontend where to redirect
             }, status=200)
         else:
             return JsonResponse({
                 'success': False,
-                'message': 'Please correct the error in the form.!',
+                'message': _("Please correct the error in the form.!"),
                 'errors': form.errors  # Include user form errors
             }, status=200)
     else:
@@ -156,19 +192,19 @@ def add_friend(request):
                 if user_profile == friend_profile:
                     return JsonResponse({
                         'success': False,
-                        'message': 'You cannot add yourself as a friend.'
+                        'message': _("You cannot add yourself as a friend.")
                         }, status=200)
                 elif friend_profile in user_profile.friends.all():
                     return JsonResponse({
                         'success': False,
-                        'message': 'You are already friends..'
+                        'message': _("You are already friends..")
                         }, status=200)
                 else:
                     user_profile.friends.add(friend_profile)
                     user_profile.save()
                     return JsonResponse({
                         'success': True,
-                        'message': 'You are now friends',
+                        'message': _("You are now friends"),
                         'redirect_url': '/add_friend/'
                         }, status=200)
             except Exception as e:
@@ -179,7 +215,7 @@ def add_friend(request):
         else:
             return JsonResponse({
                 'success': False,
-                'message': 'Please correct the error in the form.!',
+                'message': _("Please correct the error in the form.!"),
                 'errors': form.errors  # Include user form errors
             }, status=200)
     else:
@@ -194,13 +230,13 @@ def delete_friend(request, f_id):
         request.user.profile.friends.remove(friend)
         return JsonResponse({
                         'success': True,
-                        'message': 'You are now not friends more',
+                        'message': _("You are now not friends more"),
                         'redirect_url': '/add_friend/'
                         }, status=200)
     else:
         return JsonResponse({
                         'success': False,
-                        'message': 'Wrong request',
+                        'message': _("Wrong request"),
                         'redirect_url': '/add_friend/'
                         }, status=400)
 
@@ -223,7 +259,7 @@ def game_setup(request):
             player1 = Profile.objects.get(user=request.user)
             player2 = Profile.objects.get(user=user2)
             if player1 == player2:
-                return JsonResponse({'success': False, 'message': "You cannot play against yourself."})
+                return JsonResponse({'success': False, 'message': _("You cannot play against yourself.")})
             request.session['player2'] = {
                 'display_name': player2.display_name,
                 'avatar_url': player2.avatar.url if player2.avatar else '',
@@ -233,13 +269,13 @@ def game_setup(request):
             }
             return JsonResponse({
                         'success': True,
-                        'message': 'Second player logined',
+                        'message': _("Second player logined"),
                         'redirect_url': '/game_setup/'
                         }, status=200)
         else:
             return JsonResponse({
                         'success': False,
-                        'message': 'Wrong credentials for Player 2',
+                        'message': _("Wrong credentials for Player 2"),
                         }, status=200)
     return render(request, 'registration/game_setup.html', {})
 
@@ -247,9 +283,9 @@ def game_setup(request):
 def logout_player2(request):
     if 'player2' in request.session:
         del request.session['player2']
-        messages.success(request, "Player 2 has been logged out.")
+        messages.success(request, _("Player 2 has been logged out."))
     else:
-        messages.error(request, "No Player 2 is currently logged in.")
+        messages.error(request, _("No Player 2 is currently logged in."))
     return redirect('index')
 
 
@@ -341,14 +377,14 @@ def tournament_name_user(request, player_id, player_number):
         if not display_name:
             return JsonResponse({
                 'success': False,
-                'message': 'Display name is required.',
+                'message': _("Display name is required."),
             }, status=400)
         try:
             player_id = int(player_id)
         except ValueError:
             return JsonResponse({
                 'success': False,
-                'message': 'Invalid player id format.',
+                'message': _("Invalid player id format."),
             }, status=400)
         try:
             profile = Profile.objects.get(id=player_id)
@@ -385,7 +421,7 @@ def tournament_name_user(request, player_id, player_number):
             }
         return JsonResponse({
             'success': True,
-            'message': 'Display name updated successfully.',
+            'message': _("Display name updated successfully."),
             'new_display_name': display_name,
             'player_number': player_number,
             'redirect_url': '/tournament/'
@@ -393,7 +429,7 @@ def tournament_name_user(request, player_id, player_number):
     else:    
         return JsonResponse({
             'success': False,
-            'message': 'Invalid request method.',
+            'message': _("Invalid request method."),
         }, status=405)
 
 def tournament(request):
@@ -429,7 +465,7 @@ def second_player_tournament(request):
             }
             return JsonResponse({
                 'success': True,
-                'message': 'Player 2 logged in successfully.',
+                'message': _("Player 2 logged in successfully."),
                 'goal': 'Login',
                 'player_number': 2,
                 'player2_display_name': profile2.display_name,
@@ -442,11 +478,11 @@ def second_player_tournament(request):
         else:
             return JsonResponse({
                 'success': False,
-                'message': 'Invalid username or password.',
+                'message': _("Invalid username or password."),
             }, status=400)
     return JsonResponse({
         'success': False,
-        'message': 'Invalid request method.',
+        'message': _("Invalid request method."),
     }, status=405)
 
 @login_required
@@ -467,7 +503,7 @@ def third_player_tournament(request):
             }
             return JsonResponse({
                 'success': True,
-                'message': 'Player 3 logged in successfully.',
+                'message': _("Player 3 logged in successfully."),
                 'goal': 'Login',
                 'player_number': 3,
                 'player3_display_name': profile3.display_name,
@@ -480,11 +516,11 @@ def third_player_tournament(request):
         else:
             return JsonResponse({
                 'success': False,
-                'message': 'Invalid username or password.',
+                'message': _("Invalid username or password."),
             }, status=400)
     return JsonResponse({
         'success': False,
-        'message': 'Invalid request method.',
+        'message': _("Invalid request method."),
     }, status=405)
 
 @login_required
@@ -505,7 +541,7 @@ def forth_player_tournament(request):
             }
             return JsonResponse({
                 'success': True,
-                'message': 'Player 4 logged in successfully.',
+                'message': _("Player 4 logged in successfully."),
                 'goal': 'Login',
                 'player_number': 4,
                 'player4_display_name': profile4.display_name,
@@ -518,11 +554,11 @@ def forth_player_tournament(request):
         else:
             return JsonResponse({
                 'success': False,
-                'message': 'Invalid username or password.',
+                'message': _("Invalid username or password."),
             }, status=400)
     return JsonResponse({
         'success': False,
-        'message': 'Invalid request method.',
+        'message': _("Invalid request method."),
     }, status=405)
 
 @login_required
@@ -543,20 +579,20 @@ def create_tournament(request):
                 'creator': tournament.creator.display_name,
                 'player1_avatar': tournament.creator.avatar.url if tournament.creator.avatar else '',
                 'player_count': tournament.players.count(),
-                'message': 'Tournament created successfully!',
+                'message': _("Tournament created successfully!"),
                 'redirect_url': '/tournament/'  # Optional: Redirect to the tournament page
             })
         else:
            return JsonResponse({
                 'success': False,
-                'message': 'There was an error creating the tournament.',
+                'message': _("There was an error creating the tournament."),
                 'errors': form.errors  # Include form errors for debugging
             }, status=400)
     else:
         # Handle non-POST requests (e.g., GET)
         return JsonResponse({
             'success': False,
-            'message': 'Invalid request method.',
+            'message': _("Invalid request method."),
             'redirect_url': '/tournament/'  # Redirect to the tournament page
         }, status=405)
 
@@ -569,7 +605,7 @@ def join_tournament(request, tournament_id, player_id):
         tournament.players.add(player)
         return JsonResponse({
             'success': True,
-            'message': f'{player.display_name} has joined the tournament.',
+            'message': f'{player.display_name} {_(" has joined the tournament.")}',
             'player_count': tournament.players.count(),
             'player_name': player.display_name,
             'player_avatar': player.avatar.url if player.avatar else '',
@@ -590,7 +626,7 @@ def quit_tournament(request, tournament_id, player_id):
         tournament.save()
         return JsonResponse({
             'success': True,
-            'message': f'{player.display_name} has quit the tournament.',
+            'message': f'{player.display_name} {_(" has quit the tournament.")}',
             'player_count': tournament.players.count(),
             'player_name': player.display_name,
             'redirect_url': '/tournament/'
@@ -598,7 +634,7 @@ def quit_tournament(request, tournament_id, player_id):
     else:
         return JsonResponse({
             'success': False,
-            'message': 'Tournament already started.'
+            'message': _("Tournament already started.")
         }, status=400)
     
 @login_required
@@ -674,7 +710,7 @@ def get_tournament_data(request, tournament_id):
             "players": players_data
         })
     except Tournament.DoesNotExist:
-        return JsonResponse({"error": "Tournament not found"}, status=404)
+        return JsonResponse({"error": _("Tournament not found")}, status=404)
     
 def tournament_detail(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)

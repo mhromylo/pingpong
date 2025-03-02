@@ -1,9 +1,14 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div id="content">
-        <h1>Welcome, {{ new_user.username }}!</h1>
-    <p>I wanna play a game with you</p>
-
-    </div>
+<div id="content">
+    {% load i18n %}
+    {% if user.is_authenticated %}
+        <h2>{% blocktrans %}Welcome, {{ user.username }}!{% endblocktrans %}</h2>
+        <p><strong>{% trans "Display Name:" %}</strong> {{ user.profile.display_name }}</p>
+        <p><strong>{% trans "Email:" %}</strong> {{ user.email }}</p>
+        <p><strong>{% trans "Wins:" %}</strong> {{ user.profile.wins }}</p>
+        <p><strong>{% trans "Losses:" %}</strong> {{ user.profile.losses }}</p>
+    {% endif %}
+</div>
 {% endblock %}

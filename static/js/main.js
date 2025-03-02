@@ -31,24 +31,33 @@ export function fetchNewCSRFToken() {
     .catch(error => console.error("CSRF Token Fetch Error:", error));
 }
 
-function loadMyCanvasScript() {
-    var existingScript = document.querySelector('script[src="/static/js/tournament.js"]');
-    if (existingScript) {
-        existingScript.remove();
-    }
-    var script = document.createElement('script');
-    script.type = 'module';
-    script.src = "/static/js/tournament.js";
-    script.onload = function() {};
-    document.head.appendChild(script);
-}
+document.addEventListener("DOMContentLoaded", function () {
 
-export function loadPage(url, addToHistory = true) {
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
+    checkAuth();
+
+    function getCSRFToken() {
+        let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
+        if (!csrfToken) {
+            csrfToken = document.cookie.split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+        }
+        return csrfToken;
+    }
+
+    const container = document.getElementById("content");
+
+    function loadPage(url, addToHistory = true, additionalParam = null) {
+        if (additionalParam) {
+            const urlObj = new URL(url, window.location.origin);
+            urlObj.searchParams.append('language_code', additionalParam);
+            url = urlObj.toString();
+        }
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
 
             // Extract the content from the response
             const newContent = tempDiv.querySelector('#content');
@@ -59,17 +68,40 @@ export function loadPage(url, addToHistory = true) {
             if (url === '/game_setup/' || url === '/tournament/')
                 loadMyCanvasScript();
 
-            // Reattach event listeners for forms after loading new content
-            attachFormEventListeners();
-            checkAuth();
-            
-            // Add to browser history
-            if (addToHistory) {
-                history.pushState({ path: url }, "", url);
-            }
-        })
-        .catch(error => console.error("Error loading page:", error));
-}
+                // Reattach event listeners for forms after loading new content
+                attachFormEventListeners();
+                checkAuth();
+                
+                // Add to browser history
+                if (addToHistory) {
+                    history.pushState({ path: url }, "", url);
+                }
+            })
+            .catch(error => console.error("Error loading page:", error));
+    }
+
+    function loadNavbar(url, additionalParam = null) {
+        if (additionalParam) {
+            const urlObj = new URL(url, window.location.origin);
+            urlObj.searchParams.append('language_code', additionalParam);
+            url = urlObj.toString();
+        }
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+
+                // Extract the content from the response
+                const newContent = tempDiv.querySelector('#navbarNav');
+                if (newContent) {
+                    document.getElementById('navbarNav').innerHTML = newContent.innerHTML;
+                }
+
+                checkAuth();
+            })
+            .catch(error => console.error("Error loading page:", error));
+    }
 
     function attachFormEventListeners() {
         const forms = document.querySelectorAll('form');
@@ -96,7 +128,7 @@ export function loadPage(url, addToHistory = true) {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest' // Indicate this is an AJAX request
+                'X-Requested-With': 'XMLHttpRequest', // Indicate this is an AJAX request
             },
             body: formData
         })
@@ -134,7 +166,6 @@ export function loadPage(url, addToHistory = true) {
             })
             .catch(error => {
                 console.error("Error submitting form", error);
-                alert('An error occurred while processing the request.');
             });
     }
     function updatePlayerProfile(data) {
@@ -179,7 +210,6 @@ export function loadPage(url, addToHistory = true) {
             })
             .catch(error => {
                 console.error("Error joining tournament:", error);
-                alert('An error occurred while joining the tournament.');
             });
     }
     
@@ -229,10 +259,37 @@ export function loadPage(url, addToHistory = true) {
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while processing the request.');
                 });
         });
     }
+
+    $(document).on("change", "#language-select", function () {
+        let selectedLanguage = this.value;
+        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        console.log(selectedLanguage);
+        fetch("/set_language/", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest' // Indicate this is an AJAX request
+            },
+            body: new URLSearchParams({
+                "language_code": selectedLanguage,
+                "next": window.location.pathname
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.success) {
+                loadNavbar("/layout/", selectedLanguage)
+                loadPage(data.redirect_url);
+            } else {
+                console.error("Language change failed.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
     
         // Function to update player profile UI
     
