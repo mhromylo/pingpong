@@ -109,6 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener('submit', handleFormSubmit);
         });
     }
+
     function getCSRFToken() {
         let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
         if (!csrfToken) {
@@ -118,6 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return csrfToken;
     }
+
     function handleFormSubmit(event) {
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
@@ -208,7 +210,8 @@ document.addEventListener("DOMContentLoaded", function () {
             playerCount.innerText = `Players: ${data.player_count}/4`;
         }
     }
-        // Function to handle player login
+    
+    // Function to handle player login
     function loginPlayer(formId, endpoint, playerNumber) {
         const form = document.getElementById(formId);
         if (!form) return;
@@ -292,7 +295,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (id) {
             id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
         }
-    }
+    };
     
 
         // Function to handle display name updates
@@ -302,32 +305,32 @@ document.addEventListener("DOMContentLoaded", function () {
         if (display_name) {
             display_name.innerHTML = `<strong>Display Name:</strong> ${data.new_display_name}`;
         }
-    }
+    };
 
         
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    checkAuth();
-    loadPage(window.location.pathname);
-    attachFormEventListeners();
+        checkAuth();
+        loadPage(window.location.pathname);
+        attachFormEventListeners();
 
 
-    const container = document.getElementById("content");
+        const container = document.getElementById("content");
 
-    document.querySelectorAll("a.nav-link").forEach(link => {
-        link.addEventListener("click", function (event) {
-            event.preventDefault();
-            const url = this.getAttribute("href").replace("#", ""); // Remove #
-            loadPage(url);
+        document.querySelectorAll("a.nav-link").forEach(link => {
+            link.addEventListener("click", function (event) {
+                event.preventDefault();
+                const url = this.getAttribute("href").replace("#", ""); // Remove #
+                loadPage(url);
+            });
         });
-    });
 
-    window.addEventListener("popstate", function (event) {
-        if (event.state && event.state.path) {
-            loadPage(event.state.path, false);
-        }
-    });
+        window.addEventListener("popstate", function (event) {
+            if (event.state && event.state.path) {
+                loadPage(event.state.path, false);
+            }
+        });
 
- 
-    
+    }); 
+
 });

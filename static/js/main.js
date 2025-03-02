@@ -109,6 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener('submit', handleFormSubmit);
         });
     }
+
     function getCSRFToken() {
         let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
         if (!csrfToken) {
@@ -118,6 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return csrfToken;
     }
+
     function handleFormSubmit(event) {
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
@@ -166,31 +168,9 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error submitting form", error);
-            });
+        });
     }
-    function updatePlayerProfile(data) {
-        let playerNumber = data.player_number;
-        const avatar = document.getElementById(`player${playerNumber}-avatar`);
-        if (avatar) {
-            avatar.src = data[`player${playerNumber}_avatar`];
-        }
-        const display_name = document.getElementById(`player${playerNumber}-display-name`);
-        if (display_name) {
-            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
-        }
-        const wins = document.getElementById(`player${playerNumber}-wins`);
-        if (avatar) {
-            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
-        }
-        const losses = document.getElementById(`player${playerNumber}-losses`);
-        if (losses) {
-            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
-        }
-        const id = document.getElementById(`player${playerNumber}-id`);
-        if (id) {
-            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
-        }
-    }
+    
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {
             method: 'POST',
@@ -230,7 +210,8 @@ document.addEventListener("DOMContentLoaded", function () {
             playerCount.innerText = `Players: ${data.player_count}/4`;
         }
     }
-        // Function to handle player login
+    
+    // Function to handle player login
     function loginPlayer(formId, endpoint, playerNumber) {
         const form = document.getElementById(formId);
         if (!form) return;
@@ -291,8 +272,30 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Error:", error));
     });
     
-        // Function to update player profile UI
-    
+    // Function to update player profile UI
+    function updatePlayerProfile(data) {
+        let playerNumber = data.player_number;
+        const avatar = document.getElementById(`player${playerNumber}-avatar`);
+        if (avatar) {
+            avatar.src = data[`player${playerNumber}_avatar`];
+        }
+        const display_name = document.getElementById(`player${playerNumber}-display-name`);
+        if (display_name) {
+            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
+        }
+        const wins = document.getElementById(`player${playerNumber}-wins`);
+        if (avatar) {
+            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
+        }
+        const losses = document.getElementById(`player${playerNumber}-losses`);
+        if (losses) {
+            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
+        }
+        const id = document.getElementById(`player${playerNumber}-id`);
+        if (id) {
+            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
+        }
+    };
     
 
         // Function to handle display name updates
@@ -302,32 +305,32 @@ document.addEventListener("DOMContentLoaded", function () {
         if (display_name) {
             display_name.innerHTML = `<strong>Display Name:</strong> ${data.new_display_name}`;
         }
-    }
+    };
 
         
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    checkAuth();
-    loadPage(window.location.pathname);
-    attachFormEventListeners();
+        checkAuth();
+        loadPage(window.location.pathname);
+        attachFormEventListeners();
 
 
-    const container = document.getElementById("content");
+        const container = document.getElementById("content");
 
-    document.querySelectorAll("a.nav-link").forEach(link => {
-        link.addEventListener("click", function (event) {
-            event.preventDefault();
-            const url = this.getAttribute("href").replace("#", ""); // Remove #
-            loadPage(url);
+        document.querySelectorAll("a.nav-link").forEach(link => {
+            link.addEventListener("click", function (event) {
+                event.preventDefault();
+                const url = this.getAttribute("href").replace("#", ""); // Remove #
+                loadPage(url);
+            });
         });
-    });
 
-    window.addEventListener("popstate", function (event) {
-        if (event.state && event.state.path) {
-            loadPage(event.state.path, false);
-        }
-    });
+        window.addEventListener("popstate", function (event) {
+            if (event.state && event.state.path) {
+                loadPage(event.state.path, false);
+            }
+        });
 
- 
-    
+    }); 
+
 });
