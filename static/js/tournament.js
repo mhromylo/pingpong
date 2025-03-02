@@ -1,5 +1,7 @@
 import Player from "./Player.js";
 import { MapObstacleSquare, Dart } from "./powersAndMaps.js";
+import { loadPage } from './main.js';
+
 
 var canvas = document.getElementById("myCanvas");
 var ctx;
@@ -409,7 +411,6 @@ $(document).ready(function ()
 
   }
   })
-
   function getCSRFToken() {
     let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]')?.value;
     if (!csrfToken) {
@@ -423,7 +424,7 @@ $(document).ready(function ()
     return csrfToken;
     }
 
-  function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_score){
+function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_score){
     const csrfToken = getCSRFToken();
 
     if (!game_id || !player1_id || !player2_id) {

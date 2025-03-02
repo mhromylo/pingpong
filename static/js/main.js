@@ -31,6 +31,34 @@ function fetchNewCSRFToken() {
     .catch(error => console.error("CSRF Token Fetch Error:", error));
 }
 
+export function loadPage(url, addToHistory = true) {
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // Extract the content from the response
+            const newContent = tempDiv.querySelector('#content');
+            if (newContent) {
+                document.getElementById('content').innerHTML = newContent.innerHTML;
+            }
+
+            if (url === '/game_setup/' || url === '/tournament/')
+                loadMyCanvasScript();
+
+            // Reattach event listeners for forms after loading new content
+            attachFormEventListeners();
+            checkAuth();
+            
+            // Add to browser history
+            if (addToHistory) {
+                history.pushState({ path: url }, "", url);
+            }
+        })
+        .catch(error => console.error("Error loading page:", error));
+}
+
 document.addEventListener("DOMContentLoaded", function () {
 
     checkAuth();
@@ -47,33 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const container = document.getElementById("content");
 
-    function loadPage(url, addToHistory = true) {
-        fetch(url)
-            .then(response => response.text())
-            .then(html => {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-
-                // Extract the content from the response
-                const newContent = tempDiv.querySelector('#content');
-                if (newContent) {
-                    document.getElementById('content').innerHTML = newContent.innerHTML;
-                }
-
-                if (url === '/game_setup/' || url === '/tournament/')
-                    loadMyCanvasScript();
-
-                // Reattach event listeners for forms after loading new content
-                attachFormEventListeners();
-                checkAuth();
-                
-                // Add to browser history
-                if (addToHistory) {
-                    history.pushState({ path: url }, "", url);
-                }
-            })
-            .catch(error => console.error("Error loading page:", error));
-    }
+    
 
     document.querySelectorAll("a.nav-link").forEach(link => {
         link.addEventListener("click", function (event) {
@@ -278,6 +280,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+ 
+    
 
 
     

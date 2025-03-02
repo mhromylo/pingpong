@@ -322,9 +322,6 @@ def save_game_result(request):
                 if (game.game_type == Game.TOURNAMENT_3OR4):
                     tournament.third = game.winner
                     tournament.fourth = game.loser
-
-                if (tournament.winner and tournament.third):
-                    tournament.status = 'completed'
                 game.player1_score = player1_score
                 game.player2_score = player2_score
                 game.save()  # Save changes
@@ -640,6 +637,25 @@ def start_tournament(request, tournament_id):
             'redirect_url': '/tournament/'
         })
 
+    except Tournament.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Tournament not found.'
+        }, status=400)
+    
+@login_required
+def finish_tournament(request, tournament_id):
+    try:
+        tournament = Tournament.objects.get(id=tournament_id)
+
+        tournament.status = 'completed'
+        tournament.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Tournament finished.',
+            'redirect_url': '/tournament/'
+        })
     except Tournament.DoesNotExist:
         return JsonResponse({
             'success': False,

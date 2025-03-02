@@ -26,13 +26,19 @@
                         <button type="submit" class="btn btn-primary">Start Tournament</button>
                     </form>
                     {% endif %}
+                    {% if tournament.status == 'in_progress' and tournament.winner %}
+                    <form id="finish-tournament-form" method="POST" action="/finish_tournament/{{ tournament.id }}/">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Finish Tournament</button>
+                    </form>
+                    {% endif %}
                 </div>
                 <div class="col-md-6">
                     <h5 class="mb-3">Results</h5>
                     <p class="card-text"><strong>Winner:</strong> {{ tournament.winner.display_name }}</p>
                     <p class="card-text"><strong>2 Place:</strong> {{ tournament.second.display_name }}</p>
                     <p class="card-text"><strong>3 Place:</strong> {{ tournament.third.display_name }}</p>
-                    <p class="card-text"><strong>4 Place:</strong> {{ tournament.forth.display_name }}</p>
+                    <p class="card-text"><strong>4 Place:</strong> {{ tournament.fourth.display_name }}</p>
                 </div>
         
             <!-- List of Players -->
@@ -95,7 +101,7 @@
                     <p id="display_name"><strong>Display Name:</strong> {{ user.profile.display_name }}</p>
                     <p><strong>Wins:</strong> {{ user.profile.wins }}</p>
                     <p><strong>Losses:</strong> {{ user.profile.losses }}</p>
-                    <p><strong>ID:</strong> {{ user.profile.id }}</p>
+                    <p type="hidden"><strong>ID:</strong> {{ user.profile.id }}</p>
                     <!-- Update Display Name Form -->
                     <form id="update-tournament-name" method="POST" action="/tournament_name_user/{{ user.profile.id }}/1/" class="mb-3">
                         {% csrf_token %}
@@ -126,7 +132,7 @@
                     <p id="player2-display-name"><strong>Display Name:</strong> {{ request.session.player2.display_name }}</p>
                     <p id="player2-wins"><strong>Wins:</strong> {{ request.session.player2.wins }}</p>
                     <p id="player2-losses"><strong>Losses:</strong> {{ request.session.player2.losses }}</p>
-                    <p id="player2-id"><strong>ID:</strong> {{ request.session.player2.id }}</p>
+                    <p id="player2-id" type="hidden"><strong>ID:</strong> {{ request.session.player2.id }}</p>
                     <!-- Login Form for Player 2 -->
                     <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
@@ -171,19 +177,7 @@
                     <p id="player3-display-name"><strong>Display Name:</strong> {{ request.session.player3.display_name }}</p>
                     <p id="player3-wins"><strong>Wins:</strong> {{ request.session.player3.wins }}</p>
                     <p id="player3-losses"><strong>Losses:</strong> {{ request.session.player3.losses }}</p>
-                    <p id="player3-id"><strong>ID:</strong> {{ request.session.player3.id }}</p>
-                    <div class="col-md-3">
-                        <label for="player3Colour" class="form-label">Colour:</label>
-                        <select id="player3Colour" class="form-select">
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="orange">Orange</option>
-                            <option value="purple">Purple</option>
-                            <option value="gold">Gold</option>
-                            <option value="black">Black</option>
-                        </select>
-                    </div>
+                    <p id="player3-id" type="hidden"><strong>ID:</strong> {{ request.session.player3.id }}</p>
                     <!-- Login Form for Player 3 -->
                     <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
@@ -229,19 +223,7 @@
                     <p id="player4-display-name"><strong>Display Name:</strong> {{ request.session.player4.display_name }}</p>
                     <p id="player4-wins"><strong>Wins:</strong> {{ request.session.player4.wins }}</p>
                     <p id="player4-losses"><strong>Losses:</strong> {{ request.session.player4.losses }}</p>
-                    <p id="player4-id"><strong>ID:</strong> {{ request.session.player4.id }}</p>
-                    <div class="col-md-3">
-                        <label for="player4Colour" class="form-label">Colour:</label>
-                        <select id="player4Colour" class="form-select">
-                            <option value="red">Red</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="orange">Orange</option>
-                            <option value="purple">Purple</option>
-                            <option value="gold">Gold</option>
-                            <option value="black">Black</option>
-                        </select>
-                    </div>
+                    <p id="player4-id" type="hidden"><strong>ID:</strong> {{ request.session.player4.id }}</p>
                     <!-- Login Form for Player 2 -->
                     <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
@@ -299,7 +281,7 @@
     </div>
 </div>
 
-<script type="module" src="/static/js/myCanvas.js"></script>
+<script type="module" src="/static/js/tournament.js"></script>
 
 <!-- JavaScript -->
 <script>
