@@ -31,9 +31,6 @@ export function fetchNewCSRFToken() {
     .catch(error => console.error("CSRF Token Fetch Error:", error));
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-
-    checkAuth();
 
     function getCSRFToken() {
         let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
@@ -47,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const container = document.getElementById("content");
 
-    function loadPage(url, addToHistory = true, additionalParam = null) {
+    export function loadPage(url, addToHistory = true, additionalParam = null) {
         if (additionalParam) {
             const urlObj = new URL(url, window.location.origin);
             urlObj.searchParams.append('language_code', additionalParam);
@@ -109,15 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener('submit', handleFormSubmit);
         });
     }
-    function getCSRFToken() {
-        let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
-        if (!csrfToken) {
-            csrfToken = document.cookie.split('; ')
-                .find(row => row.startsWith('csrftoken='))
-                ?.split('=')[1];
-        }
-        return csrfToken;
-    }
     function handleFormSubmit(event) {
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
@@ -166,31 +154,9 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error submitting form", error);
-            });
+        });
     }
-    function updatePlayerProfile(data) {
-        let playerNumber = data.player_number;
-        const avatar = document.getElementById(`player${playerNumber}-avatar`);
-        if (avatar) {
-            avatar.src = data[`player${playerNumber}_avatar`];
-        }
-        const display_name = document.getElementById(`player${playerNumber}-display-name`);
-        if (display_name) {
-            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
-        }
-        const wins = document.getElementById(`player${playerNumber}-wins`);
-        if (avatar) {
-            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
-        }
-        const losses = document.getElementById(`player${playerNumber}-losses`);
-        if (losses) {
-            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
-        }
-        const id = document.getElementById(`player${playerNumber}-id`);
-        if (id) {
-            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
-        }
-    }
+
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {
             method: 'POST',
@@ -291,8 +257,30 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Error:", error));
     });
     
-        // Function to update player profile UI
-    
+    // Function to update player profile UI
+    function updatePlayerProfile(data) {
+        let playerNumber = data.player_number;
+        const avatar = document.getElementById(`player${playerNumber}-avatar`);
+        if (avatar) {
+            avatar.src = data[`player${playerNumber}_avatar`];
+        }
+        const display_name = document.getElementById(`player${playerNumber}-display-name`);
+        if (display_name) {
+            display_name.innerHTML = `<strong>Display Name:</strong>${data[`player${playerNumber}_display_name`]}`;
+        }
+        const wins = document.getElementById(`player${playerNumber}-wins`);
+        if (avatar) {
+            wins.innerHTML = `<strong>Wins:</strong>${data[`player${playerNumber}_wins`]}`;
+        }
+        const losses = document.getElementById(`player${playerNumber}-losses`);
+        if (losses) {
+            losses.innerHTML = `<strong>Losses:</strong>${data[`player${playerNumber}_losses`]}`;
+        }
+        const id = document.getElementById(`player${playerNumber}-id`);
+        if (id) {
+            id.innerHTML = `<strong>ID:</strong>${data[`player${playerNumber}_id`]}`;
+        }
+    }
     
 
         // Function to handle display name updates
