@@ -15,6 +15,17 @@ async function checkAuth() {
         console.error("Error checking authentication:", error);
     }
 }
+function loadMyCanvasScript() {
+    var existingScript = document.querySelector('script[src="/static/js/tournament.js"]');
+    if (existingScript) {
+        existingScript.remove();
+    }
+    var script = document.createElement('script');
+    script.type = 'module';
+    script.src = "/static/js/tournament.js";
+    script.onload = function() {};
+    document.head.appendChild(script);
+}
 
 export function fetchNewCSRFToken() {
     fetch("/get_csrf_token/")
@@ -62,19 +73,18 @@ export function fetchNewCSRFToken() {
                 document.getElementById('content').innerHTML = newContent.innerHTML;
             }
 
-            if (url === '/game_setup/' || url === '/tournament/')
-                loadMyCanvasScript();
-
                 // Reattach event listeners for forms after loading new content
-                attachFormEventListeners();
-                checkAuth();
+            attachFormEventListeners();
+            checkAuth();
                 
                 // Add to browser history
-                if (addToHistory) {
-                    history.pushState({ path: url }, "", url);
-                }
-            })
-            .catch(error => console.error("Error loading page:", error));
+            if (addToHistory) {
+                history.pushState({ path: url }, "", url);
+            }
+            if (url === '/game_setup/' || url === '/tournament/')
+                loadMyCanvasScript();
+        })
+        .catch(error => console.error("Error loading page:", error));
     }
 
     function loadNavbar(url, additionalParam = null) {

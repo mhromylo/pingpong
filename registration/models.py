@@ -29,7 +29,7 @@ class Profile(models.Model):
         else:
             self.losses += 1
         self.save()
-    def is_online(self):
+    def get_online_status(self):
         return self.is_online
     
     class Meta:

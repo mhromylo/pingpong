@@ -33,7 +33,6 @@ urlpatterns = [
 
     path('register/', views.register, name='register'),
     path('check-auth/', views.check_authentication, name='check-auth'),
-    path('get_csrf_token/', views.get_csrf_token, name='get_csrf_token'),
 
     path('register_done/', views.register_done, name='register_done'),
 
@@ -62,10 +61,12 @@ path('logout/', views.user_logout, name='logout'),
     path('create_tournament/', views.create_tournament, name='create_tournament'),
     path('get_tournament_data/<int:tournament_id>/', views.get_tournament_data, name='get_tournament_data'),
     path('tournament/<int:tournament_id>/', views.tournament_detail, name='tournament_detail'),
+    path('get_csrf_token/', views.get_csrf_token, name='get_csrf_token'),
     path('start_tournament/<int:tournament_id>/', views.start_tournament, name='start_tournament'),
     path('finish_tournament/<int:tournament_id>/', views.finish_tournament, name='finish_tournament'),
     path('join_tournament/<int:tournament_id>/<int:player_id>/', views.join_tournament, name='join_tournament'),
-     path('quit_tournament/<int:tournament_id>/<int:player_id>/', views.quit_tournament, name='quit_tournament'),
+    path('quit_tournament/<int:tournament_id>/<int:player_id>/', views.quit_tournament, name='quit_tournament'),
+    path('logout_tournament/<int:player_number>/', views.logout_tournament, name='logout_tournament'),
 ]
 
 if settings.DEBUG:
