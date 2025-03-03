@@ -31,9 +31,6 @@ export function fetchNewCSRFToken() {
     .catch(error => console.error("CSRF Token Fetch Error:", error));
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-
-    checkAuth();
 
     function getCSRFToken() {
         let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
@@ -47,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const container = document.getElementById("content");
 
-    function loadPage(url, addToHistory = true, additionalParam = null) {
+    export function loadPage(url, addToHistory = true, additionalParam = null) {
         if (additionalParam) {
             const urlObj = new URL(url, window.location.origin);
             urlObj.searchParams.append('language_code', additionalParam);
@@ -109,15 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener('submit', handleFormSubmit);
         });
     }
-    function getCSRFToken() {
-        let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
-        if (!csrfToken) {
-            csrfToken = document.cookie.split('; ')
-                .find(row => row.startsWith('csrftoken='))
-                ?.split('=')[1];
-        }
-        return csrfToken;
-    }
     function handleFormSubmit(event) {
         event.preventDefault(); // Prevent default form submission
         const form = event.target;
@@ -168,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error submitting form", error);
         });
     }
-    
+
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {
             method: 'POST',
