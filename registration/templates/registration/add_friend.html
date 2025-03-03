@@ -8,8 +8,7 @@
         {% for f in user.profile.friends.all %}
             <li id="friend-{{ f.id }}">
                 <span class="friend-name">{{ f.display_name }}</span>
-                <span class="status-indicator"
-                      style="color: {% if f.is_online %} green {% else %}red{% endif %};">
+                <span class="status-indicator {% if f.is_online %}online{% else %}offline{% endif %}">
                     {% if f.is_online %}
                         {% trans "Online" %}
                     {% else %}

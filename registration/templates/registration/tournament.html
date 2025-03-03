@@ -14,7 +14,7 @@
     {% endif %}
     <div class="card mb-4">
         <div class="card-body">
-            div class="row">
+            <div class="row">
                 <!-- Tournament Details (Left Side) -->
                 <div class="col-md-6 mb-4">
                     <h2 class="card-title">{% trans "Tournament:" %} {{ tournament.name }}</h2>
@@ -106,9 +106,6 @@
                     <p id="display_name"><strong>{% trans "Display Name:" %}</strong> {{ user.profile.display_name }}</p>
                     <p><strong>{% trans "Wins:" %}</strong> {{ user.profile.wins }}</p>
                     <p><strong>{% trans "Losses:" %}</strong> {{ user.profile.losses }}</p>
-                    <p id="player1Type" type="hidden">"human"</p>
-                    <p id="chosenMap" type="hidden">"normal"</p>
-                    <p id="extrasAreOn" type="hidden">"OFF"</p>
                     <!-- Update Display Name Form -->
                     <form id="update-tournament-name" method="POST" action="/tournament_name_user/{{ user.profile.id }}/1/" class="mb-3">
                         {% csrf_token %}
@@ -140,8 +137,8 @@
                     <p id="player2-display-name"><strong>Display Name:</strong> {{ request.session.player2.display_name }}</p>
                     <p id="player2-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player2.wins }}</p>
                     <p id="player2-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player2.losses }}</p>
-                    <input id="player2Type" type="hidden">"human"</p>
                     <!-- Login Form for Player 2 -->
+                     {% if not request.session.player2 %}
                     <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -154,6 +151,7 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 2" %}</button>
                     </form>
+                    {% endif %}
 
                     <!-- Update Display Name Form for Player 2 -->
                       {% if request.session.player2 %}
@@ -173,7 +171,13 @@
                             {% trans "Join Tournament" %}
                         </button>
                     </form>
-                {% endif %}
+                    {% endif %}
+                    {% if request.session.player2%}
+                    <form action="/logout_tournament/2/" method="post" id="logout-tournament-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -188,6 +192,7 @@
                     <p id="player3-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player3.wins }}</p>
                     <p id="player3-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player3.losses }}</p>
                     <!-- Login Form for Player 3 -->
+                    {% if not request.session.player3 %}
                     <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -200,9 +205,9 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 3" %}</button>
                     </form>
-
+                    {% endif %}
                     <!-- Update Display Name Form for Player 2 -->
-                    {% if request.session.player2 %}
+                    {% if request.session.player3 %}
                     <form id="update-tournament-name-user3" method="POST" action="/tournament_name_user/{{ request.session.player3.id }}/3/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -220,7 +225,13 @@
                             {% trans "Join Tournament" %}
                         </button>
                     </form>
-                {% endif %}
+                    {% endif %}
+                    {% if request.session.player3 %}
+                    <form action="/logout_tournament/3/" method="post" id="logout-tournament-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -234,7 +245,7 @@
                     <p id="player4-display-name"><strong>{% trans "Display Name:" %}</strong> {{ request.session.player4.display_name }}</p>
                     <p id="player4-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player4.wins }}</p>
                     <p id="player4-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player4.losses }}</p>
-                    <!-- Login Form for Player 2 -->
+                    {% if not request.session.player4 %}
                     <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -247,6 +258,7 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 4" %}</button>
                     </form>
+                    {% endif %}
                     {% if request.session.player4 %}
                     <!-- Update Display Name Form for Player 4 -->
                     <form id="update-tournament-name-user4" method="POST" action="/tournament_name_user/{{ request.session.player4.id }}/4/" class="mb-3">
@@ -266,7 +278,13 @@
                             {% trans "Join Tournament" %}
                         </button>
                     </form>
-                {% endif %}
+                    {% endif %}
+                    {% if request.session.player4 %}
+                    <form action="/logout_tournament/4/" method="post" id="logout-tournament-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>

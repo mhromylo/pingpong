@@ -68,7 +68,8 @@ def check_authentication(request):
     if request.user.is_authenticated:
         return JsonResponse({"authenticated": True})
     return JsonResponse({"authenticated": False})
- 
+
+@login_required
 @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({"csrf_token": get_token(request)})
@@ -112,14 +113,17 @@ def user_login(request):
     else:
         return render(request, 'registration/login.html', {})
 
-
+@login_required
 def user_logout(request):
-    logout(request)
-    return JsonResponse({
+    if request.method == 'POST':
+        logout(request)
+        return JsonResponse({
                 'success': True,
                 'message': _("See you later!"),
                 'redirect_url': '/index/'  # Optional: Tell the frontend where to redirect
             }, status=200)
+    else:
+        return redirect("index")
 
 
 @login_required
@@ -268,6 +272,8 @@ def game_setup(request):
                 'losses': player2.losses,
                 'id': player2.id,
             }
+            player2.is_online = True
+            player2.save()
             return JsonResponse({
                         'success': True,
                         'message': _("Second player logined"),
@@ -280,14 +286,24 @@ def game_setup(request):
                         }, status=200)
     return render(request, 'registration/game_setup.html', {})
 
-
+@login_required
 def logout_player2(request):
-    if 'player2' in request.session:
-        del request.session['player2']
-        messages.success(request, _("Player 2 has been logged out."))
+    if request.method == 'POST':
+        if 'player2' in request.session:
+            del request.session['player2']
+            return JsonResponse({
+                            'success': True,
+                            'message': _("Second player logged out."),
+                            'redirect_url': '/index/'
+                            }, status=200)
+        else:
+            return JsonResponse({
+                            'success': False,
+                            'message': _("No Player 2 is currently logged in."),
+                            'redirect_url': '/index/'
+                            }, status=200)
     else:
-        messages.error(request, _("No Player 2 is currently logged in."))
-    return redirect('index')
+        redirect("index")
 
 
 def save_game_result(request):
@@ -433,6 +449,7 @@ def tournament_name_user(request, player_id, player_number):
             'message': _("Invalid request method."),
         }, status=405)
 
+@login_required
 def tournament(request):
     player = Profile.objects.get(user=request.user)
     c_form = CreateTournamentForm(request.POST)
@@ -457,6 +474,7 @@ def second_player_tournament(request):
         if user2:
             profile2 = Profile.objects.get(user=user2)
             profile2.is_online = True
+            profile2.save()
             request.session['player2'] = {
                 'display_name': profile2.display_name,
                 'avatar_url': profile2.avatar.url if profile2.avatar else '',
@@ -495,6 +513,7 @@ def third_player_tournament(request):
         if user:
             profile3 = Profile.objects.get(user=user)
             profile3.is_online = True
+            profile3.save()
             request.session['player3'] = {
                 'display_name': profile3.display_name,
                 'avatar_url': profile3.avatar.url if profile3.avatar else '',
@@ -533,6 +552,7 @@ def forth_player_tournament(request):
         if user:
             profile4 = Profile.objects.get(user=user)
             profile4.is_online = True
+            profile4.save()
             request.session['player4'] = {
                 'display_name': profile4.display_name,
                 'avatar_url': profile4.avatar.url if profile4.avatar else '',
@@ -717,3 +737,26 @@ def tournament_detail(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     # Optionally, add players and other data
     return render(request, 'tournament_detail.html', {'tournament': tournament})
+
+def logout_tournament(request, player_number):
+    player_key = f'player{player_number}'  # Format the dynamic key
+    player_data = request.session.get(player_key)
+    if player_data:
+        player_id = player_data.get('id')
+    player = Profile.objects.get(id=player_id)
+    player.is_online = False
+    player.save()
+    if player_key in request.session:
+        del request.session[player_key]  # Remove the correct session key
+        return JsonResponse({
+            'success': True,
+            'message': _(f"Player {player_number} logged out.{player.id}"),
+            'redirect_url': '/tournament/'
+        }, status=200)
+    else:
+        return JsonResponse({
+            'success': False,
+            'message': _(f"No Player {player_number} is currently logged in."),
+            'redirect_url': '/tournament/'
+        }, status=200)
+

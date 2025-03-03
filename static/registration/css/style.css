@@ -20,6 +20,14 @@
     margin-left: 10px;
 }
 
+.online {
+    color: green;
+}
+
+.offline {
+    color: red;
+}
+
 * {
 	margin: 0;
 	padding: 0;
