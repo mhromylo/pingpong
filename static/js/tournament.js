@@ -22,20 +22,22 @@ function setupCanvas() {
 
 function disableButtons() {
     // Get the buttons by class or ID
-    const buttons = document.querySelectorAll('.startTournamentGame');
-    buttons.forEach((button) => {
-        button.disabled = true;  // Disable the button
-        button.classList.add('disabled');  // Add Bootstrap's 'disabled' class for styling
+    const buttons = document.querySelectorAll('button, a, form');
+    buttons.forEach((element) => {
+        element.disabled = true;  // Disable the button
+        element.classList.add('disabled');  // Add Bootstrap's 'disabled' class for styling
+        element.style.pointerEvents = 'none';
     });
 }
 
 // Function to enable the buttons (e.g., when the game ends)
 function enableButtons() {
     // Get the buttons by class or ID
-    const buttons = document.querySelectorAll('.startTournamentGame');
-    buttons.forEach((button) => {
-        button.disabled = false;  // Enable the button
-        button.classList.remove('disabled');  // Remove the 'disabled' class
+    const buttons = document.querySelectorAll('button, a, form');
+    buttons.forEach((element) => {
+        element.disabled = false;  // Enable the button
+        element.classList.remove('disabled');  // Remove the 'disabled' class
+        element.style.pointerEvents = 'auto'; 
     });
 }
 

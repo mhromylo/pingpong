@@ -46,16 +46,23 @@ class Game(models.Model):
     TOURNAMENT_GAME = 'tournament_game'
     TOURNAMENT_FINAL = 'tournament_final'
     TOURNAMENT_3OR4 = 'tournament_3or4'
+    PVP = 'PVP'
 
     GAME_TYPE_CHOICES = [
         (TOURNAMENT_GAME, 'Tournament Game'),
         (TOURNAMENT_FINAL, 'Tournament Final'),
         (TOURNAMENT_3OR4, 'Tournament 3rd/4th Place'),
+        (PVP, 'PVP')
     ]
     game_type = models.CharField(max_length=50, choices=GAME_TYPE_CHOICES)
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
     tournament_id = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, choices=[
+        ('waiting', 'Waiting'),
+        ('playing', 'Playing'),
+        ('finished', 'Finished')
+    ], default='waiting')
     class Meta:
         db_table = 'registration_game'
         

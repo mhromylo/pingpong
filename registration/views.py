@@ -15,6 +15,7 @@ from datetime import timedelta
 from django.utils.translation import gettext as _
 import json
 from django.db import transaction
+from django.views.decorators.http import require_GET
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
 from .models import Profile, Game, Tournament
@@ -71,6 +72,7 @@ def check_authentication(request):
 
 @login_required
 @ensure_csrf_cookie
+@require_GET
 def get_csrf_token(request):
     return JsonResponse({"csrf_token": get_token(request)})
 
@@ -256,35 +258,27 @@ def friend_list(request):
 
 @login_required
 def game_setup(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user2 = authenticate(request, username=username, password=password)
-        if user2:
-            player1 = Profile.objects.get(user=request.user)
-            player2 = Profile.objects.get(user=user2)
-            if player1 == player2:
-                return JsonResponse({'success': False, 'message': _("You cannot play against yourself.")})
-            request.session['player2'] = {
-                'display_name': player2.display_name,
-                'avatar_url': player2.avatar.url if player2.avatar else '',
-                'wins': player2.wins,
-                'losses': player2.losses,
-                'id': player2.id,
-            }
-            player2.is_online = True
-            player2.save()
-            return JsonResponse({
-                        'success': True,
-                        'message': _("Second player logined"),
-                        'redirect_url': '/game_setup/'
-                        }, status=200)
-        else:
-            return JsonResponse({
-                        'success': False,
-                        'message': _("Wrong credentials for Player 2"),
-                        }, status=200)
+    player1 = Profile.objects.get(user=request.user)
+    game = Game.objects.filter(player1=player1, game_type=Game.PVP, status = 'waiting').first()
+    if (game):
+        return render(request, 'registration/game_setup.html', {'game': game})
     return render(request, 'registration/game_setup.html', {})
+
+@login_required
+def tournament(request):
+    player = Profile.objects.get(user=request.user)
+    c_form = CreateTournamentForm(request.POST)
+    started_tournament = Tournament.objects.filter(creator=player, status = 'in_progress').first()
+    if (started_tournament):
+        return render(request, 'registration/tournament.html', {'tournament': started_tournament
+    })
+    tournament = Tournament.objects.filter(creator=player, status = 'not_started').first()
+    if (tournament):
+        return render(request, 'registration/tournament.html', {'tournament': tournament
+    })
+    return render(request, 'registration/tournament.html', {
+        'player': player, 'c_form': c_form
+    })
 
 @login_required
 def logout_player2(request):
@@ -331,7 +325,7 @@ def save_game_result(request):
                 return JsonResponse({'success': False, 'message': 'Game result already recorded'}, status=400)
             
             tournament = None
-            if (game.tournament_id != 0):
+            if game.tournament_id and game.tournament_id != 0:
                 tournament = get_object_or_404(Tournament, id=game.tournament_id)
             with transaction.atomic():  
                 if player1_score > player2_score:
@@ -339,6 +333,8 @@ def save_game_result(request):
                     player2.update_stats(won=0)
                     game.winner = player1
                     game.loser = player2
+                    game.status = "finished"
+                    game.save()
                     if (tournament and (game.game_type == Game.TOURNAMENT_GAME)):
                         if not tournament.first_tour_winners.filter(id=player1.id).exists():
                             tournament.first_tour_winners.add(player1)
@@ -349,37 +345,42 @@ def save_game_result(request):
                     game.loser = player1
                     player2.update_stats(won=1)
                     player1.update_stats(won=0)
+                    game.status = "finished"
+                    game.save()
                     if (tournament and (game.game_type == Game.TOURNAMENT_GAME)):
                         if not tournament.first_tour_winners.filter(id=player2.id).exists():
                             tournament.first_tour_winners.add(player2)
                         if not tournament.first_tour_losers.filter(id=player1.id).exists():
                             tournament.first_tour_losers.add(player1)
-                if (tournament.first_tour_winners.count() == 2 and (game.game_type == Game.TOURNAMENT_GAME)):
-                            final = Game.objects.filter(tournament_id=tournament.id, game_type=Game.TOURNAMENT_FINAL).first()
-                            if not final:
-                                finalists = list(tournament.first_tour_winners.all())
-                                final = Game.objects.create(game_type=Game.TOURNAMENT_FINAL, player1=finalists[0], player2=finalists[1], tournament_id=game.tournament_id)
-                                final.save()
-                                tournament.games.add(final)
-                if (tournament.first_tour_losers.count() == 2 and (game.game_type == Game.TOURNAMENT_GAME)):
-                     third_place_match = Game.objects.filter(tournament_id=tournament.id, game_type=Game.TOURNAMENT_3OR4).first()
-                     if not third_place_match:
-                        losers = list(tournament.first_tour_losers.all())
-                        third_place_match = Game.objects.create(game_type=Game.TOURNAMENT_3OR4, player1=losers[0], player2=losers[1], tournament_id=game.tournament_id)
-                        third_place_match.save()
-                        tournament.games.add(third_place_match)
-                if (game.game_type == Game.TOURNAMENT_FINAL):
-                        tournament.winner = game.winner
-                        tournament.second = game.loser
+                if (game.game_type == Game.PVP):
+                    return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/game_setup/'})
+                if tournament:
+                    if (tournament.first_tour_winners.count() == 2 and (game.game_type == Game.TOURNAMENT_GAME)):
+                                final = Game.objects.filter(tournament_id=tournament.id, game_type=Game.TOURNAMENT_FINAL).first()
+                                if not final:
+                                    finalists = list(tournament.first_tour_winners.all())
+                                    final = Game.objects.create(game_type=Game.TOURNAMENT_FINAL, player1=finalists[0], player2=finalists[1], tournament_id=game.tournament_id)
+                                    final.save()
+                                    tournament.games.add(final)
+                    if (tournament.first_tour_losers.count() == 2 and (game.game_type == Game.TOURNAMENT_GAME)):
+                        third_place_match = Game.objects.filter(tournament_id=tournament.id, game_type=Game.TOURNAMENT_3OR4).first()
+                        if not third_place_match:
+                            losers = list(tournament.first_tour_losers.all())
+                            third_place_match = Game.objects.create(game_type=Game.TOURNAMENT_3OR4, player1=losers[0], player2=losers[1], tournament_id=game.tournament_id)
+                            third_place_match.save()
+                            tournament.games.add(third_place_match)
+                    if (game.game_type == Game.TOURNAMENT_FINAL):
+                            tournament.winner = game.winner
+                            tournament.second = game.loser
 
-                if (game.game_type == Game.TOURNAMENT_3OR4):
-                    tournament.third = game.winner
-                    tournament.fourth = game.loser
-                game.player1_score = player1_score
-                game.player2_score = player2_score
-                game.save()  # Save changes
-                tournament.save()
-            return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/tournament/'})
+                    if (game.game_type == Game.TOURNAMENT_3OR4):
+                        tournament.third = game.winner
+                        tournament.fourth = game.loser
+                    game.player1_score = player1_score
+                    game.player2_score = player2_score
+                    game.save()  # Save changes
+                    tournament.save()
+                return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/tournament/'})
 
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
@@ -449,21 +450,7 @@ def tournament_name_user(request, player_id, player_number):
             'message': _("Invalid request method."),
         }, status=405)
 
-@login_required
-def tournament(request):
-    player = Profile.objects.get(user=request.user)
-    c_form = CreateTournamentForm(request.POST)
-    started_tournament = Tournament.objects.filter(creator=player, status = 'in_progress').first()
-    if (started_tournament):
-        return render(request, 'registration/tournament.html', {'tournament': started_tournament
-    })
-    tournament = Tournament.objects.filter(creator=player, status = 'not_started').first()
-    if (tournament):
-        return render(request, 'registration/tournament.html', {'tournament': tournament
-    })
-    return render(request, 'registration/tournament.html', {
-        'player': player, 'c_form': c_form
-    })
+
 
 @login_required
 def second_player_tournament(request):
@@ -475,6 +462,7 @@ def second_player_tournament(request):
             profile2 = Profile.objects.get(user=user2)
             profile2.is_online = True
             profile2.save()
+            redirect_url = request.META.get('HTTP_REFERER', '/default-page/')
             request.session['player2'] = {
                 'display_name': profile2.display_name,
                 'avatar_url': profile2.avatar.url if profile2.avatar else '',
@@ -492,7 +480,7 @@ def second_player_tournament(request):
                 'player2_losses': profile2.losses,
                 'player2_id': profile2.id,
                 'player2_avatar': profile2.avatar.url if profile2.avatar else '',
-                'redirect_url': '/tournament/'  # Optional: Redirect to the tournament page
+                'redirect_url': redirect_url  # Optional: Redirect to the tournament page
             })
         else:
             return JsonResponse({
@@ -704,7 +692,6 @@ def start_tournament(request, tournament_id):
 def finish_tournament(request, tournament_id):
     try:
         tournament = Tournament.objects.get(id=tournament_id)
-
         tournament.status = 'completed'
         tournament.save()
         
@@ -746,17 +733,38 @@ def logout_tournament(request, player_number):
     player = Profile.objects.get(id=player_id)
     player.is_online = False
     player.save()
+    redirect_url = request.META.get('HTTP_REFERER', '/default-page/')
     if player_key in request.session:
         del request.session[player_key]  # Remove the correct session key
         return JsonResponse({
             'success': True,
             'message': _(f"Player {player_number} logged out.{player.id}"),
-            'redirect_url': '/tournament/'
+            'redirect_url': redirect_url
         }, status=200)
     else:
         return JsonResponse({
             'success': False,
             'message': _(f"No Player {player_number} is currently logged in."),
-            'redirect_url': '/tournament/'
+            'redirect_url': redirect_url
         }, status=200)
+
+@login_required
+def create_game(request):
+    if request.method == 'POST':
+        player1 = Profile.objects.get(user=request.user)
+        game = Game.objects.create(game_type=Game.PVP, player1=player1)
+        game.save()
+        return JsonResponse({
+                'success': True,
+                'message': _("Game for result created successfully!"),
+                'redirect_url': '/game_setup/'  # Optional: Redirect to the tournament page
+            })
+    else:
+        # Handle non-POST requests (e.g., GET)
+        return JsonResponse({
+            'success': False,
+            'message': _("Invalid request method."),
+            'redirect_url': '/index/'  # Redirect to the tournament page
+        }, status=405)
+
 
