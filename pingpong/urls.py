@@ -51,7 +51,7 @@ path('logout/', views.user_logout, name='logout'),
 
     path('game_setup/', views.game_setup, name='game_setup'),
 
-    path('logout_player2/', views.logout_player2, name='logout_player2'),
+    path('logout_game_setup/', views.logout_game_setup, name='logout_game_setup'),
     path('save_game_result/', views.save_game_result, name='save_game_result'),
     path('tournament/', views.tournament, name='tournament'),
     path('create_game/', views.create_game, name='create_game'),

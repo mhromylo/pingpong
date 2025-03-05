@@ -43,6 +43,7 @@ function enableButtons() {
 
 $(document).ready(function ()
 {
+    
   if (canvas)
   {
       ctx = canvas.getContext("2d");
@@ -133,7 +134,11 @@ $(document).ready(function ()
           if (player2.score === 3) {
             alert("GAME OVER\n\nPLAYER 2 WINS");
             clearInterval(interval);
-            saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
+            if (player2.player_id != 0){
+                saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
+            }
+            else
+                enableButtons();
           }
         } else if (x + ballRadius > canvas.width) {
           player1.score++;
@@ -141,7 +146,11 @@ $(document).ready(function ()
           if (player1.score === 3) {
             alert("GAME OVER\n\nPLAYER 1 WINS");
             clearInterval(interval);
-            saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
+            if (player1.player_id != 0){
+                saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
+            }
+            else
+                enableButtons();
           }
         }
 
@@ -318,125 +327,66 @@ $(document).ready(function ()
 
         // Start game loop
         interval = setInterval(draw, 10);
-      }
+    }
 
-    //   $(document).on("click", "#startTournamentGame", function () {
-    //     setupCanvas();
-    //     const game_id = $(this).data("game-id");
-    //     const player1_id = $(this).data("player1-id");
-    //     const player2_id = $(this).data("player2-id");
-    
-    //     console.log('game:', game_id); // Log the payload
-    //     console.log('player1:', player1_id);
-    //     console.log('player2_id:', player2_id);
-    //    const gameCanvas = document.getElementById('myCanvas');
-    //    // Scroll to the canvas element  
-    //    gameCanvas.scrollIntoView({
-    //        behavior: 'smooth',  // Smooth scrolling
-    //        block: 'center',     // Scroll to the center of the canvas element
-    //        inline: 'center'     // Optionally, center horizontally as well
-    //    });
-
-    //     startGame("human", "red", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
-    //   });
-
-
-      
-    // $(document).on("click", ".startTournamentGame", function () {
-    //     const game_id = $(this).data("game-id");
-    //     const player1_id = $(this).data("player1-id");
-    //     const player2_id = $(this).data("player2-id");
-    
-    //     console.log('game:', game_id);
-    //     console.log('player1:', player1_id);
-    //     console.log('player2:', player2_id);
-
-    //     const gameCanvas = document.getElementById('myCanvas');
-    //    // Scroll to the canvas element  
-    //     gameCanvas.scrollIntoView({
-    //        behavior: 'smooth',  // Smooth scrolling
-    //        block: 'center',     // Scroll to the center of the canvas element
-    //        inline: 'center'     // Optionally, center horizontally as well
-    //     });
-    
-    //     // Call your function
-    //     startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
-    // });
-
-//     document.querySelectorAll('.startTournamentGame').forEach(button => {
-//         button.addEventListener('click', function () {
-//             console.log('Button clicked!'); // Check if this logs when the button is clicked
-
-//             const game_id = this.getAttribute('data-game-id');
-//             const player1_id = this.getAttribute('data-player1-id');
-//             const player2_id = this.getAttribute('data-player2-id');
-
-//             console.log('game:', game_id);
-//             console.log('player1:', player1_id);
-//             console.log('player2:', player2_id);
-
-//             // Call your function
-//             const gameCanvas = document.getElementById('myCanvas');
-//    // Scroll to the canvas element  
-//             gameCanvas.scrollIntoView({
-//                 behavior: 'smooth',  // Smooth scrolling
-//                 block: 'center',     // Scroll to the center of the canvas element
-//                 inline: 'center'     // Optionally, center horizontally as well
-//                 });
-
-//     // Call your function
-//             startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
-//         });
-//     });
-
+    // Attach event listeners for dynamically loaded buttons
     document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("startTournamentGame")) {
-            console.log('Button clicked!');
+        if (event.target.classList.contains("beginGame")) {
+            console.log("beginGame button clicked!");
+            disableButtons();
 
+            const game_id = event.target.getAttribute('data-game-id');
+            const player1_id = event.target.getAttribute('data-player1-id');
+            const player2_id = event.target.getAttribute('data-player2-id');
+            const player1Type = document.getElementById("player1Type").value;
+            const player1Colour = document.getElementById("player1Colour").value;
+            const player2Colour = document.getElementById("player2Colour").value;
+            const player2Type = document.getElementById("player2Type").value;
+            const chosenMap = document.getElementById("chosenMap").value;
+            const extrasOnOff = document.getElementById("extrasAreOn").value;
+
+            setupCanvas();
+            startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, game_id, player1_id, player2_id);
+        }
+
+        if (event.target.classList.contains("startTournamentGame")) {
+            console.log("startTournamentGame button clicked!");
             disableButtons();
 
             const game_id = event.target.getAttribute('data-game-id');
             const player1_id = event.target.getAttribute('data-player1-id');
             const player2_id = event.target.getAttribute('data-player2-id');
 
-            console.log('game:', game_id);
-            console.log('player1:', player1_id);
-            console.log('player2:', player2_id);
             setupCanvas();
-            const gameCanvas = document.getElementById('myCanvas');
-            if (gameCanvas) {
-                gameCanvas.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-            } else {
-                console.error("Canvas element not found!");
-            }
-
             startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
         }
     });
-    
-    //   $(document).on("click", "#runButton", function () {
-    //     setupCanvas();
-    //     const player1Type = document.getElementById("player1Type").value;
-    //     const player1Colour = document.getElementById("player1Colour").value;
-    //     const player2Colour = document.getElementById("player2Colour").value;
-    //     const player2Type = document.getElementById("player2Type").value;
-	//    const chosenMap = document.getElementById("chosenMap").value;
-	//    const extrasOnOff = document.getElementById("extrasAreOn").value;
-      
-    //     console.log("Game Starting...");
-    //     console.log("Player 1 Type:", player1Type);
-    //     console.log("Player 1 Colour:", player1Colour);
-    //     console.log("Player 2 Colour:", player2Colour);
-    //     console.log("Player 2 Type:", player2Type);
-      
-    //     startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 1, 1, 2);
-    //   });
-    
+
+        
+        $(document).on("click", "#runButton", function () {
+            setupCanvas();
+            const player1Type = document.getElementById("player1Type").value;
+            const player1Colour = document.getElementById("player1Colour").value;
+            const player2Colour = document.getElementById("player2Colour").value;
+            const player2Type = document.getElementById("player2Type").value;
+        const chosenMap = document.getElementById("chosenMap").value;
+        const extrasOnOff = document.getElementById("extrasAreOn").value;
+        
+            console.log("Game Starting...");
+            console.log("Player 1 Type:", player1Type);
+            console.log("Player 1 Colour:", player1Colour);
+            console.log("Player 2 Colour:", player2Colour);
+            console.log("Player 2 Type:", player2Type);
+        
+            startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 0, 0, 0);
+        });
+        
 
 
-  }
-  })
-  function getCSRFToken() {
+
+
+
+    function getCSRFToken() {
     let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]')?.value;
     if (!csrfToken) {
         csrfToken = document.cookie.split('; ')
@@ -449,50 +399,54 @@ $(document).ready(function ()
     return csrfToken;
     }
 
-function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_score){
-    const csrfToken = getCSRFToken();
+    function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_score){
+        const csrfToken = getCSRFToken();
 
-    if (!game_id || !player1_id || !player2_id) {
-        console.error("Missing game/player IDs!");
-        return;
-    }
+        if (!game_id || !player1_id || !player2_id) {
+            console.error("Missing game/player IDs!");
+            return;
+        }
 
-    const payload = {
-        game_id: game_id,
-        player1_id: player1_id,
-        player2_id: player2_id,
-        player1_score: player1_score,
-        player2_score: player2_score,
-    };
-
-    console.log('Payload:', payload); // Log the payload
-
-    fetch('/save_game_result/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-        },
-        body: JSON.stringify({
+        const payload = {
             game_id: game_id,
             player1_id: player1_id,
             player2_id: player2_id,
             player1_score: player1_score,
             player2_score: player2_score,
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            if (data.redirect_url) {
-                fetchNewCSRFToken();
-                enableButtons();
-                loadPage(data.redirect_url); // Dynamically load the login page
+        };
+
+        console.log('Payload:', payload); // Log the payload
+
+        fetch('/save_game_result/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({
+                game_id: game_id,
+                player1_id: player1_id,
+                player2_id: player2_id,
+                player1_score: player1_score,
+                player2_score: player2_score,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.redirect_url) {
+                    fetchNewCSRFToken();
+                    enableButtons();
+                    loadPage(data.redirect_url); // Dynamically load the login page
+                }
+                console.log('Game result saved:', data.message);
+            } else {
+                console.error('Error saving game result:', data.message);
             }
-            console.log('Game result saved:', data.message);
-        } else {
-            console.error('Error saving game result:', data.message);
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    
+      
+}});
