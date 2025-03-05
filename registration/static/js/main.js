@@ -17,20 +17,25 @@ async function checkAuth() {
 }
 
 export function fetchNewCSRFToken() {
-    fetch("/get_csrf_token/")
+    fetch("/get_csrf_token/", {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
     .then(response => response.json())
     .then(data => {
         if (data.csrf_token) {
             document.querySelector('meta[name="csrf-token"]').setAttribute("content", data.csrf_token);
-            var csrfInput = document.querySelector('#logout-form input[name="csrfmiddlewaretoken"]');
+            let csrfInput = document.querySelector('#logout-form input[name="csrfmiddlewaretoken"]');
             if (csrfInput) {
                 csrfInput.value = data.csrf_token;
             }
+        } else {
+            console.error("CSRF token response did not contain a token.");
         }
     })
     .catch(error => console.error("CSRF Token Fetch Error:", error));
 }
-
 
     function getCSRFToken() {
         let csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]');
@@ -55,23 +60,24 @@ export function fetchNewCSRFToken() {
             .then(html => {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = html;
-
-            // Extract the content from the response
-            const newContent = tempDiv.querySelector('#content');
-            if (newContent) {
-                document.getElementById('content').innerHTML = newContent.innerHTML;
-            }
-
-                // Reattach event listeners for forms after loading new content
-            attachFormEventListeners();
-            checkAuth();
-                
-                // Add to browser history
-            if (addToHistory) {
-                history.pushState({ path: url }, "", url);
-            }
-        })
-        .catch(error => console.error("Error loading page:", error));
+    
+                // Extract and replace content
+                const newContent = tempDiv.querySelector('#content');
+                if (newContent) {
+                    document.getElementById('content').innerHTML = newContent.innerHTML;
+                }
+    
+                // Reattach event listeners for dynamically loaded forms
+                attachFormEventListeners();
+                fetchNewCSRFToken(); // Refresh CSRF token for dynamically loaded forms
+                checkAuth();
+    
+                // Update browser history
+                if (addToHistory) {
+                    history.pushState({ path: url }, "", url);
+                }
+            })
+            .catch(error => console.error("Error loading page:", error));
     }
 
     function loadNavbar(url, additionalParam = null) {
@@ -98,60 +104,45 @@ export function fetchNewCSRFToken() {
     }
 
     function attachFormEventListeners() {
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', handleFormSubmit);
+        document.querySelectorAll('form').forEach(form => {
+            form.removeEventListener('submit', handleFormSubmit); // Remove old listener to prevent duplicates
+            form.addEventListener('submit', handleFormSubmit);  // Reattach new listener
         });
     }
+
     function handleFormSubmit(event) {
-        event.preventDefault(); // Prevent default form submission
-        const form = event.target;
-        const formData = new FormData(form);
-        const csrfToken = getCSRFToken();
+    event.preventDefault(); // Prevent default form submission
+    const form = event.target;
+    const formData = new FormData(form);
+    let csrfToken = getCSRFToken();
 
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest', // Indicate this is an AJAX request
-            },
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message); // Show success message
-                    if (data.goal){
-                        updatePlayerProfile(data);
-                    }
-                    if (data.new_display_name){
-                        updateDisplayName(data);
-                    }
-                    if (data.redirect_url) {
-                        loadPage(data.redirect_url); // Dynamically load the login page
-                    }
-                } else {
-                    // Display form errors
-                    const errorMessage = data.message || 'There was an error, please try again later.';
-                    alert(errorMessage);
-
-                    // Optionally, display form errors in the UI
-                    if (data.errors) {
-                        const errorContainer = document.createElement('div');
-                        errorContainer.className = 'alert alert-danger';
-                        for (const [field, errors] of Object.entries(data.errors)) {
-                            errors.forEach(error => {
-                                errorContainer.innerHTML += `<p>${field}: ${error}</p>`;
-                            });
-                        }
-                        form.prepend(errorContainer);
-                    }
-                }
-            })
-            .catch(error => {
-                console.error("Error submitting form", error);
-        });
+    if (!csrfToken) {
+        console.error("CSRF token missing!");
+        return;
     }
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            if (data.redirect_url) {
+                loadPage(data.redirect_url);
+            }
+        } else {
+            alert(data.message || 'There was an error, please try again later.');
+        }
+    })
+    .catch(error => console.error("Error submitting form", error));
+}
+
 
     function joinTournament(tournamentId) {
         fetch(`/join_tournament/${tournamentId}/`, {

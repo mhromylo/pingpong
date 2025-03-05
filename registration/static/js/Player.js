@@ -52,9 +52,9 @@ export default class Player
 	{
 		ctx.beginPath();
 		ctx.rect(this.paddleX, this.paddleY, this.paddleWidth, this.paddleHeight);
-		console.log("Player Paddle Colour:", this.paddleColour);
+		//console.log("Player Paddle Colour:", this.paddleColour);
 		ctx.fillStyle = this.paddleColour.toString();
-		console.log("Player Paddle Colour:", ctx.fillStyle);
+		//console.log("Player Paddle Colour:", ctx.fillStyle);
 		ctx.fill();
 		ctx.closePath();
 	}

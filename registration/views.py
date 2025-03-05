@@ -1,6 +1,6 @@
 from random import shuffle
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -15,7 +15,7 @@ from datetime import timedelta
 from django.utils.translation import gettext as _
 import json
 from django.db import transaction
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_http_methods
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
 from .models import Profile, Game, Tournament
@@ -70,11 +70,11 @@ def check_authentication(request):
         return JsonResponse({"authenticated": True})
     return JsonResponse({"authenticated": False})
 
-@login_required
-@ensure_csrf_cookie
-@require_GET
+@csrf_exempt
 def get_csrf_token(request):
-    return JsonResponse({"csrf_token": get_token(request)})
+    if request.headers.get('X-Requested-With') != 'XMLHttpRequest':
+        return HttpResponseForbidden("Invalid request.")
+    return JsonResponse({'csrf_token': get_token(request)})
 
 def register(request):
     if request.method == 'POST':
@@ -281,24 +281,27 @@ def tournament(request):
     })
 
 @login_required
-def logout_player2(request):
-    if request.method == 'POST':
-        if 'player2' in request.session:
-            del request.session['player2']
-            return JsonResponse({
-                            'success': True,
-                            'message': _("Second player logged out."),
-                            'redirect_url': '/index/'
-                            }, status=200)
-        else:
-            return JsonResponse({
-                            'success': False,
-                            'message': _("No Player 2 is currently logged in."),
-                            'redirect_url': '/index/'
-                            }, status=200)
-    else:
-        redirect("index")
+def logout_game_setup(request):
 
+    player_data = request.session.get('player2')
+    if player_data:
+        player_id = player_data.get('id')
+    player = Profile.objects.get(id=player_id)
+    player.is_online = False
+    player.save()
+    if 'player2' in request.session:
+        del request.session['player2']  # Remove the correct session key
+        return JsonResponse({
+            'success': True,
+            'message': _(f"Player 2 logged out.{player.id}"),
+            'redirect_url': '/game_setup/'
+        }, status=200)
+    else:
+        return JsonResponse({
+            'success': False,
+            'message': _(f"No Player 2 is currently logged in."),
+            'redirect_url': '/game_setup/'
+        }, status=200)
 
 def save_game_result(request):
     if request.method == 'POST':
@@ -733,21 +736,22 @@ def logout_tournament(request, player_number):
     player = Profile.objects.get(id=player_id)
     player.is_online = False
     player.save()
-    redirect_url = request.META.get('HTTP_REFERER', '/default-page/')
     if player_key in request.session:
         del request.session[player_key]  # Remove the correct session key
         return JsonResponse({
             'success': True,
             'message': _(f"Player {player_number} logged out.{player.id}"),
-            'redirect_url': redirect_url
+            'redirect_url': '/tournament/'
         }, status=200)
     else:
         return JsonResponse({
             'success': False,
             'message': _(f"No Player {player_number} is currently logged in."),
-            'redirect_url': redirect_url
+            'redirect_url': '/tournament/'
         }, status=200)
 
+
+    
 @login_required
 def create_game(request):
     if request.method == 'POST':

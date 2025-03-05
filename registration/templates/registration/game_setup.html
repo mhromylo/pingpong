@@ -4,38 +4,78 @@
 <div id="content">
     {% load i18n %}
     <h1>{% trans "Set Up Your Game" %}</h1>
-    <div class="row justify-content-between mb-4">
+    <div class="row d-flex justify-content-between align-items-center mb-4">
         <!-- Player 1 (Left Side) -->
-        <div class="col-md-5">
+        <div class="col-md-4">
             <div id="player1-profile" class="card p-3">
                 <h5 class="card-title">{% trans "Player 1:" %}</h5>
                 <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar rounded-circle mb-3 mx-auto d-block" width="100" height="100">
                 <p id="display_name"><strong>{% trans "Display Name:" %}</strong> {{ user.profile.display_name }}</p>
                 <p><strong>{% trans "Wins:" %}</strong> {{ user.profile.wins }}</p>
                 <p><strong>{% trans "Losses:" %}</strong> {{ user.profile.losses }}</p>
+    
+                <div class="card p-3 mt-3">
+                    <h4 class="text-center">{% trans "Player 1 Settings" %}</h4>
+                    <label for="player1Type" class="form-label">{% trans "Type:" %}</label>
+                    <select id="player1Type" class="form-select">
+                        <option value="human">{% trans "Human" %}</option>
+                        <option value="ai">{% trans "AI" %}</option>
+                    </select>
+    
+                    <label for="player1Colour" class="form-label mt-2">{% trans "Colour:" %}</label>
+                    <select id="player1Colour" class="form-select">
+                        <option value="red">{% trans "Red" %}</option>
+                        <option value="green">{% trans "Green" %}</option>
+                        <option value="blue">{% trans "Blue" %}</option>
+                        <option value="orange">{% trans "Orange" %}</option>
+                        <option value="purple">{% trans "Purple" %}</option>
+                        <option value="gold">{% trans "Gold" %}</option>
+                        <option value="black">{% trans "Black" %}</option>
+                    </select>
+                </div>
             </div>
         </div>
-        <div class="col-md-5">
-            {% if not game %}
-            {% if request.session.player2 %}
-            <form id="create-game-form" method="POST" action="/create_game/">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success btn-lg">Play for result</button>
-            </form>
-            {% endif %}
-            {% endif %}
-            {% if game %}
-            <h2 class="card-title">{% trans "Game:" %} {{ game.status }}</h2>
-            <button class="startTournamentGame btn btn-primary mt-2"
-                                    data-game-id="{{ game.id }}" 
-                                    data-player1-id="{{ game.player1.id }}" 
-                                    data-player2-id="{{ request.session.player2.id }}">
-                                Start Game
-                            </button>
-            {% endif %}
+    
+        <!-- Game Customization Column (Center) -->
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h4>{% trans "Game Settings" %}</h4>
+                <label for="chosenMap" class="form-label">{% trans "Map:" %}</label>
+                <select id="chosenMap" class="form-select">
+                    <option value="normal">{% trans "Normal" %}</option>
+                    <option value="box">{% trans "Box" %}</option>
+                    <option value="twoLines">{% trans "Two Lines" %}</option>
+                </select>
+    
+                <label for="extrasAreOn" class="form-label mt-2">{% trans "Extras:" %}</label>
+                <select id="extrasAreOn" class="form-select">
+                    <option value="OFF">{% trans "OFF" %}</option>
+                    <option value="ON">{% trans "ON" %}</option>
+                </select>
+    
+                <!-- Game Start Button -->
+                {% if not game %}
+                    {% if request.session.player2 %}
+                        <form id="create-game-form" method="POST" action="/create_game/">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-lg mt-3">{% trans "Play for result" %}</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+                {% if game and request.session.player2 %}
+                    <h5 class="mt-3">{% trans "Game:" %} {{ game.status }}</h5>
+                    <button class="beginGame btn btn-primary mt-2"
+                            data-game-id="{{ game.id }}" 
+                            data-player1-id="{{ game.player1.id }}" 
+                            data-player2-id="{{ request.session.player2.id }}">
+                        {% trans "Start Game" %}
+                    </button>
+                {% endif %}
+            </div>
         </div>
+    
         <!-- Player 2 (Right Side) -->
-        <div class="col-md-5">
+        <div class="col-md-4">
             <div id="player2-profile" class="card p-3">
                 <h5 class="card-title">{% trans "Player 2:" %}</h5>
                 {% if request.session.player2 %}
@@ -45,9 +85,29 @@
                     <p id="player2-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player2.losses }}</p>
                 {% endif %}
     
+                <div class="card p-3 mt-3">
+                    <h4 class="text-center">{% trans "Player 2 Settings" %}</h4>
+                    <label for="player2Type" class="form-label">{% trans "Type:" %}</label>
+                    <select id="player2Type" class="form-select">
+                        <option value="human">{% trans "Human" %}</option>
+                        <option value="ai">{% trans "AI" %}</option>
+                    </select>
+    
+                    <label for="player2Colour" class="form-label mt-2">{% trans "Colour:" %}</label>
+                    <select id="player2Colour" class="form-select">
+                        <option value="green">{% trans "Green" %}</option>
+                        <option value="red">{% trans "Red" %}</option>
+                        <option value="blue">{% trans "Blue" %}</option>
+                        <option value="orange">{% trans "Orange" %}</option>
+                        <option value="purple">{% trans "Purple" %}</option>
+                        <option value="gold">{% trans "Gold" %}</option>
+                        <option value="black">{% trans "Black" %}</option>
+                    </select>
+                </div>
+    
                 <!-- Login Form for Player 2 -->
                 {% if not request.session.player2 %}
-                    <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
+                    <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mt-3">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="username" class="form-label">{% trans "Player 2 Username:" %}</label>
@@ -62,9 +122,9 @@
                 {% endif %}
     
                 {% if request.session.player2 %}
-                    <form action="/logout_tournament/2/" method="post" id="logout-tournament-form">
+                    <form action="/logout_game_setup/" method="post" id="logout-tournament-form" class="mt-3">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+                        <button type="submit" class="btn btn-danger w-100">{% trans "Log Out" %}</button>
                     </form>
                 {% endif %}
             </div>
@@ -72,62 +132,6 @@
     </div>
     
     
-    <div class="menu-container">
-        <div class="menu">
-            <label for="player1Type">{% trans "Player 1:" %}</label>
-            <select id="player1Type">
-                <option value="human">{% trans "Human" %}</option>
-                <option value="ai">{% trans "AI" %}</option>
-            </select>
-        </div>
-        <div class="menu">
-            <label for="player1Colour">{% trans "Player 1 Colour:" %}</label>
-            <select id="player1Colour">
-                <option value="red">{% trans "Red" %}</option>
-                <option value="green">{% trans "Green" %}</option>
-                <option value="blue">{% trans "Blue" %}</option>
-                <option value="orange">{% trans "Orange" %}</option>
-                <option value="purple">{% trans "Purple" %}</option>
-                <option value="gold">{% trans "Gold" %}</option>
-                <option value="black">{% trans "Black" %}</option>
-            </select>
-        </div>
-        <div class="menu">
-            <label for="player2Colour">{% trans "Player 2 Colour:" %}</label>
-            <select id="player2Colour">
-                <option value="green">{% trans "Green" %}</option>
-                <option value="red">{% trans "Red" %}</option>
-                <option value="blue">{% trans "Blue" %}</option>
-                <option value="orange">{% trans "Orange" %}</option>
-                <option value="purple">{% trans "Purple" %}</option>
-                <option value="gold">{% trans "Gold" %}</option>
-                <option value="black">{% trans "Black" %}</option>
-            </select>
-        </div>
-        <div class="menu">
-            <label for="player2Type">{% trans "Player 2:" %}</label>
-            <select id="player2Type">
-                <option value="human">{% trans "Human" %}</option>
-                <option value="ai">{% trans "AI" %}</option>
-            </select>
-        </div>
-    </div>
-    <div class="menu">
-        <label for="chosenMap">{% trans "Map:" %}</label>
-        <select id="chosenMap">
-            <option value="normal">{% trans "Normal" %}</option>
-            <option value="box">{% trans "Box" %}</option>
-            <option value="twoLines">{% trans "Two Lines" %}</option>
-        </select>
-    </div>
-    <div class="menu">
-        <label for="extrasAreOn">{% trans "Extras:" %}</label>
-        <select id="extrasAreOn">
-            <option value="OFF">{% trans "OFF" %}</option>
-            <option value="ON">{% trans "ON" %}</option>
-        </select>
-    </div>
-
     <!-- Game Canvas Section -->
     <div class="game-canvas">
         <canvas id="myCanvas" width="720" height="480"></canvas>
