@@ -9,6 +9,8 @@ class Profile(models.Model):
     display_name = models.CharField(max_length=50, unique=True, null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png')
     wins = models.PositiveIntegerField(default=0)
+    tournament_wins = models.PositiveIntegerField(default=0)
+    tournament_play = models.PositiveIntegerField(default=0)
     losses = models.PositiveIntegerField(default=0)
     friends = models.ManyToManyField('self', blank=True)
     is_online = models.BooleanField(default=False)
@@ -29,6 +31,14 @@ class Profile(models.Model):
         else:
             self.losses += 1
         self.save()
+
+    def update_tournament_stats(self, won):
+        if won:
+            self.tournament_wins += 1
+        else:
+            self.tournament_play += 1
+        self.save()
+    
     def get_online_status(self):
         return self.is_online
     

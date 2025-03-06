@@ -375,10 +375,13 @@ def save_game_result(request):
                     if (game.game_type == Game.TOURNAMENT_FINAL):
                             tournament.winner = game.winner
                             tournament.second = game.loser
-
+                            game.winner.update_tournament_stats(won=1)
+                            game.loser.update_tournament_stats(won=0)
                     if (game.game_type == Game.TOURNAMENT_3OR4):
                         tournament.third = game.winner
                         tournament.fourth = game.loser
+                        game.winner.update_tournament_stats(won=1)
+                        game.loser.update_tournament_stats(won=0)
                     game.player1_score = player1_score
                     game.player2_score = player2_score
                     game.save()  # Save changes
