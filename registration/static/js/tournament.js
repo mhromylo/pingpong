@@ -12,38 +12,19 @@ let currentMap;
 let extrasAreOn;
 
 function setupCanvas() {
-  canvas = document.getElementById("myCanvas");
-  if (!canvas) {
-      console.error("Canvas not found!");
-      return;
+    canvas = document.getElementById("myCanvas");
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return;
+    }
+    ctx = canvas.getContext("2d");
   }
-  ctx = canvas.getContext("2d");
-}
-
-function disableButtons() {
-    // Get the buttons by class or ID
-    const buttons = document.querySelectorAll('button, a, form');
-    buttons.forEach((element) => {
-        element.disabled = true;  // Disable the button
-        element.classList.add('disabled');  // Add Bootstrap's 'disabled' class for styling
-        element.style.pointerEvents = 'none';
-    });
-}
-
-// Function to enable the buttons (e.g., when the game ends)
-function enableButtons() {
-    // Get the buttons by class or ID
-    const buttons = document.querySelectorAll('button, a, form');
-    buttons.forEach((element) => {
-        element.disabled = false;  // Enable the button
-        element.classList.remove('disabled');  // Remove the 'disabled' class
-        element.style.pointerEvents = 'auto'; 
-    });
-}
 
 $(document).ready(function ()
 {
-    
+   
+
+    console.log("DOM fully loaded");
   if (canvas)
   {
       ctx = canvas.getContext("2d");
@@ -283,7 +264,6 @@ $(document).ready(function ()
 	   moveDarts();
       }
 
-      // Start the game
       function startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, game_id, player1_id, player2_id) {
 
         
@@ -291,95 +271,141 @@ $(document).ready(function ()
         {
           clearInterval(interval);
         }
-
+    
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-	   mapObstacleSquares = [];
-	   dartsFlying = [];
-
-
+       mapObstacleSquares = [];
+       dartsFlying = [];
+    
+    
         x = canvas.width / 2;
         y = canvas.height / 2;
         dx = 2; 
         dy = 1.5;
-	   currentMap = chosenMap;
-
-	   if (chosenMap === "box")
-	   {
-		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.4, canvas.height*0.4, canvas.width*0.2, canvas.height*0.2, "black"));
-		y = 100;
-	   }
-	   else if (chosenMap === "twoLines")
-	   {
-		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.2, canvas.height*0.2, canvas.width*0.25, canvas.height*0.1, "black"));
-		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.55, canvas.height*0.7, canvas.width*0.25, canvas.height*0.1, "black"));
-   	  }
-
-	  if (extrasOnOff === "ON")
-		extrasAreOn = true;
-	  else
-	  	extrasAreOn = false;
-
-	
-
-
+       currentMap = chosenMap;
+    
+       if (chosenMap === "box")
+       {
+        mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.4, canvas.height*0.4, canvas.width*0.2, canvas.height*0.2, "black"));
+        y = 100;
+       }
+       else if (chosenMap === "twoLines")
+       {
+        mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.2, canvas.height*0.2, canvas.width*0.25, canvas.height*0.1, "black"));
+        mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.55, canvas.height*0.7, canvas.width*0.25, canvas.height*0.1, "black"));
+         }
+    
+      if (extrasOnOff === "ON")
+        extrasAreOn = true;
+      else
+          extrasAreOn = false;
+    
+    
+    
+    
         player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, game_id, player1_id, "r");
         player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, game_id, player2_id, "l");
-
+    
         // Start game loop
         interval = setInterval(draw, 10);
-    }
+      }
 
-    // Attach event listeners for dynamically loaded buttons
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("beginGame")) {
-            console.log("beginGame button clicked!");
-            disableButtons();
-
-            const game_id = event.target.getAttribute('data-game-id');
-            const player1_id = event.target.getAttribute('data-player1-id');
-            const player2_id = event.target.getAttribute('data-player2-id');
-            const player1Type = document.getElementById("player1Type").value;
-            const player1Colour = document.getElementById("player1Colour").value;
-            const player2Colour = document.getElementById("player2Colour").value;
-            const player2Type = document.getElementById("player2Type").value;
-            const chosenMap = document.getElementById("chosenMap").value;
-            const extrasOnOff = document.getElementById("extrasAreOn").value;
-
-            setupCanvas();
-            startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, game_id, player1_id, player2_id);
-        }
-
-        if (event.target.classList.contains("startTournamentGame")) {
-            console.log("startTournamentGame button clicked!");
-            disableButtons();
-
-            const game_id = event.target.getAttribute('data-game-id');
-            const player1_id = event.target.getAttribute('data-player1-id');
-            const player2_id = event.target.getAttribute('data-player2-id');
-
-            setupCanvas();
-            startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
-        }
-    });
-
-        
-        $(document).on("click", "#runButton", function () {
-            setupCanvas();
-            const player1Type = document.getElementById("player1Type").value;
-            const player1Colour = document.getElementById("player1Colour").value;
-            const player2Colour = document.getElementById("player2Colour").value;
-            const player2Type = document.getElementById("player2Type").value;
+      function handleBeginGameClick(event) {
+        setupCanvas();
+        console.log("beginGame button clicked!");
+        disableButtons();
+    
+        const game_id = event.target.getAttribute('data-game-id');
+        const player1_id = event.target.getAttribute('data-player1-id');
+        const player2_id = event.target.getAttribute('data-player2-id');
+        const player1Type = document.getElementById("player1Type").value;
+        const player1Colour = document.getElementById("player1Colour").value;
+        const player2Colour = document.getElementById("player2Colour").value;
+        const player2Type = document.getElementById("player2Type").value;
         const chosenMap = document.getElementById("chosenMap").value;
         const extrasOnOff = document.getElementById("extrasAreOn").value;
+    
+            
+        startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, game_id, player1_id, player2_id);
+    }
+    
+    function handleRunButtonClick(event) {
+        console.log("RunButton button clicked!");
+        setupCanvas();
+        const player1Type = document.getElementById("player1Type").value;
+        const player1Colour = document.getElementById("player1Colour").value;
+        const player2Colour = document.getElementById("player2Colour").value;
+        const player2Type = document.getElementById("player2Type").value;
+        const chosenMap = document.getElementById("chosenMap").value;
+        const extrasOnOff = document.getElementById("extrasAreOn").value;
+    
+        console.log("Game Starting...");
+        console.log("Player 1 Type:", player1Type);
+        console.log("Player 1 Colour:", player1Colour);
+        console.log("Player 2 Colour:", player2Colour);
+        console.log("Player 2 Type:", player2Type);
+    
+        startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 0, 0, 0);
+    }
+    function handleStartTournamentGameClick(event) {
+    
+        console.log("startTournamentGame button clicked!");
+        setupCanvas();
+        disableButtons();
+    
+        const game_id = event.target.getAttribute('data-game-id');
+        const player1_id = event.target.getAttribute('data-player1-id');
+        const player2_id = event.target.getAttribute('data-player2-id');
+    
         
-            console.log("Game Starting...");
-            console.log("Player 1 Type:", player1Type);
-            console.log("Player 1 Colour:", player1Colour);
-            console.log("Player 2 Colour:", player2Colour);
-            console.log("Player 2 Type:", player2Type);
-        
-            startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 0, 0, 0);
+        startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
+    }
+    $(document).on("click", ".beginGame", function (event) {
+        handleBeginGameClick(event);
+    });
+    $(document).on("click", ".startTournamentGame", function (event) {
+        handleStartTournamentGameClick(event);
+    });
+    $(document).on("click", "#runButton", function () {
+        handleRunButtonClick();
+    });
+    
+
+    
+
+    
+
+    }});
+
+
+    
+    
+
+    
+    function disableButtons() {
+        // Get the buttons by class or ID
+        const buttons = document.querySelectorAll('button, a, form');
+        buttons.forEach((element) => {
+            element.disabled = true;  // Disable the button
+            element.classList.add('disabled');  // Add Bootstrap's 'disabled' class for styling
+            element.style.pointerEvents = 'none';
         });
+    }
+    
+    // Function to enable the buttons (e.g., when the game ends)
+    function enableButtons() {
+        // Get the buttons by class or ID
+        const buttons = document.querySelectorAll('button, a, form');
+        buttons.forEach((element) => {
+            element.disabled = false;  // Enable the button
+            element.classList.remove('disabled');  // Remove the 'disabled' class
+            element.style.pointerEvents = 'auto'; 
+        });
+    }
+    
+    
+    
+        
+
         
 
 
@@ -449,4 +475,5 @@ $(document).ready(function ()
 
     
       
-}});
+
+
