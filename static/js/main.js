@@ -67,7 +67,7 @@ export function fetchNewCSRFToken() {
             urlObj.searchParams.append('language_code', additionalParam);
             url = urlObj.toString();
         }
-        fetch(url)
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => response.text())
             .then(html => {
                 const tempDiv = document.createElement('div');
@@ -78,7 +78,7 @@ export function fetchNewCSRFToken() {
                 if (newContent) {
                     document.getElementById('content').innerHTML = newContent.innerHTML;
                 }
-    
+
                 // Reattach event listeners for dynamically loaded forms
                 attachFormEventListeners();
                 fetchNewCSRFToken(); // Refresh CSRF token for dynamically loaded forms
@@ -90,6 +90,15 @@ export function fetchNewCSRFToken() {
                 }
                 if (url === '/game_setup/' || url === '/tournament/')
                     loadMyCanvasScript();
+                if (url === '/user_dashboard/'){
+                    tempDiv.querySelectorAll('script').forEach(script => {
+                        const newScript = document.createElement('script');
+                        newScript.text = script.text;
+                        document.body.appendChild(newScript).remove();
+                    });
+                    renderWinLossChart();
+                }
+                    
 
             })
             .catch(error => console.error("Error loading page:", error));
@@ -125,6 +134,76 @@ export function fetchNewCSRFToken() {
         });
     }
 
+    let gameStatsChart;
+
+function renderChart(wins, losses) {
+    const ctx = document.getElementById('gameStatsChart').getContext('2d');
+
+    // Destroy the existing chart if it exists
+    if (gameStatsChart) {
+        gameStatsChart.destroy();
+    }
+
+    // Create a new chart
+    gameStatsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Wins', 'Losses'],
+            datasets: [{
+                label: 'Game Statistics',
+                data: [wins, losses],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)', // Green for wins
+                    'rgba(255, 99, 132, 0.2)', // Red for losses
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function renderWinLossChart() {
+    const ctx = document.getElementById('winLossChart').getContext('2d');
+
+    // Destroy the existing chart if it exists
+    if (window.winLossChartInstance) {
+        window.winLossChartInstance.destroy();
+    }
+
+    // Create the pie chart
+    window.winLossChartInstance = new Chart(ctx, {
+        type: 'pie', // Chart type
+        data: {
+            labels: ['Wins', 'Losses'], // Labels for the chart
+            datasets: [{
+                data: [window.playerStats.wins, window.playerStats.losses], // Data from Django
+                backgroundColor: ['#36a2eb', '#ff6384'], // Colors for the segments
+            }]
+        },
+        options: {
+            responsive: true, // Make the chart responsive
+            plugins: {
+                legend: { position: 'top' }, // Position of the legend
+                title: {
+                    display: true, // Show the title
+                    text: 'Win/Loss Distribution' // Title text
+                }
+            }
+        }
+    });
+}
+
     function handleFormSubmit(event) {
     event.preventDefault(); // Prevent default form submission
     const form = event.target;
@@ -148,6 +227,13 @@ export function fetchNewCSRFToken() {
     .then(data => {
         if (data.success) {
             alert(data.message);
+            if (data.html){
+                document.getElementById('game_table').innerHTML = data.html;
+                if (data.player_stats) {
+                    const { wins, losses } = data.player_stats;
+                    renderChart(wins, losses); // Pass wins and losses to the chart
+                }
+            }
             if (data.redirect_url) {
                 loadPage(data.redirect_url);
             }
@@ -294,7 +380,8 @@ export function fetchNewCSRFToken() {
         }
     }
 
-    
+
+
         
 document.addEventListener("DOMContentLoaded", function () {
 

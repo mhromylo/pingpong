@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div id="content" class="container mt-4">
+    <h2 class="text-center mb-4">Game Dashboard</h2>
+
+    <!-- Player Filter Form -->
+    <form id="player_filter_form" action="/game_dashboard/" method="POST">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="player_filter">Filter by Player:</label>
+            <select id="player_filter" name="player" class="form-control">
+                <option value="">All Players</option>
+                {% for player in players %}
+                <option value="{{ player.id }}">{{ player.display_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Apply Filter</button>
+    </form>
+
+    <div class="card p-3 mb-4">
+        <h4 class="text-center mb-3">Game Statistics</h4>
+        <canvas id="gameStatsChart" width="400" height="200"></canvas>
+    </div>
+    
+    <!-- Game History Table -->
+    <div class="card p-3">
+        <h4 class="text-center mb-3">Game History</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Game Type</th>
+                    <th>Players</th>
+                    <th>Scores</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="game_table">
+                {% for game in games %}
+                <tr>
+                    <td>{{ game.get_game_type_display }}</td>
+                    <td>{{ game.player1.display_name }} VS {{ game.player2.display_name }}</td>
+                    <td>{{ game.player1_score }} - {{ game.player2_score }}</td>
+                    <td>{{ game.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

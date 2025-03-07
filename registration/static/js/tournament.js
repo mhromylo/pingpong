@@ -115,11 +115,7 @@ $(document).ready(function ()
           if (player2.score === 3) {
             alert("GAME OVER\n\nPLAYER 2 WINS");
             clearInterval(interval);
-            if (player2.player_id != 0){
-                saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
-            }
-            else
-                enableButtons();
+            saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
           }
         } else if (x + ballRadius > canvas.width) {
           player1.score++;
@@ -127,11 +123,7 @@ $(document).ready(function ()
           if (player1.score === 3) {
             alert("GAME OVER\n\nPLAYER 1 WINS");
             clearInterval(interval);
-            if (player1.player_id != 0){
-                saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
-            }
-            else
-                enableButtons();
+            saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
           }
         }
 
@@ -427,11 +419,6 @@ $(document).ready(function ()
 
     function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_score){
         const csrfToken = getCSRFToken();
-
-        if (!game_id || !player1_id || !player2_id) {
-            console.error("Missing game/player IDs!");
-            return;
-        }
 
         const payload = {
             game_id: game_id,

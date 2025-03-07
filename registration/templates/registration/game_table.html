@@ -1,0 +1,10 @@
+<tbody>
+    {% for game in games %}
+    <tr>
+        <td>{{ game.get_game_type_display }}</td>
+        <td>{{ game.player1.display_name }} VS {{ game.player2.display_name }}</td>
+        <td>{{ game.player1_score }} - {{ game.player2_score }}</td>
+        <td>{{ game.created_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
