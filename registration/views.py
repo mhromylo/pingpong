@@ -16,6 +16,7 @@ from django.utils.translation import gettext as _
 import json
 from django.db import transaction
 from django.views.decorators.http import require_http_methods
+from django.db.models import Q
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
 from .models import Profile, Game, Tournament
@@ -317,6 +318,8 @@ def save_game_result(request):
             player1_score = data.get('player1_score')
             player2_score = data.get('player2_score')
 
+            if game_id == 0:
+                return JsonResponse({'success': True, 'message': 'Game without saving result!', 'redirect_url': '/game_setup/'})
             # Get player profiles
             player1 = get_object_or_404(Profile, id=player1_id)
             player2 = get_object_or_404(Profile, id=player2_id)
@@ -356,6 +359,10 @@ def save_game_result(request):
                         if not tournament.first_tour_losers.filter(id=player1.id).exists():
                             tournament.first_tour_losers.add(player1)
                 if (game.game_type == Game.PVP):
+                    game.player1_score = player1_score
+                    game.player2_score = player2_score
+                    game.status = "finished"
+                    game.save()
                     return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/game_setup/'})
                 if tournament:
                     if (tournament.first_tour_winners.count() == 2 and (game.game_type == Game.TOURNAMENT_GAME)):
@@ -384,6 +391,8 @@ def save_game_result(request):
                         game.loser.update_tournament_stats(won=0)
                     game.player1_score = player1_score
                     game.player2_score = player2_score
+                    game.status = "finished"
+                    game.save()
                     game.save()  # Save changes
                     tournament.save()
                 return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/tournament/'})
@@ -465,10 +474,17 @@ def second_player_tournament(request):
         password = request.POST.get('password')
         user2 = authenticate(request, username=username, password=password)
         if user2:
+            profile1 = Profile.objects.get(user=request.user)
             profile2 = Profile.objects.get(user=user2)
+            redirect_url = request.META.get('HTTP_REFERER', '/default-page/')
+            if (profile2 == profile1):
+                return JsonResponse({
+                'success': True,
+                'message': _("You already logined"),
+                'redirect_url': redirect_url
+                })
             profile2.is_online = True
             profile2.save()
-            redirect_url = request.META.get('HTTP_REFERER', '/default-page/')
             request.session['player2'] = {
                 'display_name': profile2.display_name,
                 'avatar_url': profile2.avatar.url if profile2.avatar else '',
@@ -774,4 +790,67 @@ def create_game(request):
             'redirect_url': '/index/'  # Redirect to the tournament page
         }, status=405)
 
+@login_required
+def user_dashboard(request):
+    player = Profile.objects.get(user=request.user)
+    games = Game.objects.filter(Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player))
+    tournaments = Tournament.objects.filter(players=player)
 
+    # Calculate additional metrics
+    total_games = games.count()
+    win_rate = (player.wins / (player.wins + player.losses)) * 100 if (player.wins + player.losses) > 0 else 0
+    friends = player.friends.all()
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'registration/user_dashboard.html', {
+            'player': player,
+            'games': games,
+            'tournaments': tournaments,
+            'total_games': total_games,
+            'win_rate': win_rate,
+            'friends': friends,
+        })
+    return render(request, 'registration/index.html')
+
+    
+@require_http_methods(["GET", "POST"])
+@login_required
+def game_dashboard(request):
+    games = Game.objects.all().order_by('-created_at')
+    players = Profile.objects.all()
+
+    # Apply filters for POST requests (form submission)
+    if request.method == 'POST':
+        player_filter = request.POST.get('player')
+        if player_filter:
+            games = games.filter(
+                Q(player1_id=player_filter) |
+                Q(player2_id=player_filter) |
+                Q(player3_id=player_filter) |
+                Q(player4_id=player_filter)
+            )
+
+            # Fetch the player's stats
+            player = Profile.objects.get(id=player_filter)
+            player_stats = {
+                'wins': player.wins,
+                'losses': player.losses,
+            }
+        else:
+            player_stats = None
+
+        # Render the game table as HTML
+        html = render_to_string('registration/game_table.html', {'games': games})
+        return JsonResponse({
+            'success': True,
+            'message': _("Filter applyed!"),
+            'html': html,
+            'player_stats': player_stats,  # Include player stats in the response
+        })
+
+    # For GET requests, render the full page
+    context = {
+        'games': games,
+        'players': players,
+    }
+    return render(request, 'registration/game_dashboard.html', context)

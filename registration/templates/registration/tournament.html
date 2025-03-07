@@ -18,31 +18,30 @@
                 <!-- Tournament Details (Left Side) -->
                 <div class="col-md-6 mb-4">
                     <h2 class="card-title">{% trans "Tournament:" %} {{ tournament.name }}</h2>
-                    <p class="card-text"><strong>Status:</strong> {{ tournament.status }}</p>
                     <p class="card-text" id="player-count"><strong>{% trans "Players:" %}</strong> {{ tournament.players.count }}/4</p>
         
                     {% if tournament.status == 'not_started' %}
                     <form id="start-tournament-form" method="POST" action="/start_tournament/{{ tournament.id }}/">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-success btn-lg">Start Tournament</button>
+                        <button type="submit" class="btn btn-success btn-lg">{% trans "Start Tournament" %}</button>
                     </form>
                     {% endif %}
                     
-                    {% if tournament.status == 'in_progress' and tournament.winner %}
+                    {% if tournament.status == 'in_progress' and tournament.winner and tournament.third %}
                     <form id="finish-tournament-form" method="POST" action="/finish_tournament/{{ tournament.id }}/">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-lg">Finish Tournament</button>
+                        <button type="submit" class="btn btn-danger btn-lg">{% trans "Finish Tournament" %}</button>
                     </form>
                     {% endif %}
                 </div>
-        
+                
                 <!-- Results (Right Side) -->
                 <div class="col-md-6 mb-4">
                     <h5 class="mb-3">Results</h5>
-                    <p class="card-text"><strong>Winner:</strong> {{ tournament.winner.display_name }}</p>
-                    <p class="card-text"><strong>2nd Place:</strong> {{ tournament.second.display_name }}</p>
-                    <p class="card-text"><strong>3rd Place:</strong> {{ tournament.third.display_name }}</p>
-                    <p class="card-text"><strong>4th Place:</strong> {{ tournament.fourth.display_name }}</p>
+                    <p class="card-text"> 🏆 {{ tournament.winner.display_name }}</p>
+                    <p class="card-text"> 🥈 {{ tournament.second.display_name }}</p>
+                    <p class="card-text"> 🥉 {{ tournament.third.display_name }}</p>
+                    <p class="card-text"> 🎖️ {{ tournament.fourth.display_name }}</p>
                 </div>
             </div>
 
@@ -74,7 +73,7 @@
                         {% for game in tournament.games.all %}
                         <p class="card-text">
                             <strong>{{ game.game_type }}:</strong> {{ game.player1.display_name }} VS {{ game.player2.display_name }}
-                            <strong>Scores:</strong> {{ game.player1_score }} VS {{ game.player2_score }}
+                            <strong>{% trans "Scores:" %}</strong> {{ game.player1_score }} VS {{ game.player2_score }}
                             {% if not game.winner %}
                             <button class="startTournamentGame btn btn-primary mt-2"
                                     data-game-id="{{ game.id }}" 

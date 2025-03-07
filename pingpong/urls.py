@@ -68,6 +68,8 @@ path('logout/', views.user_logout, name='logout'),
     path('join_tournament/<int:tournament_id>/<int:player_id>/', views.join_tournament, name='join_tournament'),
     path('quit_tournament/<int:tournament_id>/<int:player_id>/', views.quit_tournament, name='quit_tournament'),
     path('logout_tournament/<int:player_number>/', views.logout_tournament, name='logout_tournament'),
+    path('user_dashboard/', views.user_dashboard, name='user_dashboard'),
+    path('game_dashboard/', views.game_dashboard, name='game_dashboard'),
 ]
 
 if settings.DEBUG:

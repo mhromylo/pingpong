@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div id="content" class="container mt-4">
+    {% load i18n %}
+    <h2 class="text-center mb-4">{{ player.display_name }} {% trans "Dashboard" %}</h2>
+    <canvas id="winLossChart" width="400" height="200"></canvas>
+    <div class="row">
+        <!-- Player Profile Section -->
+        <div class="col-md-4">
+            <div id="player-profile" class="card p-3">
+                <h5 class="card-title text-center">{% trans "Profile" %}</h5>
+                <img src="{{ player.avatar.url }}" alt="User Avatar" class="avatar rounded-circle mb-3 mx-auto d-block" width="100" height="100">
+                <p><strong>{% trans "Display Name:" %}</strong> {{ player.display_name }}</p>
+                <p><strong>{% trans "Wins:" %}</strong> {{ player.wins }}</p>
+                <p><strong>{% trans "Losses:" %}</strong> {{ player.losses }}</p>
+                <p><strong>{% trans "Win Rate:" %}</strong> {{ win_rate|floatformat:2 }}%</p>
+                <p><strong>{% trans "Total Games:" %}</strong> {{ total_games }}</p>
+                <p><strong>{% trans "Tournament Wins:" %}</strong> {{ player.tournament_wins }}</p>
+                <p><strong>{% trans "Tournament Play:" %}</strong> {{ player.tournament_play }}</p>
+            </div>
+        </div>
+        
+        <!-- Game History Section -->
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h4 class="text-center">{% trans "Game History" %}</h4>
+                <ul class="list-unstyled">
+                    {% for game in games %}
+                    <li class="mb-2">
+                        <strong>{{ game.game_type }}:</strong> 
+                        {{ game.player1.display_name }} VS {{ game.player2.display_name }}
+                        <strong>{% trans "Scores:" %}</strong> {{ game.player1_score }} - {{ game.player2_score }}
+                        <br><small>{{ game.created_at|date:"Y-m-d H:i" }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tournament Section -->
+        <div class="col-md-4">
+            <h4 class="text-center mb-3">{% trans "Tournaments" %}</h4>
+            {% for tournament in tournaments %}
+                {% if tournament.status == 'completed' %}
+                <div class="card p-3 mb-3">
+                    <h5 class="card-title text-center">{{ tournament.name }}</h5>
+                    <p class="text-center">
+                        {% if tournament.winner == player %}
+                            🏆 {% trans "You placed: 1st" %}
+                        {% elif tournament.second == player %}
+                            🥈 {% trans "You placed: 2nd" %}
+                        {% elif tournament.third == player %}
+                            🥉 {% trans "You placed: 3rd" %}
+                        {% elif tournament.fourth == player %}
+                            🎖️ {% trans "You placed: 4th" %}
+                        {% else %}
+                            ❌ {% trans "You did not place in the top 4" %}
+                        {% endif %}
+                    </p>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Pass Django template variables to JavaScript
+    window.playerStats = {
+        wins: {{ player.wins }},
+        losses: {{ player.losses }},
+    };
+</script>
+{% endblock %}
