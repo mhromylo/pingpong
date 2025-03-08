@@ -4,6 +4,8 @@ services:
     container_name: web
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       - DJANGO_SETTINGS_MODULE=pingpong.settings
     expose:
@@ -23,6 +25,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./static:/static
       - ./media:/media
+    env_file:
+      - .env
     ports:
       - "443:443"
       - "80:80"
@@ -34,10 +38,12 @@ services:
   db:
     image: postgres:15
     container_name: db
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: mhromylo
-      POSTGRES_PASSWORD: qwerty
-      POSTGRES_DB: table
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME
     ports:
       - "5432:5432"
     volumes:
