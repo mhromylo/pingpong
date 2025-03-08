@@ -304,6 +304,7 @@ def logout_game_setup(request):
             'redirect_url': '/game_setup/'
         }, status=200)
 
+@login_required
 def save_game_result(request):
     if request.method == 'POST':
         try:
@@ -727,7 +728,8 @@ def finish_tournament(request, tournament_id):
             'success': False,
             'message': 'Tournament not found.'
         }, status=400)
-    
+
+@login_required  
 def get_tournament_data(request, tournament_id):
     try:
         tournament = Tournament.objects.get(id=tournament_id)
@@ -741,12 +743,14 @@ def get_tournament_data(request, tournament_id):
         })
     except Tournament.DoesNotExist:
         return JsonResponse({"error": _("Tournament not found")}, status=404)
-    
+
+@login_required   
 def tournament_detail(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     # Optionally, add players and other data
     return render(request, 'tournament_detail.html', {'tournament': tournament})
 
+@login_required
 def logout_tournament(request, player_number):
     player_key = f'player{player_number}'  # Format the dynamic key
     player_data = request.session.get(player_key)
