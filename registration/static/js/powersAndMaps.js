@@ -16,7 +16,7 @@ export class MapObstacleSquare
 
 export class PowerUp
 {
-	constructor(x, y, width, height, colour, powerUpType)
+	constructor(x, y, width, height, powerUpType, speed)
 	{
 		this.upperLeftX = x;
 		this.upperLeftY = y;
@@ -25,6 +25,9 @@ export class PowerUp
 		this.lowerRightX = x + width;
 		this.lowerRightY = y + height;
 		this.powerUpType = powerUpType;
+		this.speed = speed;
+		this.mainColour = "MidnightBlue";
+		this.crossColour = "PowderBlue";
 	}
 }
 
@@ -121,6 +124,13 @@ export class Dart
 		let mapObstacleRect = new Rectangle(mapObstacle.upperLeftX, mapObstacle.upperLeftY, mapObstacle.width, mapObstacle.height);
 		let dartRect = new Rectangle(this.upperLeftX, this.upperLeftY, this.width, this.height);
 		return this.twoRectanglesIntersect(mapObstacleRect, dartRect);
+	 }
+
+	 dartHitPowerup(powerUp)
+	 {
+		let powerUpRect = new Rectangle (powerUp.upperLeftX, powerUp.upperLeftY, powerUp.width, powerUp.height);
+		let dartRect = new Rectangle(this.upperLeftX, this.upperLeftY, this.width, this.height);
+		return this.twoRectanglesIntersect(powerUpRect, dartRect);
 	 }
 	
 }

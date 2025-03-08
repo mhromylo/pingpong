@@ -10,6 +10,7 @@ let mapObstacleSquares = [];
 let dartsFlying = [];
 let currentMap;
 let extrasAreOn;
+let gameRunning = false;
 
 function setupCanvas() {
     canvas = document.getElementById("myCanvas");
@@ -52,13 +53,13 @@ $(document).ready(function ()
 
       // Add event listeners for key presses
       document.addEventListener("keydown", (e) => {
-		player1.keyDownHandler(e, dartsFlying, extrasAreOn);
-		player2.keyDownHandler(e, dartsFlying, extrasAreOn);
+		player1.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
+		player2.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
       });
 
       document.addEventListener("keyup", (e) => {
-        player1.keyUpHandler(e);
-        player2.keyUpHandler(e);
+        player1.keyUpHandler(e, gameRunning);
+        player2.keyUpHandler(e, gameRunning);
       });
 
       // Draw the ball
@@ -113,6 +114,7 @@ $(document).ready(function ()
           player2.score++;
           resetBall();
           if (player2.score === 3) {
+            gameRunning = false;
             alert("GAME OVER\n\nPLAYER 2 WINS");
             clearInterval(interval);
             saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
@@ -121,6 +123,7 @@ $(document).ready(function ()
           player1.score++;
           resetBall();
           if (player1.score === 3) {
+            gameRunning = false;
             alert("GAME OVER\n\nPLAYER 1 WINS");
             clearInterval(interval);
             saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
@@ -299,6 +302,7 @@ $(document).ready(function ()
     
         // Start game loop
         interval = setInterval(draw, 10);
+        gameRunning = true;
       }
 
       function handleBeginGameClick(event) {

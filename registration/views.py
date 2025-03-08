@@ -682,11 +682,11 @@ def start_tournament(request, tournament_id):
         
         all_players_online = all(player.is_online for player in tournament.players.all())
 
-        if not all_players_online:
-            return JsonResponse({
-                'success': False,
-                'message': 'Not all players are online.'
-            }, status=400)
+        # if not all_players_online:
+        #     return JsonResponse({
+        #         'success': False,
+        #         'message': 'Not all players are online.'
+        #     }, status=400)
 
         # Randomly shuffle players to generate matchups
         players = list(tournament.players.all())
