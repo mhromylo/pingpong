@@ -1,3 +1,4 @@
+let scene = new THREE.Scene();
 import Player from "./Player.js";
 import { MapObstacleSquare, Dart } from "./powersAndMaps.js";
 import { loadPage } from './main.js';
@@ -11,6 +12,11 @@ let dartsFlying = [];
 let currentMap;
 let extrasAreOn;
 let gameRunning = false;
+let currentGameTab;
+
+// Three.js variables
+let  camera, renderer, ball3D;
+let paddleMeshes = []; 
 
 function setupCanvas() {
     canvas = document.getElementById("myCanvas");
@@ -19,7 +25,80 @@ function setupCanvas() {
         return;
     }
     ctx = canvas.getContext("2d");
+
+    initThreeJS();
   }
+
+  function initThreeJS() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('threejsCanvas') });
+    renderer.setSize(canvas.width, canvas.height);
+   
+    // Adjust camera position and rotation
+  
+    camera.position.y = -200;  // Move camera up
+    camera.position.z = 450;  // Move camera back
+   
+    camera.rotation.y = -Math.PI / 4;  // Tilt camera down (45 degrees)
+   
+    camera.lookAt(0, 0, 0);
+  
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 1).normalize();
+    scene.add(directionalLight);
+   
+    // Create 3D ball
+    const ballGeometry = new THREE.SphereGeometry(10, 32, 32);
+    const ballMaterial = new THREE.MeshLambertMaterial({ color: 0x0095DD });
+    ball3D = new THREE.Mesh(ballGeometry, ballMaterial);
+    scene.add(ball3D);
+  
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xdddddd }); // Light gray lines
+  
+    // Top edge
+    const topPoints = [
+        new THREE.Vector3(-canvas.width / 2, -canvas.height / 2, 0),
+        new THREE.Vector3(canvas.width / 2, -canvas.height / 2, 0)
+    ];
+    const topGeometry = new THREE.BufferGeometry().setFromPoints(topPoints);
+    const topLine = new THREE.Line(topGeometry, lineMaterial);
+    scene.add(topLine);
+   
+    // Bottom edge
+    const bottomPoints = [
+        new THREE.Vector3(-canvas.width / 2, canvas.height / 2, 0),
+        new THREE.Vector3(canvas.width / 2, canvas.height / 2, 0)
+    ];
+    const bottomGeometry = new THREE.BufferGeometry().setFromPoints(bottomPoints);
+    const bottomLine = new THREE.Line(bottomGeometry, lineMaterial);
+    scene.add(bottomLine);
+   
+    // Left edge
+    const leftPoints = [
+        new THREE.Vector3(-canvas.width / 2, -canvas.height / 2, 0),
+        new THREE.Vector3(-canvas.width / 2, canvas.height / 2, 0)
+    ];
+    const leftGeometry = new THREE.BufferGeometry().setFromPoints(leftPoints);
+    const leftLine = new THREE.Line(leftGeometry, lineMaterial);
+    scene.add(leftLine);
+   
+    // Right edge
+    const rightPoints = [
+        new THREE.Vector3(canvas.width / 2, -canvas.height / 2, 0),
+        new THREE.Vector3(canvas.width / 2, canvas.height / 2, 0)
+    ];
+    const rightGeometry = new THREE.BufferGeometry().setFromPoints(rightPoints);
+    const rightLine = new THREE.Line(rightGeometry, lineMaterial);
+    scene.add(rightLine);
+  
+    const surfaceGeometry = new THREE.PlaneGeometry(canvas.width, canvas.height);
+    const surfaceMaterial = new THREE.MeshBasicMaterial({ color: 0xdddddd, side: THREE.DoubleSide }); // Light gray surface
+    const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
+    scene.add(surface);
+   }
 
 $(document).ready(function ()
 {
@@ -118,6 +197,7 @@ $(document).ready(function ()
           resetBall();
           if (player2.score === 3) {
             gameRunning = false;
+            enableButtons();
             alert("GAME OVER\n\nPLAYER 2 WINS");
             clearInterval(interval);
             saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
@@ -127,6 +207,7 @@ $(document).ready(function ()
           resetBall();
           if (player1.score === 3) {
             gameRunning = false;
+            enableButtons();
             alert("GAME OVER\n\nPLAYER 1 WINS");
             clearInterval(interval);
             saveGameResult(player1.game_id, player1.player_id, player2.player_id, player1.score, player2.score);
@@ -224,6 +305,8 @@ $(document).ready(function ()
 
       // Main draw loop
       function draw() {
+        console.log("Tournament drawing");
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 	   drawMapObstacles();
         drawScores();
@@ -247,28 +330,42 @@ $(document).ready(function ()
 
         if (player2.isAI)
         {
-        if (performance.now() - executeAIlogicInterval_player_2 >= AI_INTERVAL)
-        {
-          player2.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius);
-          executeAIlogicInterval_player_2 = performance.now();
-        }   
-        player2.moveAIpaddle(ctx);
+          if (performance.now() - executeAIlogicInterval_player_2 >= AI_INTERVAL)
+          {
+            player2.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius);
+            executeAIlogicInterval_player_2 = performance.now();
+          }   
+          player2.moveAIpaddle(ctx);
         }
         else
           player2.movePaddlePlayer(canvas);
 
-	   dartsHitThings();
+        dartsHitThings();
         moveBall();
-	   moveDarts();
+        moveDarts();
+
+        if (ball3D && typeof x !== 'undefined' && typeof y !== 'undefined')
+        {
+            ball3D.position.set(x - canvas.width / 2, -y + canvas.height / 2, 0);
+        }
+        renderer.render(scene, camera);
+
+        if (window.location.href != currentGameTab)
+        {
+            gameRunning = false;
+            alert("Game ended");
+            clearInterval(interval);
+        }
       }
 
-      function startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, game_id, player1_id, player2_id) {
+      function startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, game_id, player_id) {
 
         
         if (interval)
         {
           clearInterval(interval);
         }
+        currentGameTab = window.location.href;
     
         ctx.clearRect(0, 0, canvas.width, canvas.height);
        mapObstacleSquares = [];
@@ -300,9 +397,8 @@ $(document).ready(function ()
     
     
     
-        player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, game_id, player1_id, "r");
-        player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, game_id, player2_id, "l");
-    
+       player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, (canvas.width - paddleHeight) / 2, 0, "q", "w", canvas.height, canvas.width, "e", game_id, player_id );
+        player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "ArrowLeft",  game_id, player_id );
         // Start game loop
         interval = setInterval(draw, 10);
         gameRunning = true;
@@ -367,6 +463,29 @@ $(document).ready(function ()
     // $(document).on("click", "#runButton", function () {
     //     handleRunButtonClick();
     // });
+
+    $(document).on("click", "#runButton", function () {
+      setupCanvas();
+      const player1Type = document.getElementById("player1Type").value;
+      const player1Colour = document.getElementById("player1Colour").value;
+      const player2Colour = document.getElementById("player2Colour").value;
+      const player2Type = document.getElementById("player2Type").value;
+   //    const player3Type = document.getElementById("player3Type").value;
+   //    const player3Colour = document.getElementById("player3Colour").value;
+   //    const player4Type = document.getElementById("player4Type").value;
+   //    const player4Colour = document.getElementById("player4Colour").value;
+      const chosenMap = document.getElementById("chosenMap").value;
+      const extrasOnOff = document.getElementById("extrasAreOn").value;
+    
+      console.log("Game Starting...");
+      console.log("Player 1 Type:", player1Type);
+      console.log("Player 1 Colour:", player1Colour);
+      console.log("Player 2 Colour:", player2Colour);
+      console.log("Player 2 Type:", player2Type);
+    
+      if (window.location.href === "https://localhost/game_setup/")
+        startGame(player1Type, player1Colour, player2Type, player2Colour, "human", "red", "human", "red", chosenMap, extrasOnOff);
+    });
     
 
     
@@ -456,7 +575,6 @@ $(document).ready(function ()
             if (data.success) {
                 if (data.redirect_url) {
                     fetchNewCSRFToken();
-                    enableButtons();
                     loadPage(data.redirect_url); // Dynamically load the login page
                 }
                 console.log('Game result saved:', data.message);

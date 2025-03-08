@@ -297,13 +297,12 @@
 {% endif %}
 
     <!-- Game Canvas Section -->
-    <div class="card mb-4">
-        <div class="card-body text-center">
-            <h5 class="card-title">{% trans "Game Canvas" %}</h5>
-            <canvas id="myCanvas" width="720" height="480" class="mb-3"></canvas>
-        </div>
+    <div class="game-canvas">
+        <canvas id="myCanvas" width="720" height="480"></canvas>
+        <canvas id="threejsCanvas" class="threejs-canvas" width="720" height="480"></canvas>
     </div>
 
+    </div>
 
 <script type="module" src="/static/js/tournament.js"></script>
 

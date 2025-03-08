@@ -524,6 +524,8 @@ $(document).ready(function ()
 
 	 // Main draw loop
 	 function draw() {
+		console.log("Mycanvas drawing");
+
 	   ctx.clearRect(0, 0, canvas.width, canvas.height);
 	   createPowerups();
 	   drawMapObstacles();
