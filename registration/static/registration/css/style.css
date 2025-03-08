@@ -98,14 +98,12 @@ canvas {
 }
 
 .threejs-canvas {
-    position: absolute;
     top: 0px;
     left: 0px;
     z-index: 2;
     pointer-events: none;
 }
 #myCanvas {
-    position: absolute;
     top: 0px;
     left: 0px;
     z-index: 1;
