@@ -4,5 +4,6 @@ Pillow>=8.0.0
 channels
 gunicorn>=20.1.0
 djangorestframework
+django-environ >= 0.11.2
 
 
