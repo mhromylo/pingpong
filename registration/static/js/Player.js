@@ -74,7 +74,11 @@ export default class Player
 			this.paddleY = this.canvasHeight - this.paddleHeight;
 
 	}
-	 keyDownHandler(e, dartsFlying, extrasAreOn) {
+	 keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning) {
+		if (gameRunning === false)
+		{
+			return;
+		}
 		if (e.key === this.moveUp || e.key === this.alternateMoveUp) {
 		  this.UpPressed = true;
 		  e.preventDefault();
@@ -90,7 +94,11 @@ export default class Player
 		}
 	}
 	   
-	 keyUpHandler(e) {
+	 keyUpHandler(e, gameRunning) {
+		if (gameRunning === false)
+		{
+			return;
+		}
 		if (e.key === this.moveUp || e.key === this.alternateMoveUp) {
 		  this.UpPressed = false;
 		} else if (e.key === this.moveDown || e.key === this.alternateMoveDown) {
