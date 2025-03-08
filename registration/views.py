@@ -16,7 +16,7 @@ from django.utils.translation import gettext as _
 import json
 from django.db import transaction
 from django.views.decorators.http import require_http_methods
-from django.db.models import Q
+from django.db.models import Q, Count
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
 from .models import Profile, Game, Tournament
@@ -801,6 +801,15 @@ def user_dashboard(request):
     win_rate = (player.wins / (player.wins + player.losses)) * 100 if (player.wins + player.losses) > 0 else 0
     friends = player.friends.all()
 
+    tournament_wins = player.tournament_wins
+    tournament_play = player.tournament_play
+    tournament_win_rate = (tournament_wins / (tournament_wins + tournament_play)) * 100 if (tournament_wins + tournament_play) > 0 else 0
+
+    game_type_counts = games.values('game_type').annotate(count=Count('game_type')).order_by('game_type')
+
+    # Convert to a dictionary for easier access in the template
+    game_type_data = {item['game_type']: item['count'] for item in game_type_counts}
+
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return render(request, 'registration/user_dashboard.html', {
             'player': player,
@@ -809,6 +818,10 @@ def user_dashboard(request):
             'total_games': total_games,
             'win_rate': win_rate,
             'friends': friends,
+            'game_type_data': game_type_data,
+            'tournament_wins': tournament_wins,
+            'tournament_play': tournament_play,
+            'tournament_win_rate': tournament_win_rate,
         })
     return render(request, 'registration/index.html')
 
@@ -818,7 +831,9 @@ def user_dashboard(request):
 def game_dashboard(request):
     games = Game.objects.all().order_by('-created_at')
     players = Profile.objects.all()
-
+    top_winners = Profile.objects.annotate(total_wins=Count('games_won')).order_by('-total_wins')[:5]
+    game_type_counts = games.values('game_type').annotate(count=Count('game_type')).order_by('game_type')
+    game_type_data = {item['game_type']: item['count'] for item in game_type_counts}
     # Apply filters for POST requests (form submission)
     if request.method == 'POST':
         player_filter = request.POST.get('player')
@@ -831,14 +846,15 @@ def game_dashboard(request):
             )
 
             # Fetch the player's stats
-            player = Profile.objects.get(id=player_filter)
+            player1 = Profile.objects.get(user=request.user)
+            player2 = get_object_or_404(Profile, id=player_filter)
             player_stats = {
-                'wins': player.wins,
-                'losses': player.losses,
+                'player1': player1.wins,
+                'player2': player2.wins,
             }
         else:
             player_stats = None
-
+    
         # Render the game table as HTML
         html = render_to_string('registration/game_table.html', {'games': games})
         return JsonResponse({
@@ -852,5 +868,7 @@ def game_dashboard(request):
     context = {
         'games': games,
         'players': players,
+        'top_winners': top_winners,  # Pass top 5 winners to the template
+        'game_type_data': game_type_data,
     }
     return render(request, 'registration/game_dashboard.html', context)

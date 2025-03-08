@@ -82,3 +82,17 @@ canvas {
   .game-canvas canvas {
     margin-right: 20px;
   }
+
+  #winLossChart, #gameTypeChart {
+    margin: 0 !important; /* Remove extra margins */
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-container {
+    height: 300px; /* Same height for both */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

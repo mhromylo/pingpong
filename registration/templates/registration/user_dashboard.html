@@ -4,7 +4,25 @@
 <div id="content" class="container mt-4">
     {% load i18n %}
     <h2 class="text-center mb-4">{{ player.display_name }} {% trans "Dashboard" %}</h2>
-    <canvas id="winLossChart" width="400" height="200"></canvas>
+    
+    <div class="row">
+        <!-- Win/Loss Chart -->
+        <div class="col-md-6">
+            <div class="card p-3 mb-4">
+                <h5 class="text-center">{% trans "Win/Loss Distribution" %}</h5>
+                <canvas id="winLossChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    
+        <!-- Game Type Chart -->
+        <div class="col-md-6">
+            <div class="card p-3 mb-4">
+                <h5 class="text-center">{% trans "Game Type Distribution" %}</h5>
+                <canvas id="gameTypeChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <!-- Player Profile Section -->
         <div class="col-md-4">
@@ -20,7 +38,7 @@
                 <p><strong>{% trans "Tournament Play:" %}</strong> {{ player.tournament_play }}</p>
             </div>
         </div>
-        
+    
         <!-- Game History Section -->
         <div class="col-md-4">
             <div class="card p-3">
@@ -37,40 +55,51 @@
                 </ul>
             </div>
         </div>
-
+    
         <!-- Tournament Section -->
         <div class="col-md-4">
-            <h4 class="text-center mb-3">{% trans "Tournaments" %}</h4>
-            {% for tournament in tournaments %}
-                {% if tournament.status == 'completed' %}
-                <div class="card p-3 mb-3">
-                    <h5 class="card-title text-center">{{ tournament.name }}</h5>
-                    <p class="text-center">
-                        {% if tournament.winner == player %}
-                            🏆 {% trans "You placed: 1st" %}
-                        {% elif tournament.second == player %}
-                            🥈 {% trans "You placed: 2nd" %}
-                        {% elif tournament.third == player %}
-                            🥉 {% trans "You placed: 3rd" %}
-                        {% elif tournament.fourth == player %}
-                            🎖️ {% trans "You placed: 4th" %}
-                        {% else %}
-                            ❌ {% trans "You did not place in the top 4" %}
-                        {% endif %}
-                    </p>
-                </div>
-                {% endif %}
-            {% endfor %}
+            <div class="card p-3">
+                <h4 class="text-center">{% trans "Tournaments" %}</h4>
+                {% for tournament in tournaments %}
+                    {% if tournament.status == 'completed' %}
+                    <div class="card p-3 mb-3">
+                        <h5 class="card-title text-center">{{ tournament.name }}</h5>
+                        <p class="text-center">
+                            {% if tournament.winner == player %}
+                                🏆 {% trans "You placed: 1st" %}
+                            {% elif tournament.second == player %}
+                                🥈 {% trans "You placed: 2nd" %}
+                            {% elif tournament.third == player %}
+                                🥉 {% trans "You placed: 3rd" %}
+                            {% elif tournament.fourth == player %}
+                                🎖️ {% trans "You placed: 4th" %}
+                            {% else %}
+                                ❌ {% trans "You did not place in the top 4" %}
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
-
 
 <script>
     // Pass Django template variables to JavaScript
     window.playerStats = {
         wins: {{ player.wins }},
         losses: {{ player.losses }},
+    };
+
+    const gameTypeData = {
+        labels: ['Tournament Game', 'Tournament Final', 'Tournament 3rd/4th Place', 'PVP'],
+        counts: [
+            {{ game_type_data.tournament_game|default:0 }},
+            {{ game_type_data.tournament_final|default:0 }},
+            {{ game_type_data.tournament_3or4|default:0 }},
+            {{ game_type_data.PVP|default:0 }},
+        ],
     };
 </script>
 {% endblock %}
