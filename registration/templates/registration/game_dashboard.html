@@ -19,11 +19,32 @@
         <button type="submit" class="btn btn-primary">Apply Filter</button>
     </form>
 
-    <div class="card p-3 mb-4">
-        <h4 class="text-center mb-3">Game Statistics</h4>
-        <canvas id="gameStatsChart" width="400" height="200"></canvas>
+    <div class="row">
+        <!-- Top 5 Winners Chart -->
+        <div class="col-md-4">
+            <div class="card p-3 mb-4">
+                <h5 class="text-center">Top 5 Winners</h5>
+                <canvas id="topWinnersChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Compare Wins Chart -->
+        <div class="col-md-4">
+            <div class="card p-3 mb-4">
+                <h5 class="text-center">Compare Wins</h5>
+                <canvas id="gameStatsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Game Type Distribution Chart -->
+        <div class="col-md-4">
+            <div class="card p-3 mb-4">
+                <h5 class="text-center">Game Type Distribution</h5>
+                <canvas id="typeChart" width="400" height="200"></canvas>
+            </div>
+        </div>
     </div>
-    
+
     <!-- Game History Table -->
     <div class="card p-3">
         <h4 class="text-center mb-3">Game History</h4>
@@ -49,5 +70,22 @@
         </table>
     </div>
 </div>
+
+<script>
+    window.topWinnersData = {
+        labels: [{% for player in top_winners %}"{{ player.display_name }}",{% endfor %}],
+        wins: [{% for player in top_winners %}{{ player.total_wins }},{% endfor %}],
+    };
+
+    window.gameTypeData = {
+        labels: ['Tournament Game', 'Tournament Final', 'Tournament 3rd/4th Place', 'PVP'],
+        counts: [
+            {{ game_type_data.tournament_game|default:0 }},
+            {{ game_type_data.tournament_final|default:0 }},
+            {{ game_type_data.tournament_3or4|default:0 }},
+            {{ game_type_data.PVP|default:0 }},
+        ],
+    };
+</script>
 
 {% endblock %}

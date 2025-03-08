@@ -97,11 +97,100 @@ export function fetchNewCSRFToken() {
                         document.body.appendChild(newScript).remove();
                     });
                     renderWinLossChart();
+                    renderGameTypeChart();
+                }
+                if (url === '/game_dashboard/'){
+                    renderTopWinnersChart();
+                    renderTypeChart();
                 }
                     
 
             })
             .catch(error => console.error("Error loading page:", error));
+    }
+
+    function renderTopWinnersChart() {
+        const ctx = document.getElementById('topWinnersChart').getContext('2d');
+        if (window.topWinnersChartInstance) {
+            window.topWinnersChartInstance.destroy();
+        }
+        window.topWinnersChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: window.topWinnersData.labels,
+                datasets: [{
+                    label: 'Wins',
+                    data: window.topWinnersData.wins,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' },
+                    title: {
+                        display: true,
+                        text: 'Top 5 Winners'
+                    }
+                }
+            }
+        });
+    }
+
+    function renderTypeChart() {
+        const ctx = document.getElementById('typeChart').getContext('2d');
+    
+        // Destroy the existing chart if it exists
+        if (window.gameTypeChartInstance) {
+            window.gameTypeChartInstance.destroy();
+        }
+    
+        // Create the bar chart
+        window.gameTypeChartInstance = new Chart(ctx, {
+            type: 'bar', // Chart type
+            data: {
+                labels: window.gameTypeData.labels, // Labels for the chart
+                datasets: [{
+                    label: 'Number of Games',
+                    data: window.gameTypeData.counts, // Data from Django
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)', // Tournament Game
+                        'rgba(255, 99, 132, 0.2)', // Tournament Final
+                        'rgba(54, 162, 235, 0.2)', // Tournament 3rd/4th Place
+                        'rgba(255, 206, 86, 0.2)', // PVP
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true, // Make the chart responsive
+                scales: {
+                    y: {
+                        beginAtZero: true // Start the y-axis at 0
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' }, // Position of the legend
+                    title: {
+                        display: true, // Show the title
+                        text: 'Game Type Distribution' // Title text
+                    }
+                }
+            }
+        });
     }
 
     function loadNavbar(url, additionalParam = null) {
@@ -136,7 +225,7 @@ export function fetchNewCSRFToken() {
 
     let gameStatsChart;
 
-function renderChart(wins, losses) {
+function renderChart(player1, player2) {
     const ctx = document.getElementById('gameStatsChart').getContext('2d');
 
     // Destroy the existing chart if it exists
@@ -148,10 +237,10 @@ function renderChart(wins, losses) {
     gameStatsChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Wins', 'Losses'],
+            labels: ['You Wins', 'Another Player Wins'],
             datasets: [{
                 label: 'Game Statistics',
-                data: [wins, losses],
+                data: [player1, player2],
                 backgroundColor: [
                     'rgba(75, 192, 192, 0.2)', // Green for wins
                     'rgba(255, 99, 132, 0.2)', // Red for losses
@@ -167,6 +256,91 @@ function renderChart(wins, losses) {
             scales: {
                 y: {
                     beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function renderGameTypeChart() {
+    const ctx = document.getElementById('gameTypeChart').getContext('2d');
+
+    // Destroy the existing chart if it exists
+    if (window.gameTypeChartInstance) {
+        window.gameTypeChartInstance.destroy();
+    }
+
+    // Create the donut chart
+    window.gameTypeChartInstance = new Chart(ctx, {
+        type: 'doughnut', // Change to 'doughnut' for a donut chart
+        data: {
+            labels: window.gameTypeData.labels, // Labels for the chart
+            datasets: [{
+                label: 'Number of Games',
+                data: window.gameTypeData.counts, // Data from Django
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)', // Tournament Game
+                    'rgba(255, 99, 132, 0.2)', // Tournament Final
+                    'rgba(54, 162, 235, 0.2)', // Tournament 3rd/4th Place
+                    'rgba(255, 206, 86, 0.2)', // PVP
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true, // Make the chart responsive
+            cutout: '50%', // Add a cutout to create a donut chart
+            plugins: {
+                legend: { position: 'top' }, // Position of the legend
+                title: {
+                    display: true, // Show the title
+                    text: 'Game Type Distribution' // Title text
+                }
+            }
+        }
+    });
+}
+
+function renderTournamentWinRateChart() {
+    const ctx = document.getElementById('tournamentWinRateChart').getContext('2d');
+
+    // Destroy the existing chart if it exists
+    if (window.tournamentWinRateChartInstance) {
+        window.tournamentWinRateChartInstance.destroy();
+    }
+
+    // Create the donut chart
+    window.tournamentWinRateChartInstance = new Chart(ctx, {
+        type: 'doughnut', // Change to 'doughnut' for a donut chart
+        data: {
+            labels: tournamentWinRateData.labels, // Labels for the chart
+            datasets: [{
+                data: tournamentWinRateData.data, // Data from Django
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)', // Tournaments Won
+                    'rgba(255, 99, 132, 0.2)', // Tournaments Played
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true, // Make the chart responsive
+            cutout: '50%', // Add a cutout to create a donut chart
+            plugins: {
+                legend: { position: 'top' }, // Position of the legend
+                title: {
+                    display: true, // Show the title
+                    text: 'Tournament Win Rate' // Title text
                 }
             }
         }
@@ -230,8 +404,8 @@ function renderWinLossChart() {
             if (data.html){
                 document.getElementById('game_table').innerHTML = data.html;
                 if (data.player_stats) {
-                    const { wins, losses } = data.player_stats;
-                    renderChart(wins, losses); // Pass wins and losses to the chart
+                    const { player1, player2 } = data.player_stats;
+                    renderChart(player1, player2); // Pass wins and losses to the chart
                 }
             }
             if (data.redirect_url) {
