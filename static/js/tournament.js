@@ -10,7 +10,12 @@ var ctx;
 let mapObstacleSquares = [];
 let dartsFlying = [];
 let currentMap;
+let powerupsOnMap = [];
+let powerupCountdown;
+let powerupSpawnSide = "UP";
 let extrasAreOn;
+
+
 let gameRunning = false;
 let currentGameTab;
 
@@ -220,6 +225,39 @@ $(document).ready(function ()
 	   bounceBallOffMapObstacles();
       }
 
+      function movePowerups()
+	{
+		for (let i = powerupsOnMap.length - 1; i >= 0; i--)
+		{
+			powerupsOnMap[i].upperLeftY += powerupsOnMap[i].speed;
+			if ((powerupsOnMap[i].speed > 0 && powerupsOnMap[i].upperLeftY + powerupsOnMap[i].height >= canvas.height) || 
+				(powerupsOnMap[i].speed < 0 && powerupsOnMap[i].upperLeftY <= 0))
+			{
+				powerupsOnMap[i].speed *= -1;
+			}
+
+			// ADD THIS LATER, bouncing off the mapObstacleSquares
+			//for (let j = 0; j < mapObstacleSquares.length; j++)
+			//{
+			//	//powerups go up and down
+			//	{
+			//		powerupsOnMap[i].speed *= -1;
+			//	}
+//
+			//}
+		}
+		
+	}
+
+
+	function createPaddleMesh(player, paddleWidth, paddleHeight) {
+		const paddleGeometry = player.isHorizontal
+		    ? new THREE.BoxGeometry(paddleHeight, paddleWidth, 20) // Taller for horizontal paddles
+		    : new THREE.BoxGeometry(paddleWidth, paddleHeight, 20); // Taller for vertical paddles
+		const paddleMaterial = new THREE.MeshLambertMaterial({ color: player.paddleColour }); // Use Lambert for shading
+		return new THREE.Mesh(paddleGeometry, paddleMaterial);
+	 }
+
       // Reset ball position
       function resetBall()
       {
@@ -308,12 +346,14 @@ $(document).ready(function ()
         console.log("Tournament drawing");
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+	   //createPowerups();
 	   drawMapObstacles();
-        drawScores();
-        drawBall();
+	   drawScores();
+	   drawBall();
 	   drawDarts();
-        player1.drawPaddle(ctx, canvas);
-        player2.drawPaddle(ctx, canvas);
+	   //drawPowerups();
+	   player1.drawPaddle(ctx, canvas);
+	   player2.drawPaddle(ctx, canvas);
         
         if (player1.isAI)
         {
@@ -340,8 +380,13 @@ $(document).ready(function ()
         else
           player2.movePaddlePlayer(canvas);
 
+          player2.paddleMesh.position.set(player2.paddleX - canvas.width / 2 + player2.paddleWidth/2, -player2.paddleY + canvas.height / 2 - player2.paddleHeight/2, 10);
+          player1.paddleMesh.position.set(player1.paddleX - canvas.width / 2 + player1.paddleWidth/2, -player1.paddleY + canvas.height / 2 - player1.paddleHeight/2, 10);
+   
+
         dartsHitThings();
         moveBall();
+        movePowerups();
         moveDarts();
 
         if (ball3D && typeof x !== 'undefined' && typeof y !== 'undefined')
@@ -370,7 +415,8 @@ $(document).ready(function ()
         ctx.clearRect(0, 0, canvas.width, canvas.height);
        mapObstacleSquares = [];
        dartsFlying = [];
-    
+       powerupsOnMap = [];
+       powerupCountdown = performance.now() - 70000;
     
         x = canvas.width / 2;
         y = canvas.height / 2;
@@ -394,11 +440,27 @@ $(document).ready(function ()
       else
           extrasAreOn = false;
     
+      for (let i = 0; i < paddleMeshes.length; i++) {
+        scene.remove(paddleMeshes[i]);
+        }
+        paddleMeshes = []; // Clear the array
     
     
-    
-       player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, (canvas.width - paddleHeight) / 2, 0, "q", "w", canvas.height, canvas.width, "e", game_id, player_id );
+       player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, "d", game_id, player_id );
         player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "ArrowLeft",  game_id, player_id );
+       
+        if (player1 && player1.paddleMesh) scene.remove(player1.paddleMesh);
+        if (player2 && player2.paddleMesh) scene.remove(player2.paddleMesh);
+
+        player1.paddleMesh = createPaddleMesh(player1, paddleWidth, paddleHeight);
+		    player2.paddleMesh = createPaddleMesh(player2, paddleWidth, paddleHeight);
+
+        paddleMeshes.push(player1.paddleMesh);
+		    paddleMeshes.push(player2.paddleMesh);
+
+        scene.add(player1.paddleMesh);
+		    scene.add(player2.paddleMesh);
+
         // Start game loop
         interval = setInterval(draw, 10);
         gameRunning = true;
