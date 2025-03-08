@@ -25,7 +25,6 @@ $(document).ready(function ()
 {
    
 
-    console.log("DOM fully loaded");
   if (canvas)
   {
       ctx = canvas.getContext("2d");
@@ -53,13 +52,17 @@ $(document).ready(function ()
 
       // Add event listeners for key presses
       document.addEventListener("keydown", (e) => {
-		player1.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
-		player2.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
+        if (player1)
+		    player1.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
+        if (player2)
+		    player2.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
       });
 
       document.addEventListener("keyup", (e) => {
-        player1.keyUpHandler(e, gameRunning);
-        player2.keyUpHandler(e, gameRunning);
+        if (player1)
+            player1.keyUpHandler(e, gameRunning);
+        if (player2)
+            player2.keyUpHandler(e, gameRunning);
       });
 
       // Draw the ball

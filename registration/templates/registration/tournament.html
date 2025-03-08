@@ -37,7 +37,7 @@
                 
                 <!-- Results (Right Side) -->
                 <div class="col-md-6 mb-4">
-                    <h5 class="mb-3">Results</h5>
+                    <h5 class="mb-3">{% trans "Results:" %}</h5>
                     <p class="card-text"> 🏆 {{ tournament.winner.display_name }}</p>
                     <p class="card-text"> 🥈 {{ tournament.second.display_name }}</p>
                     <p class="card-text"> 🥉 {{ tournament.third.display_name }}</p>
@@ -49,7 +49,7 @@
             <div class="row">
                 <!-- Players List (Left Side) -->
                 <div class="col-md-6">
-                    <h5 class="mb-3">Players</h5>
+                    <h5 class="mb-3">{% trans "Players:" %}</h5>
                     <ul id="players-list" class="list-group">
                         {% for player in tournament.players.all %}
                         <li id="player-{{ player.display_name }}" class="list-group-item d-flex justify-content-between align-items-center p-2">
@@ -68,7 +68,7 @@
                 
                 <!-- Game Results (Right Side) -->
                 <div class="col-md-6">
-                    <h5 class="mb-3">Games</h5>
+                    <h5 class="mb-3">{% trans "Games:" %}</h5>
                     <div id="games" class="p-3 border rounded bg-light">
                         {% for game in tournament.games.all %}
                         <p class="card-text">
@@ -115,7 +115,7 @@
                         <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                     </form>
                     {% if tournament %}
-                    <form id="second-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ user.profile.id }}/" class="mb-3">
+                    <form id="first-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ user.profile.id }}/" class="mb-3">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary mb-2">
                             {% trans "Join Tournament" %}
@@ -132,21 +132,23 @@
             <div id="player2-profile" class="card">
                 <div class="card-body text-center">
                     <h5 class="card-title">{% trans "Player 2:" %}</h5>
+                    {% if request.session.player2 %}
                     <img id="player2-avatar" src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
                     <p id="player2-display-name"><strong>Display Name:</strong> {{ request.session.player2.display_name }}</p>
                     <p id="player2-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player2.wins }}</p>
                     <p id="player2-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player2.losses }}</p>
+                    {% endif %}
                     <!-- Login Form for Player 2 -->
                      {% if not request.session.player2 %}
                     <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="username" class="form-label">{% trans "Player 2 Username:" %}</label>
-                            <input type="text" id="username" name="username" class="form-control" required>
+                            <input type="text" id="username2" name="username" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">{% trans "Player 2 Password:" %}</label>
-                            <input type="password" id="password" name="password" class="form-control" required>
+                            <input type="password" id="password2" name="password" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 2" %}</button>
                     </form>
@@ -158,7 +160,7 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="display_name" class="form-label">{% trans "Player Display Name:" %}</label>
-                            <input type="text" id="display_name" name="display_name" class="form-control" required>
+                            <input type="text" id="display_name2" name="display_name" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                     </form>
@@ -172,7 +174,7 @@
                     </form>
                     {% endif %}
                     {% if request.session.player2%}
-                    <form action="/logout_tournament/2/" method="post" id="logout-tournament-form">
+                    <form action="/logout_tournament/2/" method="post" id="logout-tournament-form2">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
                     </form>
@@ -186,21 +188,23 @@
             <div id="player3-profile" class="card">
                 <div class="card-body text-center">
                     <h5 class="card-title">{% trans "Player 3" %}</h5>
+                    {% if request.session.player3 %}
                     <img id="player3-avatar" src="{{ request.session.player3.avatar_url }}" alt="Player 3 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
                     <p id="player3-display-name"><strong>{% trans "Display Name:" %}</strong> {{ request.session.player3.display_name }}</p>
                     <p id="player3-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player3.wins }}</p>
                     <p id="player3-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player3.losses }}</p>
+                    {% endif %}
                     <!-- Login Form for Player 3 -->
                     {% if not request.session.player3 %}
                     <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="username" class="form-label">{% trans "Player 3 Username:" %}</label>
-                            <input type="text" id="username" name="username" class="form-control" required>
+                            <input type="text" id="username3" name="username" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">{% trans "Player 3 Password:" %}</label>
-                            <input type="password" id="password" name="password" class="form-control" required>
+                            <input type="password" id="password3" name="password" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 3" %}</button>
                     </form>
@@ -211,7 +215,7 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="display_name" class="form-label">{% trans "Player 3 Display Name:" %}</label>
-                            <input type="text" id="display_name" name="display_name" class="form-control" required>
+                            <input type="text" id="display_name3" name="display_name" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                         
@@ -226,7 +230,7 @@
                     </form>
                     {% endif %}
                     {% if request.session.player3 %}
-                    <form action="/logout_tournament/3/" method="post" id="logout-tournament-form">
+                    <form action="/logout_tournament/3/" method="post" id="logout-tournament-form3">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
                     </form>
@@ -240,20 +244,22 @@
             <div id="player4-profile" class="card">
                 <div class="card-body text-center">
                     <h5 class="card-title">{% trans "Player 4" %}</h5>
+                    {% if request.session.player4 %}
                     <img id="player4-avatar" src="{{ request.session.player4.avatar_url }}" alt="Player 4 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
                     <p id="player4-display-name"><strong>{% trans "Display Name:" %}</strong> {{ request.session.player4.display_name }}</p>
                     <p id="player4-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player4.wins }}</p>
                     <p id="player4-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player4.losses }}</p>
+                    {% endif %}
                     {% if not request.session.player4 %}
                     <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="username" class="form-label">{% trans "Player 4 Username:" %}</label>
-                            <input type="text" id="username" name="username" class="form-control" required>
+                            <input type="text" id="username4" name="username" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">{% trans "Player 4 Password:" %}</label>
-                            <input type="password" id="password" name="password" class="form-control" required>
+                            <input type="password" id="password4" name="password" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 4" %}</button>
                     </form>
@@ -264,7 +270,7 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="display_name" class="form-label">{% trans "Player 4 Display Name:" %}</label>
-                            <input type="text" id="display_name" name="display_name" class="form-control" required>
+                            <input type="text" id="display_name4" name="display_name" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
                        
@@ -279,7 +285,7 @@
                     </form>
                     {% endif %}
                     {% if request.session.player4 %}
-                    <form action="/logout_tournament/4/" method="post" id="logout-tournament-form">
+                    <form action="/logout_tournament/4/" method="post" id="logout-tournament-form4">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
                     </form>

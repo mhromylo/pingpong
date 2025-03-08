@@ -144,18 +144,17 @@ $(document).ready(function ()
 
       // Add event listeners for key presses
       document.addEventListener("keydown", (e) => {
-          player1.keyDownHandler(e, dartsFlying, extrasAreOn);
-          player2.keyDownHandler(e, dartsFlying, extrasAreOn);
-          player3.keyDownHandler(e, dartsFlying, extrasAreOn);
-          player4.keyDownHandler(e, dartsFlying, extrasAreOn);
-
+        if (player1)
+		    player1.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
+        if (player2)
+		    player2.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
       });
 
       document.addEventListener("keyup", (e) => {
-        player1.keyUpHandler(e);
-        player2.keyUpHandler(e);
-        player3.keyUpHandler(e);
-        player4.keyUpHandler(e);
+        if (player1)
+            player1.keyUpHandler(e, gameRunning);
+        if (player2)
+            player2.keyUpHandler(e, gameRunning);
       });
 
       function stopGame() {
