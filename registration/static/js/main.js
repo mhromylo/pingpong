@@ -93,13 +93,42 @@ export function fetchNewCSRFToken() {
                 if (url === '/user_dashboard/'){
                     tempDiv.querySelectorAll('script').forEach(script => {
                         const newScript = document.createElement('script');
+                
+                        // Copy attributes (e.g., src, type) from the original script
+                        Array.from(script.attributes).forEach(attr => {
+                            newScript.setAttribute(attr.name, attr.value);
+                        });
+                
+                        // Append the script content
                         newScript.text = script.text;
-                        document.body.appendChild(newScript).remove();
+                
+                        // Append the new script to the document body
+                        document.body.appendChild(newScript);
+                
+                        // Remove the new script after execution
+                        document.body.removeChild(newScript);
                     });
                     renderWinLossChart();
                     renderGameTypeChart();
                 }
                 if (url === '/game_dashboard/'){
+                    tempDiv.querySelectorAll('script').forEach(script => {
+                        const newScript = document.createElement('script');
+                
+                        // Copy attributes (e.g., src, type) from the original script
+                        Array.from(script.attributes).forEach(attr => {
+                            newScript.setAttribute(attr.name, attr.value);
+                        });
+                
+                        // Append the script content
+                        newScript.text = script.text;
+                
+                        // Append the new script to the document body
+                        document.body.appendChild(newScript);
+                
+                        // Remove the new script after execution
+                        document.body.removeChild(newScript);
+                    });
                     renderTopWinnersChart();
                     renderTypeChart();
                 }

@@ -92,7 +92,7 @@
         losses: {{ player.losses }},
     };
 
-    const gameTypeData = {
+    window.gameTypeData = {
         labels: ['Tournament Game', 'Tournament Final', 'Tournament 3rd/4th Place', 'PVP'],
         counts: [
             {{ game_type_data.tournament_game|default:0 }},
