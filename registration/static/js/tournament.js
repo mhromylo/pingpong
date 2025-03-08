@@ -361,9 +361,9 @@ $(document).ready(function ()
     $(document).on("click", ".startTournamentGame", function (event) {
         handleStartTournamentGameClick(event);
     });
-    $(document).on("click", "#runButton", function () {
-        handleRunButtonClick();
-    });
+    // $(document).on("click", "#runButton", function () {
+    //     handleRunButtonClick();
+    // });
     
 
     
@@ -377,7 +377,7 @@ $(document).ready(function ()
     
 
     
-    function disableButtons() {
+    export function disableButtons() {
         // Get the buttons by class or ID
         const buttons = document.querySelectorAll('button, a, form');
         buttons.forEach((element) => {
@@ -388,7 +388,7 @@ $(document).ready(function ()
     }
     
     // Function to enable the buttons (e.g., when the game ends)
-    function enableButtons() {
+    export function enableButtons() {
         // Get the buttons by class or ID
         const buttons = document.querySelectorAll('button, a, form');
         buttons.forEach((element) => {

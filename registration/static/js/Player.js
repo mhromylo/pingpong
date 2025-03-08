@@ -6,7 +6,7 @@ let upDownAlternate =    ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 export default class Player
 {
 
-	constructor(name, isAI, paddleColour, paddleWidth, paddleHeight, paddleSpeed, paddleX, paddleY, moveUp, moveDown, canvasHeight, canvasWidth, game_id, player_id, shootButton)
+	constructor(name, isAI, paddleColour, paddleWidth, paddleHeight, paddleSpeed, paddleX, paddleY, moveUp, moveDown, canvasHeight, canvasWidth, shootButton)
 	{
 		this.name = name;
 		this.isAI = isAI;
@@ -27,9 +27,7 @@ export default class Player
 		this.DownPressed = false;
 		this.canvasHeight = canvasHeight;
 		this.canvasWidth = canvasWidth;
-
-        this.game_id = game_id;
-        this.player_id = player_id;
+		this.lastFiredDart = performance.now() - 15000;
 
 		this.testValueDeleteLater_calculatedYforAI = "";
 
@@ -76,13 +74,7 @@ export default class Player
 			this.paddleY = this.canvasHeight - this.paddleHeight;
 
 	}
-	 keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning) {
-		if (gameRunning === false)
-		{
-			console.log("AAAA");
-			return;
-		}
-		console.log("BBB");
+	 keyDownHandler(e, dartsFlying, extrasAreOn) {
 		if (e.key === this.moveUp || e.key === this.alternateMoveUp) {
 		  this.UpPressed = true;
 		  e.preventDefault();
@@ -98,13 +90,7 @@ export default class Player
 		}
 	}
 	   
-	 keyUpHandler(e, gameRunning) {
-		if (gameRunning === false)
-		{
-			console.log("CCC");
-			return;
-		}
-		console.log("DDD");
+	 keyUpHandler(e) {
 		if (e.key === this.moveUp || e.key === this.alternateMoveUp) {
 		  this.UpPressed = false;
 		} else if (e.key === this.moveDown || e.key === this.alternateMoveDown) {

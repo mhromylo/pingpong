@@ -13,6 +13,7 @@ let currentMap;
 let extrasAreOn;
 let gameRunning = false;
 
+let lastTouch_4p = null;
 let paddleMeshes = []; 
 
 // Three.js variables
@@ -21,8 +22,8 @@ let  camera, renderer, ball3D;
 function setupCanvas() {
   canvas = document.getElementById("myCanvas");
   if (!canvas) {
-	 console.error("Canvas not found!");
-	 return;
+      console.error("Canvas not found!");
+      return;
   }
   ctx = canvas.getContext("2d");
 
@@ -114,108 +115,179 @@ $(document).ready(function ()
 
   if (canvas)
   {
-	 ctx = canvas.getContext("2d");
+      ctx = canvas.getContext("2d");
 
-	 canvas.width;
-	 canvas.height;
+      canvas.width;
+      canvas.height;
 
-	 let x  ;
-	 let y  ;
-	 let dx ;
-	 let dy ;
-	 const ballRadius = 10;
+      let x  ;
+      let y  ;
+      let dx ;
+      let dy ;
+      const ballRadius = 10;
 
-	 const paddleHeight = 100; // Side paddle height
-	 const paddleWidth = 10; // Side paddle width
-
-
-
-	 let interval;
-
-	 const AI_INTERVAL = 1000;
-	 let executeAIlogicInterval_player_1 = performance.now();
-	 let executeAIlogicInterval_player_2 = performance.now();
-
-	 let player1, player2;
+      const paddleHeight = 100; // Side paddle height
+      const paddleWidth = 10; // Side paddle width
 
 
-	 // Add event listeners for key presses
-	 document.addEventListener("keydown", (e) => {
-		if (player1)
-			player1.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
-		if (player2)
-			player2.keyDownHandler(e, dartsFlying, extrasAreOn, gameRunning);
-	 });
 
-	 document.addEventListener("keyup", (e) => {
-		if (player1)
-	   		player1.keyUpHandler(e, gameRunning);
-		if (player2)
-			player2.keyUpHandler(e, gameRunning);
-	 });
+      let interval;
 
-	 function stopGame() {
-		clearInterval(interval); // Stop game loop
-		gameRunning = false;
-	}
+      const AI_INTERVAL = 1000;
+      let executeAIlogicInterval_player_1 = performance.now();
+      let executeAIlogicInterval_player_2 = performance.now();
+      let executeAIlogicInterval_player_3 = performance.now();
+      let executeAIlogicInterval_player_4 = performance.now();
 
-	 // Draw the ball
-	 function drawBall()
+      let player1, player2, player3, player4;
+
+
+      // Add event listeners for key presses
+      document.addEventListener("keydown", (e) => {
+          player1.keyDownHandler(e, dartsFlying, extrasAreOn);
+          player2.keyDownHandler(e, dartsFlying, extrasAreOn);
+          player3.keyDownHandler(e, dartsFlying, extrasAreOn);
+          player4.keyDownHandler(e, dartsFlying, extrasAreOn);
+
+      });
+
+      document.addEventListener("keyup", (e) => {
+        player1.keyUpHandler(e);
+        player2.keyUpHandler(e);
+        player3.keyUpHandler(e);
+        player4.keyUpHandler(e);
+      });
+
+      function stopGame() {
+          clearInterval(interval); // Stop game loop
+          gameRunning = false;
+      }
+      
+      // Listen for tab visibility change
+      //document.addEventListener("visibilitychange", function () {
+      //    if (document.hidden || window.location.href !== "https://localhost/game_setup/") {
+      //        stopGame(); // Stop game if tab is hidden or URL is different
+      //    } else {
+      //        startGame(); // Resume game if tab is active and URL matches
+      //    }
+      //});
+
+      // Draw the ball
+      function drawBall()
+      {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+
+      }
+
+      // Handle ball collisions
+
+      function bounceBallOffMapObstacles()
+      {
+          for (let i = 0; i < mapObstacleSquares.length; i++)
+          {
+               if (x < mapObstacleSquares[i].upperLeftX && dx > 0 && x + ballRadius > mapObstacleSquares[i].upperLeftX && y > mapObstacleSquares[i].upperLeftY && y < mapObstacleSquares[i].lowerRightY)
+                    dx = -dx;
+               else if (x > mapObstacleSquares[i].upperLeftX && dx < 0 && x - ballRadius < mapObstacleSquares[i].lowerRightX && y > mapObstacleSquares[i].upperLeftY && y < mapObstacleSquares[i].lowerRightY)
+                    dx = -dx;
+               else if (y < mapObstacleSquares[i].upperLeftY && dy > 0 && y + ballRadius > mapObstacleSquares[i].upperLeftY && x > mapObstacleSquares[i].upperLeftX && x < mapObstacleSquares[i].lowerRightX)
+                    dy = -dy;
+               else if (y > mapObstacleSquares[i].upperLeftY && dy < 0 && y - ballRadius < mapObstacleSquares[i].lowerRightY && x > mapObstacleSquares[i].upperLeftX && x < mapObstacleSquares[i].lowerRightX)
+                    dy = -dy;
+          }
+      }
+
+      function declareWinner()
+      {
+          const scoreThreshold = 2;
+
+          if (player1.score >= scoreThreshold)
+          {
+               alert("Player 1 wins!");
+               clearInterval(interval);
+          }
+          else if (player2.score >= scoreThreshold)
+          {
+               alert("Player 2 wins!");
+               clearInterval(interval);
+          }
+          else if (player3.score >= scoreThreshold)
+          {
+               alert("Player 3 wins!");
+               clearInterval(interval);
+          }
+          else if (player4.score >= scoreThreshold)
+          {
+               alert("Player 4 wins!");
+               clearInterval(interval);
+          }
+      }
+
+
+      function handleScore()
+      {
+          if (x - ballRadius < 0)
+               player4.score -= 0.5;
+          else if (x + ballRadius > canvas.width)
+               player2.score -= 0.5;
+          else if (y - ballRadius < 0)
+               player1.score -= 0.5;
+          else if (y + ballRadius > canvas.height)
+               player3.score -= 0.5;
+
+          if (lastTouch_4p !== null)
+          {
+               lastTouch_4p.score += 1;
+          }
+
+          player1.score = Math.max(0, player1.score);
+          player2.score = Math.max(0, player2.score);
+          player3.score = Math.max(0, player3.score);
+          player4.score = Math.max(0, player4.score);
+
+          declareWinner();
+          lastTouch_4p = null;
+          
+
+      }
+
+	 function hitBall()
 	 {
-	   ctx.beginPath();
-	   ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-	   ctx.fillStyle = "#0095DD";
-	   ctx.fill();
-	   ctx.closePath();
 
-	 }
-
-	 // Handle ball collisions
-
-	 function bounceBallOffMapObstacles()
-	 {
-		for (let i = 0; i < mapObstacleSquares.length; i++)
+		//player 1 
+		if (y - ballRadius < paddleWidth && (x >= player1.paddleX && x <= player1.paddleX + player1.paddleHeight) && dy < 0)
 		{
-			if (x < mapObstacleSquares[i].upperLeftX && dx > 0 && x + ballRadius > mapObstacleSquares[i].upperLeftX && y > mapObstacleSquares[i].upperLeftY && y < mapObstacleSquares[i].lowerRightY)
-				dx = -dx;
-			else if (x > mapObstacleSquares[i].upperLeftX && dx < 0 && x - ballRadius < mapObstacleSquares[i].lowerRightX && y > mapObstacleSquares[i].upperLeftY && y < mapObstacleSquares[i].lowerRightY)
-				dx = -dx;
-			else if (y < mapObstacleSquares[i].upperLeftY && dy > 0 && y + ballRadius > mapObstacleSquares[i].upperLeftY && x > mapObstacleSquares[i].upperLeftX && x < mapObstacleSquares[i].lowerRightX)
-				dy = -dy;
-			else if (y > mapObstacleSquares[i].upperLeftY && dy < 0 && y - ballRadius < mapObstacleSquares[i].lowerRightY && x > mapObstacleSquares[i].upperLeftX && x < mapObstacleSquares[i].lowerRightX)
-				dy = -dy;
+			dy = -dy;
+			lastTouch_4p = player1;
 		}
-	 }
-	 function hitBall() {
-	   if (x - ballRadius < paddleWidth && y > player1.paddleY && y < player1.paddleY + player1.paddleHeight && dx < 0) {
-		dx = -dx;
-	   } else if (
-		x + ballRadius > canvas.width - paddleWidth &&
-		y > player2.paddleY &&
-		y < player2.paddleY + player2.paddleHeight && dx > 0
-	   ) {
-		dx = -dx;
-	   } else if (x - ballRadius < 0) {
-		player2.score++;
-		resetBall();
-		if (player2.score >= 20) {
-		  gameRunning = false;
-		  alert("GAME OVER\n\nPLAYER 2 WINS");
-		  clearInterval(interval);
+		//player 2
+		else if (x + ballRadius > canvas.width - paddleWidth && (y >= player2.paddleY && y <= player2.paddleY + player2.paddleHeight) && dx > 0)
+		{
+			dx = -dx;
+			lastTouch_4p = player2;
 		}
-	   } else if (x + ballRadius > canvas.width) {
-		player1.score++;
-		resetBall();
-		if (player1.score >= 20) {
-		  gameRunning = false;
-		  alert("GAME OVER\n\nPLAYER 1 WINS");
-		  clearInterval(interval);
+		//player 3
+		else if (y + ballRadius > canvas.height - paddleWidth && (x >= player3.paddleX && x <= player3.paddleX + player3.paddleHeight) && dy > 0)
+		{
+			dy = -dy;
+			lastTouch_4p = player3;
 		}
-	   }
+		//player 4
+		else if (x - ballRadius < paddleWidth && (y >= player4.paddleY && y <= player4.paddleY + player4.paddleHeight) && dx < 0)
+		{
+			dx = -dx;
+			lastTouch_4p = player4;
+		}
 
-	   if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-		dy = -dy;
-	   }
+		if (x - ballRadius < 0 || x + ballRadius > canvas.width || y - ballRadius < 0 || y + ballRadius > canvas.height)
+		{
+	   		handleScore(); 
+	   		resetBall();
+		}
+
 	   bounceBallOffMapObstacles();
 	 }
 
@@ -225,9 +297,9 @@ $(document).ready(function ()
 	   x = canvas.width / 2;
 	   y = canvas.height / 2;
 	   dx = -dx;
+	   dy = -dy;
 
-	   if (currentMap === "box")
-		y = 100;
+	   // add map logic here
 	 }
 
 	 // Move the ball
@@ -269,7 +341,7 @@ $(document).ready(function ()
 		    : new THREE.BoxGeometry(paddleWidth, paddleHeight, 20); // Taller for vertical paddles
 		const paddleMaterial = new THREE.MeshLambertMaterial({ color: player.paddleColour }); // Use Lambert for shading
 		return new THREE.Mesh(paddleGeometry, paddleMaterial);
-	}
+	 }
 
 
 	 function moveDarts()
@@ -280,7 +352,8 @@ $(document).ready(function ()
 			{
 				dartsFlying.splice(i, 1);
 			}
-			dartsFlying[i].upperLeftX += dartsFlying[i].speed;  
+			dartsFlying[i].upperLeftX += dartsFlying[i].player.ballTowardsUs[0] * -1 * dartsFlying[i].speed;
+			dartsFlying[i].upperLeftY += dartsFlying[i].player.ballTowardsUs[1] * -1 * dartsFlying[i].speed;  
 		}
 	 }
 
@@ -305,12 +378,6 @@ $(document).ready(function ()
 				powerupSpawnSide = "UP";
 			}
 		}
-		else 
-		{
-			//write on the screen THAT THE IF	statement is not being met
-			ctx.fillText("IF CONDITION NOT BEING MET", 400, 40 + 15);
-			ctx.fillText(powerupsOnMap.length.toString(), 400, 60 + 15);
-		}
 
 	 }
 
@@ -324,6 +391,14 @@ $(document).ready(function ()
 		    }
 		    if (dartsFlying[i].dartHitPlayer(player2.paddleX, player2.paddleY, player2.paddleWidth, player2.paddleHeight) && dartsFlying[i].player !== player2) {
 			   player2.score -= 0.5;
+			   dartsToRemove.push(i);
+		    }
+		    if (dartsFlying[i].dartHitPlayer(player3.paddleX, player3.paddleY, player3.paddleWidth, player3.paddleHeight) && dartsFlying[i].player !== player3){
+			   player3.score -= 0.5;
+			   dartsToRemove.push(i);
+		    }
+		    if (dartsFlying[i].dartHitPlayer(player4.paddleX, player4.paddleY, player4.paddleWidth, player4.paddleHeight) && dartsFlying[i].player !== player4){
+			   player4.score -= 0.5;
 			   dartsToRemove.push(i);
 		    }
 		}
@@ -394,9 +469,14 @@ $(document).ready(function ()
 	 function drawScores() {
 	   ctx.font = "40px Lato";
 	   ctx.fillStyle = player1.paddleColour;
-	   ctx.fillText(player1.score.toString(), canvas.width / 4, 50);
+	   ctx.fillText(player1.score.toString(), canvas.width / 2 - 20, 50);
 	   ctx.fillStyle = player2.paddleColour;
-	   ctx.fillText(player2.score.toString(), (canvas.width * 3) / 4, 50);
+	   ctx.fillText(player2.score.toString(), canvas.width -70, canvas.height / 2 - 30);
+	   ctx.fillStyle = player3.paddleColour;
+	   ctx.fillText(player3.score.toString(), canvas.width / 2 - 20, canvas.height - 80);
+	   ctx.fillStyle = player4.paddleColour;
+	   ctx.fillText(player4.score.toString(), 20, canvas.height / 2- 30);
+
 	 }
 
 	 function drawMapObstacles()
@@ -454,6 +534,8 @@ $(document).ready(function ()
 	   drawPowerups();
 	   player1.drawPaddle(ctx, canvas);
 	   player2.drawPaddle(ctx, canvas);
+	   player3.drawPaddle(ctx, canvas);
+	   player4.drawPaddle(ctx, canvas);
 	   
 	   if (player1.isAI)
 	   {
@@ -480,6 +562,41 @@ $(document).ready(function ()
 	   else
 		player2.movePaddlePlayer(canvas);
 
+	    if (player3.isAI)
+	    {
+			if (performance.now() - executeAIlogicInterval_player_3 >= AI_INTERVAL)
+			{
+			  player3.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius);
+			  executeAIlogicInterval_player_3 = performance.now();
+			}   
+			player3.moveAIpaddle(ctx);
+		}
+		else
+		{
+			player3.movePaddlePlayer(canvas);
+		}
+
+
+		if (player4.isAI)
+			{
+				 if (performance.now() - executeAIlogicInterval_player_4 >= AI_INTERVAL)
+				 {
+				   player3.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius);
+				   executeAIlogicInterval_player_4 = performance.now();
+				 }   
+				 player4.moveAIpaddle(ctx);
+			 }
+			 else
+			 {
+				 player4.movePaddlePlayer(canvas);
+			 }
+
+			 
+			 player1.paddleMesh.position.set(player1.paddleX - canvas.width / 2 + paddleHeight/2, -player1.paddleY + canvas.height / 2 , 10);
+			 player2.paddleMesh.position.set(player2.paddleX - canvas.width / 2 + player2.paddleWidth/2, -player2.paddleY + canvas.height / 2 - player2.paddleHeight/2, 10);
+			 player3.paddleMesh.position.set(player3.paddleX - canvas.width / 2 + paddleHeight/2, -player3.paddleY + canvas.height / 2 , 10);
+			 player4.paddleMesh.position.set(player4.paddleX - canvas.width / 2 + player4.paddleWidth/2, -player4.paddleY + canvas.height / 2 - player4.paddleHeight/2, 10);
+
 	   dartsHitThings();
 	   moveBall();
 	   movePowerups();
@@ -503,7 +620,7 @@ $(document).ready(function ()
 	 }
 
 	 // Start the game
-	 function startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff) {
+	 function startGame(player1Type, player1Colour, player2Type, player2Colour, player3Type, player3Colour, player4Type, player4Colour, chosenMap, extrasOnOff) {
 
 	   if (interval)
 	   {
@@ -524,14 +641,11 @@ $(document).ready(function ()
 
 	   if (chosenMap === "box")
 	   {
-		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.4, canvas.height*0.4, canvas.width*0.2, canvas.height*0.2, "black"));
-		y = 100;
+		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.40, canvas.height*0.35, canvas.width*0.2, canvas.height*0.05, "black"));
+		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.30, canvas.height*0.45, canvas.width*0.05, canvas.height*0.2, "black"));
+		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.40, canvas.height*0.70, canvas.width*0.2, canvas.height*0.05, "black"));
+		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.65, canvas.height*0.45, canvas.width*0.05, canvas.height*0.2, "black"));
 	   }
-	   else if (chosenMap === "twoLines")
-	   {
-		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.2, canvas.height*0.2, canvas.width*0.25, canvas.height*0.1, "black"));
-		mapObstacleSquares.push(new MapObstacleSquare(canvas.width*0.55, canvas.height*0.7, canvas.width*0.25, canvas.height*0.1, "black"));
-	  }
 
 	  if (extrasOnOff === "ON")
 		extrasAreOn = true;
@@ -539,27 +653,39 @@ $(document).ready(function ()
 		extrasAreOn = false;
 
 	
+		for (let i = 0; i < paddleMeshes.length; i++) {
+			scene.remove(paddleMeshes[i]);
+		 }
+		 paddleMeshes = []; // Clear the array
 
+		player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, (canvas.width - paddleHeight) / 2, 0, "q", "w", canvas.height, canvas.width, "e", true);
+		player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "ArrowLeft", false);
+		player3 = new Player("Player 3", player3Type === "human" ? false : true, player3Colour, paddleWidth, paddleHeight, 7, (canvas.width - paddleHeight) / 2, canvas.height - paddleWidth, "n", "m", canvas.height, canvas.width, "j", true);
+		player4 = new Player("Player 4", player4Type === "human" ? false : true, player4Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "8", "2", canvas.height, canvas.width, "5", false);
+	 
+		if (player1 && player1.paddleMesh) scene.remove(player1.paddleMesh);
+		if (player2 && player2.paddleMesh) scene.remove(player2.paddleMesh);
+		if (player3 && player3.paddleMesh) scene.remove(player3.paddleMesh);
+		if (player4 && player4.paddleMesh) scene.remove(player4.paddleMesh);
+	 
+		// Create 3D paddle meshes with adjusted geometry and shading
+		player1.paddleMesh = createPaddleMesh(player1, paddleWidth, paddleHeight);
+		player2.paddleMesh = createPaddleMesh(player2, paddleWidth, paddleHeight);
+		player3.paddleMesh = createPaddleMesh(player3, paddleWidth, paddleHeight);
+		player4.paddleMesh = createPaddleMesh(player4, paddleWidth, paddleHeight);
 
-	   player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, "r");
-	   player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "l");
-
-	   if (player1 && player1.paddleMesh) scene.remove(player1.paddleMesh);
-	   if (player2 && player2.paddleMesh) scene.remove(player2.paddleMesh);
-
-	   player1.paddleMesh = createPaddleMesh(player1, paddleWidth, paddleHeight);
-	   player2.paddleMesh = createPaddleMesh(player2, paddleWidth, paddleHeight);
-
-	   paddleMeshes.push(player1.paddleMesh);
-	   paddleMeshes.push(player2.paddleMesh);
-
-	   scene.add(player1.paddleMesh);
-	   scene.add(player2.paddleMesh);
-
-	   // Start game loop
-	   interval = setInterval(draw, 10);
+		paddleMeshes.push(player1.paddleMesh);
+		paddleMeshes.push(player2.paddleMesh);
+		paddleMeshes.push(player3.paddleMesh);
+		paddleMeshes.push(player4.paddleMesh);
+	 
+		scene.add(player1.paddleMesh);
+		scene.add(player2.paddleMesh);
+		scene.add(player3.paddleMesh);
+		scene.add(player4.paddleMesh);
+		
+		interval = setInterval(draw, 10);
 	   gameRunning = true;
-
 	 }
 
 	 $(document).on("click", "#runButton", function () {
@@ -568,6 +694,10 @@ $(document).ready(function ()
 	   const player1Colour = document.getElementById("player1Colour").value;
 	   const player2Colour = document.getElementById("player2Colour").value;
 	   const player2Type = document.getElementById("player2Type").value;
+	//    const player3Type = document.getElementById("player3Type").value;
+	//    const player3Colour = document.getElementById("player3Colour").value;
+	//    const player4Type = document.getElementById("player4Type").value;
+	//    const player4Colour = document.getElementById("player4Colour").value;
 	   const chosenMap = document.getElementById("chosenMap").value;
 	   const extrasOnOff = document.getElementById("extrasAreOn").value;
 	 
@@ -578,7 +708,7 @@ $(document).ready(function ()
 	   console.log("Player 2 Type:", player2Type);
 	 
 	   if (window.location.href === "https://localhost/game_setup/")
-	   	   startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff);
+	   	startGame(player1Type, player1Colour, player2Type, player2Colour, "human", "red", "human", "red", chosenMap, extrasOnOff);
 	 });
 
   }
