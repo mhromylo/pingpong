@@ -136,26 +136,20 @@ $(document).ready(function ()
       const AI_INTERVAL = 1000;
       let executeAIlogicInterval_player_1 = performance.now();
       let executeAIlogicInterval_player_2 = performance.now();
-      let executeAIlogicInterval_player_3 = performance.now();
-      let executeAIlogicInterval_player_4 = performance.now();
 
-      let player1, player2, player3, player4;
+      let player1, player2;
 
 
       // Add event listeners for key presses
       document.addEventListener("keydown", (e) => {
           player1.keyDownHandler(e, dartsFlying, extrasAreOn);
           player2.keyDownHandler(e, dartsFlying, extrasAreOn);
-          player3.keyDownHandler(e, dartsFlying, extrasAreOn);
-          player4.keyDownHandler(e, dartsFlying, extrasAreOn);
 
       });
 
       document.addEventListener("keyup", (e) => {
         player1.keyUpHandler(e);
         player2.keyUpHandler(e);
-        player3.keyUpHandler(e);
-        player4.keyUpHandler(e);
       });
 
       function stopGame() {
@@ -200,96 +194,38 @@ $(document).ready(function ()
           }
       }
 
-      function declareWinner()
-      {
-          const scoreThreshold = 2;
 
-          if (player1.score >= scoreThreshold)
-          {
-               alert("Player 1 wins!");
-               clearInterval(interval);
-          }
-          else if (player2.score >= scoreThreshold)
-          {
-               alert("Player 2 wins!");
-               clearInterval(interval);
-          }
-          else if (player3.score >= scoreThreshold)
-          {
-               alert("Player 3 wins!");
-               clearInterval(interval);
-          }
-          else if (player4.score >= scoreThreshold)
-          {
-               alert("Player 4 wins!");
-               clearInterval(interval);
-          }
-      }
-
-
-      function handleScore()
-      {
-          if (x - ballRadius < 0)
-               player4.score -= 0.5;
-          else if (x + ballRadius > canvas.width)
-               player2.score -= 0.5;
-          else if (y - ballRadius < 0)
-               player1.score -= 0.5;
-          else if (y + ballRadius > canvas.height)
-               player3.score -= 0.5;
-
-          if (lastTouch_4p !== null)
-          {
-               lastTouch_4p.score += 1;
-          }
-
-          player1.score = Math.max(0, player1.score);
-          player2.score = Math.max(0, player2.score);
-          player3.score = Math.max(0, player3.score);
-          player4.score = Math.max(0, player4.score);
-
-          declareWinner();
-          lastTouch_4p = null;
-          
-
-      }
-
-	 function hitBall()
-	 {
-
-		//player 1 
-		if (y - ballRadius < paddleWidth && (x >= player1.paddleX && x <= player1.paddleX + player1.paddleHeight) && dy < 0)
-		{
-			dy = -dy;
-			lastTouch_4p = player1;
+	 function hitBall() {
+		if (x - ballRadius < paddleWidth && y > player1.paddleY && y < player1.paddleY + player1.paddleHeight && dx < 0) {
+		  dx = -dx;
+		} else if (
+		  x + ballRadius > canvas.width - paddleWidth &&
+		  y > player2.paddleY &&
+		  y < player2.paddleY + player2.paddleHeight && dx > 0
+		) {
+		  dx = -dx;
+		} else if (x - ballRadius < 0) {
+		  player2.score++;
+		  resetBall();
+		  if (player2.score >= 20) {
+		    alert("GAME OVER\n\nPLAYER 2 WINS");
+		    clearInterval(interval);
+		  }
+		} else if (x + ballRadius > canvas.width) {
+		  player1.score++;
+		  resetBall();
+		  if (player1.score >= 20) {
+		    alert("GAME OVER\n\nPLAYER 1 WINS");
+		    clearInterval(interval);
+		  }
 		}
-		//player 2
-		else if (x + ballRadius > canvas.width - paddleWidth && (y >= player2.paddleY && y <= player2.paddleY + player2.paddleHeight) && dx > 0)
-		{
-			dx = -dx;
-			lastTouch_4p = player2;
+  
+		if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
+		  dy = -dy;
 		}
-		//player 3
-		else if (y + ballRadius > canvas.height - paddleWidth && (x >= player3.paddleX && x <= player3.paddleX + player3.paddleHeight) && dy > 0)
-		{
-			dy = -dy;
-			lastTouch_4p = player3;
-		}
-		//player 4
-		else if (x - ballRadius < paddleWidth && (y >= player4.paddleY && y <= player4.paddleY + player4.paddleHeight) && dx < 0)
-		{
-			dx = -dx;
-			lastTouch_4p = player4;
-		}
-
-		if (x - ballRadius < 0 || x + ballRadius > canvas.width || y - ballRadius < 0 || y + ballRadius > canvas.height)
-		{
-	   		handleScore(); 
-	   		resetBall();
-		}
-
-	   bounceBallOffMapObstacles();
-	 }
+		bounceBallOffMapObstacles();
+	   }
+  
 
 	 // Reset ball position
 	 function resetBall()
@@ -297,9 +233,9 @@ $(document).ready(function ()
 	   x = canvas.width / 2;
 	   y = canvas.height / 2;
 	   dx = -dx;
-	   dy = -dy;
 
-	   // add map logic here
+	   if (currentMap === "box")
+		y = 100;
 	 }
 
 	 // Move the ball
@@ -352,8 +288,7 @@ $(document).ready(function ()
 			{
 				dartsFlying.splice(i, 1);
 			}
-			dartsFlying[i].upperLeftX += dartsFlying[i].player.ballTowardsUs[0] * -1 * dartsFlying[i].speed;
-			dartsFlying[i].upperLeftY += dartsFlying[i].player.ballTowardsUs[1] * -1 * dartsFlying[i].speed;  
+			dartsFlying[i].upperLeftX += dartsFlying[i].speed;  
 		}
 	 }
 
@@ -397,6 +332,7 @@ $(document).ready(function ()
 			   player3.score -= 0.5;
 			   dartsToRemove.push(i);
 		    }
+
 		    if (dartsFlying[i].dartHitPlayer(player4.paddleX, player4.paddleY, player4.paddleWidth, player4.paddleHeight) && dartsFlying[i].player !== player4){
 			   player4.score -= 0.5;
 			   dartsToRemove.push(i);

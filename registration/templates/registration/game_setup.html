@@ -3,11 +3,6 @@
 {% block content %}
 <div id="content">
     {% load i18n %}
-    <div class="game-canvas">
-        <canvas id="myCanvas" width="720" height="480"></canvas>
-        <canvas id="threejsCanvas" class="threejs-canvas" width="720" height="480"></canvas>
-        <button id="runButton" class="btn btn-primary">Start Game</button>
-    </div>
     <h1>{% trans "Set Up Your Game" %}</h1>
     <div class="row d-flex justify-content-between align-items-center mb-4">
         <!-- Player 1 (Left Side) -->
@@ -27,7 +22,7 @@
                         <option value="ai">{% trans "AI" %}</option>
                     </select>
     
-                    <label for="player1Colour" class="form-label mt-2">{% trans "Colour:" %}</label>
+                    <label for="player1Colour" class="form-label mt-2">{% trans "Colour!!!!!!!:" %}</label>
                     <select id="player1Colour" class="form-select">
                         <option value="red">{% trans "Red" %}</option>
                         <option value="green">{% trans "Green" %}</option>
@@ -140,7 +135,15 @@
     <!-- Game Canvas Section -->
     
 </div>
-
+<div class="game-canvas">
+	<canvas id="myCanvas" width="720" height="480"></canvas>
+	<canvas id="threejsCanvas" class="threejs-canvas" width="720" height="480"></canvas>
+	<button id="runButton" class="btn btn-primary">Start Game</button>
+ </div>
 <script type="module" src="/static/js/myCanvas.js"></script>
+<script src="https://unpkg.com/three@0.150.1/build/three.min.js"></script>
+<script src="https://threejs.org/examples/js/loaders/FontLoader.js"></script>
+<script src="https://threejs.org/examples/js/geometries/TextGeometry.js"></script>
+
 
 {% endblock %}
