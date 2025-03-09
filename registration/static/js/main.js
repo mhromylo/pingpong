@@ -282,6 +282,7 @@ function renderChart(player1, player2) {
             }]
         },
         options: {
+            responsive: true,
             scales: {
                 y: {
                     beginAtZero: true

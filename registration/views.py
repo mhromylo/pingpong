@@ -19,7 +19,7 @@ from django.views.decorators.http import require_http_methods
 from django.db.models import Q, Count
 
 from .forms import UserUpdateForm, ProfileUpdateForm, RegistrationForm, AddFriendsForm, TournamentUpdateForm, CreateTournamentForm
-from .models import Profile, Game, Tournament
+from .models import Profile, Game, Tournament, AnotherGame
 
 
 def index(request):
@@ -192,43 +192,35 @@ def change_password(request):
 def add_friend(request):
     if request.method == 'POST':
         user_profile = Profile.objects.get(user=request.user)
-        form = AddFriendsForm(request.POST)
-        if form.is_valid():
-            friend_name = form.cleaned_data['friend_name']
-            try:
-                friend_profile = get_object_or_404(Profile, display_name=friend_name)
-                if user_profile == friend_profile:
-                    return JsonResponse({
-                        'success': False,
-                        'message': _("You cannot add yourself as a friend.")
-                        }, status=200)
-                elif friend_profile in user_profile.friends.all():
-                    return JsonResponse({
-                        'success': False,
-                        'message': _("You are already friends..")
-                        }, status=200)
-                else:
-                    user_profile.friends.add(friend_profile)
-                    user_profile.save()
-                    return JsonResponse({
-                        'success': True,
-                        'message': _("You are now friends"),
-                        'redirect_url': '/add_friend/'
-                        }, status=200)
-            except Exception as e:
+        friend_name = request.POST.get('player')
+        try:
+            friend_profile = get_object_or_404(Profile, id=friend_name)
+            if user_profile == friend_profile:
                 return JsonResponse({
-                        'success': False,
-                        'message': 'Something went wrong while adding friend, maybe wrong display_name'
-                        }, status=200)
-        else:
+                    'success': False,
+                    'message': _("You cannot add yourself as a friend.")
+                    }, status=200)
+            elif friend_profile in user_profile.friends.all():
+                return JsonResponse({
+                    'success': False,
+                    'message': _("You are already friends..")
+                    }, status=200)
+            else:
+                user_profile.friends.add(friend_profile)
+                user_profile.save()
+                return JsonResponse({
+                    'success': True,
+                    'message': _("You are now friends"),
+                    'redirect_url': '/add_friend/'
+                    }, status=200)
+        except Exception as e:
             return JsonResponse({
-                'success': False,
-                'message': _("Please correct the error in the form.!"),
-                'errors': form.errors  # Include user form errors
-            }, status=200)
+                    'success': False,
+                    'message': _('Something went wrong while adding friend, maybe wrong display_name')
+                    }, status=200)
     else:
-        form = AddFriendsForm()
-        return render(request, 'registration/add_friend.html', {'form': form})
+        players = Profile.objects.all()
+        return render(request, 'registration/add_friend.html', {'players': players})
 
 
 @login_required
@@ -264,6 +256,25 @@ def game_setup(request):
     if (game):
         return render(request, 'registration/game_setup.html', {'game': game})
     return render(request, 'registration/game_setup.html', {})
+
+@login_required
+def another_game(request):
+    player1 = Profile.objects.get(user=request.user)
+    if request.method == 'POST':
+        player1 = Profile.objects.get(user=request.user)
+        another_game = AnotherGame.objects.create(game_type="Another", status = 'not started', player1=player1)
+        another_game.save()
+        return JsonResponse({
+                'success': True,
+                'message': _("Another Game Created!"),
+                'redirect_url': '/another_game/' 
+            })
+    else:
+        another_game = AnotherGame.objects.filter(player1=player1, status = 'not started').first()
+        if another_game:
+            return render(request, 'registration/another_game.html', {'player1': player1, 'another_game': another_game})
+        else:
+            return render(request, 'registration/another_game.html', {'player1': player1})
 
 @login_required
 def tournament(request):
@@ -873,3 +884,49 @@ def game_dashboard(request):
         'game_type_data': game_type_data,
     }
     return render(request, 'registration/game_dashboard.html', context)
+
+@login_required
+def save_another_game_result(request):
+    if request.method == 'POST':
+        try:
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
+
+            another_game_id = data.get('another_game_id')
+            player1_id = data.get('player1_id')
+            player2_id = data.get('player2_id')
+            player1_score = data.get('player1_score')
+            player2_score = data.get('player2_score')
+
+            if another_game_id == 0:
+                return JsonResponse({'success': True, 'message': 'Game without saving result!', 'redirect_url': '/another_game/'})
+            # Get player profiles
+            player1 = get_object_or_404(Profile, id=player1_id)
+            player2 = get_object_or_404(Profile, id=player2_id)
+
+            # Update the existing game
+            another_game = get_object_or_404(AnotherGame, id=another_game_id)
+            if another_game.winner:
+                return JsonResponse({'success': False, 'message': 'Game result already recorded'}, status=400)
+            
+            another_game.player2 = player2
+            
+            with transaction.atomic():  
+                if player1_score > player2_score:
+                    player1.update_stats(won=1)
+                    player2.update_stats(won=0)
+                    another_game.winner = player1
+                    another_game.loser = player2
+                else:
+                    another_game.winner = player2
+                    another_game.loser = player1
+                another_game.player1_score = player1_score
+                another_game.player2_score = player2_score
+                another_game.status = "ended"
+                another_game.save()
+                return JsonResponse({'success': True, 'message': 'Game result saved successfully!', 'redirect_url': '/another_game/'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)

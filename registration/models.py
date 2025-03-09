@@ -14,6 +14,8 @@ class Profile(models.Model):
     losses = models.PositiveIntegerField(default=0)
     friends = models.ManyToManyField('self', blank=True)
     is_online = models.BooleanField(default=False)
+    another_wins = models.PositiveIntegerField(default=0)
+    another_losses = models.PositiveIntegerField(default=0)
 
 
     def __str__(self):
@@ -78,6 +80,27 @@ class Game(models.Model):
         
     def __str__(self):
         return f"Game ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')} - {self.game_type})"
+    
+class AnotherGame(models.Model):
+    player1 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Amother_Player1")
+    player2 = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name="games_as_Amother_Player2")
+    winner = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="another_games_won", null=True, blank=True)
+    loser = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="another_games_lost", null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    game_type = models.CharField(max_length=50)
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, choices=[
+        ('not started', 'Not started'),
+        ('ended', 'Ended')
+    ], default='not started')
+    
+    
+    class Meta:
+        db_table = 'registration_another_game'
+        
+    def __str__(self):
+        return f"Another Game ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')} - {self.game_type})"
 
 class Tournament(models.Model):
     name = models.CharField(max_length=100)
