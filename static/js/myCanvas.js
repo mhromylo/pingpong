@@ -1,6 +1,8 @@
 let scene = new THREE.Scene();
 import Player from "./Player.js";
 import { MapObstacleSquare, Dart, PowerUp } from "./powersAndMaps.js";
+import { loadPage } from './main.js';
+import { fetchNewCSRFToken } from './main.js';
 
 var canvas = document.getElementById("myCanvas");
 var ctx;
@@ -112,6 +114,7 @@ function initThreeJS() {
 $(document).ready(function ()
 {
 	setupCanvas();
+    
 
   if (canvas)
   {
@@ -686,29 +689,34 @@ $(document).ready(function ()
 		interval = setInterval(draw, 10);
 	   gameRunning = true;
 	 }
+     
+     function handleRunButtonClick(event) {
+        setupCanvas();
+        const player1Type = document.getElementById("player1Type").value;
+        const player1Colour = document.getElementById("player1Colour").value;
+        const player2Colour = document.getElementById("player2Colour").value;
+        const player2Type = document.getElementById("player2Type").value;
+     //    const player3Type = document.getElementById("player3Type").value;
+     //    const player3Colour = document.getElementById("player3Colour").value;
+     //    const player4Type = document.getElementById("player4Type").value;
+     //    const player4Colour = document.getElementById("player4Colour").value;
+        const chosenMap = document.getElementById("chosenMap").value;
+        const extrasOnOff = document.getElementById("extrasAreOn").value;
+      
+        console.log("Game Starting...");
+        console.log("Player 1 Type:", player1Type);
+        console.log("Player 1 Colour:", player1Colour);
+        console.log("Player 2 Colour:", player2Colour);
+        console.log("Player 2 Type:", player2Type);
+      
+        if (window.location.href === "https://localhost/game_setup/")
+            startGame(player1Type, player1Colour, player2Type, player2Colour, "human", "red", "human", "red", chosenMap, extrasOnOff);
+      }
 
-	 $(document).on("click", "#runButton", function () {
-	   setupCanvas();
-	   const player1Type = document.getElementById("player1Type").value;
-	   const player1Colour = document.getElementById("player1Colour").value;
-	   const player2Colour = document.getElementById("player2Colour").value;
-	   const player2Type = document.getElementById("player2Type").value;
-	//    const player3Type = document.getElementById("player3Type").value;
-	//    const player3Colour = document.getElementById("player3Colour").value;
-	//    const player4Type = document.getElementById("player4Type").value;
-	//    const player4Colour = document.getElementById("player4Colour").value;
-	   const chosenMap = document.getElementById("chosenMap").value;
-	   const extrasOnOff = document.getElementById("extrasAreOn").value;
+      $(document).on("click", ".runButton", function () {
+            handleRunButtonClick();
+        });
 	 
-	   console.log("Game Starting...");
-	   console.log("Player 1 Type:", player1Type);
-	   console.log("Player 1 Colour:", player1Colour);
-	   console.log("Player 2 Colour:", player2Colour);
-	   console.log("Player 2 Type:", player2Type);
-	 
-	   if (window.location.href === "https://localhost/game_setup/")
-	   	startGame(player1Type, player1Colour, player2Type, player2Colour, "human", "red", "human", "red", chosenMap, extrasOnOff);
-	 });
 
   }
   

@@ -1,9 +1,7 @@
 async function checkAuth() {
     try {
         let response = await fetch("/check-auth/");
-        console.log(response);
         let data = await response.json();
-        console.log(data);
         if (data.authenticated) {
             document.getElementById("auth-nav").style.display = "flex";
             document.getElementById("guest-nav").style.display = "none";
@@ -48,13 +46,13 @@ export function fetchNewCSRFToken() {
     }
 
     function loadMyCanvasScript() {
-        var existingScript = document.querySelector('script[src="/static/js/tournament.js"]');
+        var existingScript = document.querySelector('script[src="/static/js/myCanvas.js"]');
         if (existingScript) {
             existingScript.remove();
         }
         var script = document.createElement('script');
         script.type = 'module';
-        script.src = "/static/js/tournament.js";
+        script.src = "/static/js/myCanvas.js";
         script.onload = function() {};
         document.head.appendChild(script);
     }
@@ -88,8 +86,12 @@ export function fetchNewCSRFToken() {
                 if (addToHistory) {
                     history.pushState({ path: url }, "", url);
                 }
+                console.log(url);
                 if (url === '/game_setup/' || url === '/tournament/')
+                {
+                    console.log("loadMyCanvasScript");
                     loadMyCanvasScript();
+                }
                 if (url === '/user_dashboard/'){
                     tempDiv.querySelectorAll('script').forEach(script => {
                         const newScript = document.createElement('script');
@@ -139,6 +141,10 @@ export function fetchNewCSRFToken() {
     }
 
     function renderTopWinnersChart() {
+        if (!window.topWinnersData || !window.topWinnersData.labels || !window.topWinnersData.wins) {
+            console.error('topWinnersData is not defined or missing labels/wins');
+            return;
+        }
         const ctx = document.getElementById('topWinnersChart').getContext('2d');
         if (window.topWinnersChartInstance) {
             window.topWinnersChartInstance.destroy();
@@ -166,7 +172,7 @@ export function fetchNewCSRFToken() {
                     legend: { position: 'top' },
                     title: {
                         display: true,
-                        text: 'Top 5 Winners'
+                        text: 'Top Winners'
                     }
                 }
             }

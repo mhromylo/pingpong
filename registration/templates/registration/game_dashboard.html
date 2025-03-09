@@ -72,10 +72,20 @@
 </div>
 
 <script>
-    window.topWinnersData = {
-        labels: [{% for player in top_winners %}"{{ player.display_name }}",{% endfor %}],
-        wins: [{% for player in top_winners %}{{ player.total_wins }},{% endfor %}],
-    };
+    {% if top_winners %}
+        window.topWinnersData = {
+            labels: [{% for player in top_winners %}"{{ player.display_name }}",{% endfor %}],
+            wins: [{% for player in top_winners %}{{ player.total_wins }},{% endfor %}],
+        };
+    {% else %}
+        window.topWinnersData = {
+            labels: ["No players found"],
+            wins: [0],
+        };
+    {% endif %}
+
+    // Log the data for debugging
+    console.log('topWinnersData:', window.topWinnersData);
 
     window.gameTypeData = {
         labels: ['Tournament Game', 'Tournament Final', 'Tournament 3rd/4th Place', 'PVP'],

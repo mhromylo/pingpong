@@ -25,7 +25,6 @@ $(document).ready(function ()
 {
    
 
-    console.log("DOM fully loaded");
   if (canvas)
   {
       ctx = canvas.getContext("2d");
@@ -301,8 +300,8 @@ $(document).ready(function ()
     
     
     
-        player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, game_id, player1_id, "r");
-        player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, game_id, player2_id, "l");
+        player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, "e", game_id, player1_id);
+        player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "ArrowLeft", game_id, player2_id);
     
         // Start game loop
         interval = setInterval(draw, 10);
@@ -355,8 +354,9 @@ $(document).ready(function ()
         const game_id = event.target.getAttribute('data-game-id');
         const player1_id = event.target.getAttribute('data-player1-id');
         const player2_id = event.target.getAttribute('data-player2-id');
-    
-        
+        console.log("game_id", game_id );
+        console.log("player1_id", player1_id );
+        console.log("player2_id", player2_id );
         startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
     }
     $(document).on("click", ".beginGame", function (event) {

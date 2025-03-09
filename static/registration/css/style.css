@@ -108,3 +108,7 @@ canvas {
     left: 0px;
     z-index: 1;
 }
+.card canvas {
+    width: 100% !important; /* Ensure canvas fills the card */
+    height: 200px !important; /* Set a fixed height for consistency */
+}
