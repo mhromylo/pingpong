@@ -327,9 +327,10 @@ def save_game_result(request):
 
             # Update the existing game
             game = get_object_or_404(Game, id=game_id)
-
             if game.winner:
                 return JsonResponse({'success': False, 'message': 'Game result already recorded'}, status=400)
+            
+            game.player2 = player2
             
             tournament = None
             if game.tournament_id and game.tournament_id != 0:
@@ -340,8 +341,6 @@ def save_game_result(request):
                     player2.update_stats(won=0)
                     game.winner = player1
                     game.loser = player2
-                    game.status = "finished"
-                    game.save()
                     if (tournament and (game.game_type == Game.TOURNAMENT_GAME)):
                         if not tournament.first_tour_winners.filter(id=player1.id).exists():
                             tournament.first_tour_winners.add(player1)
@@ -352,8 +351,6 @@ def save_game_result(request):
                     game.loser = player1
                     player2.update_stats(won=1)
                     player1.update_stats(won=0)
-                    game.status = "finished"
-                    game.save()
                     if (tournament and (game.game_type == Game.TOURNAMENT_GAME)):
                         if not tournament.first_tour_winners.filter(id=player2.id).exists():
                             tournament.first_tour_winners.add(player2)
@@ -665,9 +662,9 @@ def quit_tournament(request, tournament_id, player_id):
         })
     else:
         return JsonResponse({
-            'success': False,
+            'success': True,
             'message': _("Tournament already started.")
-        }, status=400)
+        }, status=200)
     
 @login_required
 def start_tournament(request, tournament_id):
