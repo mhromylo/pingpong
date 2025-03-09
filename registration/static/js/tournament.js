@@ -22,6 +22,8 @@ let currentGameTab;
 // Three.js variables
 let camera, renderer, ball3D;
 let paddleMeshes = [];
+let obstacleMeshes = [];
+let dartMeshes = [];
 
 function setupCanvas() {
   canvas = document.getElementById("myCanvas");
@@ -33,6 +35,18 @@ function setupCanvas() {
 
   initThreeJS();
 }
+
+function createObstacleMesh(obstacle) {
+	const obstacleGeometry = new THREE.BoxGeometry(obstacle.width, obstacle.height, 20);
+	const obstacleMaterial = new THREE.MeshLambertMaterial({ color: obstacle.colour });
+	return new THREE.Mesh(obstacleGeometry, obstacleMaterial);
+ }
+
+ function createDartMesh(dart) {
+	const dartGeometry = new THREE.BoxGeometry(dart.width, dart.height, 10); // Adjust thickness as needed
+	const dartMaterial = new THREE.MeshLambertMaterial({ color: dart.player.paddleColour }); // Use player's color
+	return new THREE.Mesh(dartGeometry, dartMaterial);
+ }
 
 function initThreeJS() {
   scene = new THREE.Scene();
@@ -277,23 +291,66 @@ $(document).ready(function () {
 
     function dartsHitThings() {
       let dartsToRemove = [];
-
-      for (let i = dartsFlying.length - 1; i >= 0; i--) {
-        if (dartsFlying[i].dartHitPlayer(player1.paddleX, player1.paddleY, player1.paddleWidth, player1.paddleHeight) && dartsFlying[i].player !== player1) {
-          player1.score -= 0.5;
-          dartsToRemove.push(i);
-        }
-        if (dartsFlying[i].dartHitPlayer(player2.paddleX, player2.paddleY, player2.paddleWidth, player2.paddleHeight) && dartsFlying[i].player !== player2) {
-          player2.score -= 0.5;
-          dartsToRemove.push(i);
-        }
+     
+      for (let i = dartsFlying.length - 1; i >= 0; i--) {  //this can be rewritten to be in the other file if we have time, the classes are passed by reference in JavaScript
+          if (dartsFlying[i].dartHitPlayer(player1.paddleX, player1.paddleY, player1.paddleWidth, player1.paddleHeight) && dartsFlying[i].player !== player1) {
+           player1.score -= 0.5;
+           dartsToRemove.push(i);
+          }
+          if (dartsFlying[i].dartHitPlayer(player2.paddleX, player2.paddleY, player2.paddleWidth, player2.paddleHeight) && dartsFlying[i].player !== player2) {
+           player2.score -= 0.5;
+           dartsToRemove.push(i);
+          }
       }
-
-      // Remove marked darts **after** loop (to avoid skipping elements)
       for (let index of dartsToRemove) {
-        dartsFlying.splice(index, 1);
+          dartsFlying.splice(index, 1);
       }
-    }
+      dartsToRemove = [];
+  
+      for (let i = 0; i < dartsFlying.length; i++)
+      {
+        let j = i+1;
+        while (j < dartsFlying.length)
+        {
+          if (dartsFlying[i].dartHitDart(dartsFlying[j]))
+          {
+            dartsToRemove.push(i);
+            dartsToRemove.push(j);
+            let temp = dartsFlying[i].player.score;
+            dartsFlying[i].player.score = dartsFlying[j].player.score;
+            dartsFlying[j].player.score = temp;
+            for (let k = dartsToRemove.length - 1; k >= 0; k--) {
+                dartsFlying.splice(k, 1);
+            }
+            break;
+          }
+          j++;
+        }
+      }
+      dartsToRemove = [];
+  
+      for (let i = dartsFlying.length - 1; i >= 0; i--)
+      {
+        for (let j = 0; j < mapObstacleSquares.length; j++)
+        {
+          if (dartsFlying[i].dartHitMapObstacle(mapObstacleSquares[j]))
+          {
+            dartsFlying.splice(i, 1);
+            break;
+          }
+        }
+      }
+  
+      for (let i = dartsFlying.length - 1; i >= 0; i--)
+      {
+        if (dartsFlying[i].dartHitBall(x, y, ballRadius))
+        {
+          dartsFlying[i].player.score -= 0.5;
+          dartsFlying.splice(i, 1);
+        }
+      
+      }
+     }
 
     // Draw player scores
     function drawScores() {
@@ -314,6 +371,19 @@ $(document).ready(function () {
       }
     }
     function drawDarts() {
+      for (let i = 0; i < dartMeshes.length; i++)
+        {
+          scene.remove(dartMeshes[i]);
+        }
+        dartMeshes = [];
+
+        for (let i = 0; i < dartsFlying.length; i++) {
+          const dartMesh = createDartMesh(dartsFlying[i]);
+          dartMesh.position.set(dartsFlying[i].upperLeftX + dartsFlying[i].width / 2 - canvas.width / 2, -dartsFlying[i].upperLeftY - dartsFlying[i].height / 2 + canvas.height / 2, 5); // Adjust z-position
+          scene.add(dartMesh);
+          dartMeshes.push(dartMesh);
+        }
+
       for (let i = 0; i < dartsFlying.length; i++) {
         ctx.beginPath();
         ctx.rect(dartsFlying[i].upperLeftX, dartsFlying[i].upperLeftY, dartsFlying[i].width, dartsFlying[i].height);
@@ -325,7 +395,6 @@ $(document).ready(function () {
 
     // Main draw loop
     function draw() {
-      console.log("Tournament drawing");
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       //createPowerups();
@@ -379,7 +448,7 @@ $(document).ready(function () {
       }
     }
 
-    function startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, game_id, player_id) {
+    function startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, game_id, player1_id, player2_id) {
 
 
       if (interval) {
@@ -419,8 +488,8 @@ $(document).ready(function () {
       paddleMeshes = []; // Clear the array
 
 
-      player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, "d", game_id, player_id);
-      player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "ArrowLeft", game_id, player_id);
+      player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width, "d", game_id, player1_id);
+      player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "ArrowLeft", game_id, player2_id);
 
       if (player1 && player1.paddleMesh) scene.remove(player1.paddleMesh);
       if (player2 && player2.paddleMesh) scene.remove(player2.paddleMesh);
@@ -433,6 +502,19 @@ $(document).ready(function () {
 
       scene.add(player1.paddleMesh);
       scene.add(player2.paddleMesh);
+
+      for (let i = 0; i < obstacleMeshes.length; i++) {
+        scene.remove(obstacleMeshes[i]);
+       }
+       obstacleMeshes = []; 
+  
+       // Create and add new obstacle meshes
+       for (let i = 0; i < mapObstacleSquares.length; i++) {
+        const obstacleMesh = createObstacleMesh(mapObstacleSquares[i]);
+        obstacleMesh.position.set(mapObstacleSquares[i].upperLeftX + mapObstacleSquares[i].width / 2 - canvas.width / 2, -mapObstacleSquares[i].upperLeftY - mapObstacleSquares[i].height / 2 + canvas.height / 2, 10);
+        scene.add(obstacleMesh);
+        obstacleMeshes.push(obstacleMesh);
+       }
 
       // Start game loop
       interval = setInterval(draw, 10);
@@ -499,7 +581,7 @@ $(document).ready(function () {
     //     handleRunButtonClick();
     // });
 
-    $(document).on("click", "#runButton", function () {
+    $(document).on("click", "#runButton", function (event) {
       setupCanvas();
       const player1Type = document.getElementById("player1Type").value;
       const player1Colour = document.getElementById("player1Colour").value;
@@ -517,9 +599,11 @@ $(document).ready(function () {
       console.log("Player 1 Colour:", player1Colour);
       console.log("Player 2 Colour:", player2Colour);
       console.log("Player 2 Type:", player2Type);
+      console.log("chosenMap:", chosenMap);
+      console.log("extrasAreOn", extrasOnOff);
 
       if (window.location.href === "https://localhost/game_setup/")
-        startGame(player1Type, player1Colour, player2Type, player2Colour, "human", "red", "human", "red", chosenMap, extrasOnOff);
+        startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 0, 0, 0);
     });
 
 

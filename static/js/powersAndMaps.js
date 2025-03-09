@@ -72,7 +72,7 @@ export class Dart
 
 	twoRectanglesIntersect(rectA, rectB) {
 
-		console.log("rectA.x: " + rectA.x + " rectA.width: " + rectA.width + " rectB.x: " + rectB.x + " rectB.width: " + rectB.width);
+		//console.log("rectA.x: " + rectA.x + " rectA.width: " + rectA.width + " rectB.x: " + rectB.x + " rectB.width: " + rectB.width);
 
 		return !(
 		    rectA.x + rectA.width < rectB.x ||  // A is to the left of B
