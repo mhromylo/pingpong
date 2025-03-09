@@ -303,7 +303,6 @@ def logout_game_setup(request):
             'message': _(f"No Player 2 is currently logged in."),
             'redirect_url': '/game_setup/'
         }, status=200)
-
 @login_required
 def save_game_result(request):
     if request.method == 'POST':

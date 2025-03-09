@@ -50,12 +50,13 @@
 /* Responsive Fixes */
 @media (max-width: 768px) {
     .navbar-collapse {
-        background-color: #343a40;
+        background-color: #343a40; /* Background color */
         padding: 10px;
     }
-    
+
     .navbar-nav {
         flex-direction: column;
+        align-items: center;
     }
 
     .nav-item {
@@ -63,7 +64,13 @@
         text-align: center;
     }
 
-    .btn-danger {
+    /* Make the Logout button full-width */
+    #logout-form button {
+        width: 100%;
+    }
+
+    /* Fix dropdown alignment */
+    .form-select {
         width: 100%;
     }
 }
