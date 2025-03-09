@@ -208,7 +208,7 @@ $(document).ready(function () {
       } else if (x - ballRadius < 0) {
         player2.score++;
         resetBall();
-        if (player2.score === 3) {
+        if (player2.score >= 3) {
           gameRunning = false;
           enableButtons();
           alert("GAME OVER\n\nPLAYER 2 WINS");
@@ -218,7 +218,7 @@ $(document).ready(function () {
       } else if (x + ballRadius > canvas.width) {
         player1.score++;
         resetBall();
-        if (player1.score === 3) {
+        if (player1.score >= 3) {
           gameRunning = false;
           enableButtons();
           alert("GAME OVER\n\nPLAYER 1 WINS");
@@ -285,7 +285,8 @@ $(document).ready(function () {
         if (dartsFlying[i].upperLeftX + dartsFlying[i].width < 0 || dartsFlying[i].upperLeftX > canvas.width) {
           dartsFlying.splice(i, 1);
         }
-        dartsFlying[i].upperLeftX += dartsFlying[i].speed;
+        else
+            dartsFlying[i].upperLeftX += dartsFlying[i].speed;
       }
     }
 
@@ -383,15 +384,14 @@ $(document).ready(function () {
           scene.add(dartMesh);
           dartMeshes.push(dartMesh);
         }
-/*
-for (let i = 0; i < dartsFlying.length; i++) {
-    ctx.beginPath();
-    ctx.rect(dartsFlying[i].upperLeftX, dartsFlying[i].upperLeftY, dartsFlying[i].width, dartsFlying[i].height);
-    ctx.fillStyle = dartsFlying[i].player.paddleColour;
-    ctx.fill();
-    ctx.closePath();
-}
-*/
+
+    //   for (let i = 0; i < dartsFlying.length; i++) {
+    //     ctx.beginPath();
+    //     ctx.rect(dartsFlying[i].upperLeftX, dartsFlying[i].upperLeftY, dartsFlying[i].width, dartsFlying[i].height);
+    //     ctx.fillStyle = dartsFlying[i].player.paddleColour;
+    //     ctx.fill();
+    //     ctx.closePath();
+    //   }
     }
 
     // Main draw loop
@@ -399,13 +399,13 @@ for (let i = 0; i < dartsFlying.length; i++) {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       //createPowerups();
-     // drawMapObstacles();
+    //   drawMapObstacles();
       drawScores();
-     // drawBall();
+    //   drawBall();
       drawDarts();
       //drawPowerups();
-      //player1.drawPaddle(ctx, canvas);
-     // player2.drawPaddle(ctx, canvas);
+    //   player1.drawPaddle(ctx, canvas);
+    //   player2.drawPaddle(ctx, canvas);
 
       if (player1.isAI) {
 
