@@ -383,14 +383,15 @@ $(document).ready(function () {
           scene.add(dartMesh);
           dartMeshes.push(dartMesh);
         }
-
-      for (let i = 0; i < dartsFlying.length; i++) {
-        ctx.beginPath();
-        ctx.rect(dartsFlying[i].upperLeftX, dartsFlying[i].upperLeftY, dartsFlying[i].width, dartsFlying[i].height);
-        ctx.fillStyle = dartsFlying[i].player.paddleColour;
-        ctx.fill();
-        ctx.closePath();
-      }
+/*
+for (let i = 0; i < dartsFlying.length; i++) {
+    ctx.beginPath();
+    ctx.rect(dartsFlying[i].upperLeftX, dartsFlying[i].upperLeftY, dartsFlying[i].width, dartsFlying[i].height);
+    ctx.fillStyle = dartsFlying[i].player.paddleColour;
+    ctx.fill();
+    ctx.closePath();
+}
+*/
     }
 
     // Main draw loop
@@ -398,13 +399,13 @@ $(document).ready(function () {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       //createPowerups();
-      drawMapObstacles();
+     // drawMapObstacles();
       drawScores();
-      drawBall();
+     // drawBall();
       drawDarts();
       //drawPowerups();
-      player1.drawPaddle(ctx, canvas);
-      player2.drawPaddle(ctx, canvas);
+      //player1.drawPaddle(ctx, canvas);
+     // player2.drawPaddle(ctx, canvas);
 
       if (player1.isAI) {
 
@@ -469,12 +470,12 @@ $(document).ready(function () {
       currentMap = chosenMap;
 
       if (chosenMap === "box") {
-        mapObstacleSquares.push(new MapObstacleSquare(canvas.width * 0.4, canvas.height * 0.4, canvas.width * 0.2, canvas.height * 0.2, "black"));
+        mapObstacleSquares.push(new MapObstacleSquare(canvas.width * 0.4, canvas.height * 0.4, canvas.width * 0.2, canvas.height * 0.2, "Khaki"));
         y = 100;
       }
       else if (chosenMap === "twoLines") {
-        mapObstacleSquares.push(new MapObstacleSquare(canvas.width * 0.2, canvas.height * 0.2, canvas.width * 0.25, canvas.height * 0.1, "black"));
-        mapObstacleSquares.push(new MapObstacleSquare(canvas.width * 0.55, canvas.height * 0.7, canvas.width * 0.25, canvas.height * 0.1, "black"));
+        mapObstacleSquares.push(new MapObstacleSquare(canvas.width * 0.2, canvas.height * 0.2, canvas.width * 0.25, canvas.height * 0.1, "Khaki"));
+        mapObstacleSquares.push(new MapObstacleSquare(canvas.width * 0.55, canvas.height * 0.7, canvas.width * 0.25, canvas.height * 0.1, "Khaki"));
       }
 
       if (extrasOnOff === "ON")
@@ -502,6 +503,7 @@ $(document).ready(function () {
 
       scene.add(player1.paddleMesh);
       scene.add(player2.paddleMesh);
+      scene.background = new THREE.Color(0xabcdef);
 
       for (let i = 0; i < obstacleMeshes.length; i++) {
         scene.remove(obstacleMeshes[i]);
