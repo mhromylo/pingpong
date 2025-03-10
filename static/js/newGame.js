@@ -257,6 +257,7 @@ $(document).ready(function ()
 				ctx.fill();
 
 				alert("It's a tie! we didnt save result");
+                saveAnotherGameResult(player1.another_game_id, player1.player_id, player2.player_id, player1.score, player2.score );
 			}
 			clearInterval(interval);
 		}
@@ -406,8 +407,8 @@ $(document).ready(function ()
         interval = setInterval(draw, 10);
         gameRunning = true;
       }
-
-      $(document).on("click", "#newRunButton", function (event) {
+      $(document).ready(function() {
+        $(document).on("click", "#newRunButton", function (event) {
         setupCanvas();
         const player1Type  = "human";
         const player1Colour = document.getElementById("player1Colour").value;
@@ -430,7 +431,7 @@ $(document).ready(function ()
       
         startGame(player1Type, player1Colour, player2Type, player2Colour, another_game_id, player1_id, player2_id);
       });
-
+    });
   }
   
 })

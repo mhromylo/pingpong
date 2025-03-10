@@ -44,7 +44,6 @@
 /* Adjust Logout Button */
 #logout-form {
     text-align: center;
-    margin-top: 10px;
 }
 
 /* Responsive Fixes */
@@ -121,10 +120,10 @@ canvas {
 
 #scoreContainer {
     position: absolute;
-    top: -10px;  /* Adjust the space to move it above the canvas */
+    top: 60px;  /* Adjust the space to move it above the canvas */
     left: 0;
     right: 0;
     text-align: center;
-    color: white;
+    color: black;
     font-size: 24px;
 }

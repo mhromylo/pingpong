@@ -904,6 +904,8 @@ def save_another_game_result(request):
             if another_game_id == 0:
                 return JsonResponse({'success': True, 'message': 'Game without saving result!', 'redirect_url': '/another_game/'})
             # Get player profiles
+            if player1_score == player2_score:
+                 return JsonResponse({'success': True, 'message': 'Game without saving result!', 'redirect_url': '/another_game/'})
             player1 = get_object_or_404(Profile, id=player1_id)
             player2 = get_object_or_404(Profile, id=player2_id)
 

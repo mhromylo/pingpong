@@ -38,7 +38,9 @@
         <!-- Game Customization Column (Center) -->
         <div class="col-md-4">
             <div class="card p-3 text-center">
-    
+                {% if not request.session.player2%}
+                <h5 class="mt-3">{% trans "Login, please second player" %}</h5>
+                {% endif %}
                 <!-- Game Start Button -->
                 {% if request.session.player2 and not another_game %}
                 <form id="create-game-form" method="POST" action="/another_game/">
@@ -47,7 +49,7 @@
                 </form>
             {% endif %}
             {% if another_game and request.session.player2 %}
-            <h5 class="mt-3">{% trans "Another Game:" %} {{ another_game.status }}</h5>
+            
                 <button id="newRunButton" class="runButton btn btn-primary mt-2"
                                     data-another_game-id = "{{ another_game.id}}"
                                     data-player1-id="{{ player1.id }}" 
