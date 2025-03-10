@@ -50,8 +50,7 @@ export default class Player
 			this.lowerAIpaddleCenterPosition = canvasHeight / 2 + (paddleHeight / 2);
 			this.AIcalculatedImpactSpot = canvasHeight / 2;
 
-
-			this.dangerZone = 0.25;
+			this.dangerZone = 0.20;
 		}
 	}
 
@@ -124,6 +123,17 @@ export default class Player
 
 	/* Functions for AI players*/
 
+	dartCanReachOtherSideOfCanvas(dart, obstaclesOnCanvas)
+	{
+		for (let i = 0; i < obstaclesOnCanvas.length; i++)
+		{
+			if (dart.x + dart.radius >= obstaclesOnCanvas[i].x && dart.x - dart.radius <= obstaclesOnCanvas[i].x + obstaclesOnCanvas[i].width && dart.y + dart.radius >= obstaclesOnCanvas[i].y && dart.y - dart.radius <= obstaclesOnCanvas[i].y + obstaclesOnCanvas[i].height)
+			{
+				return false;
+			}
+		}
+	}
+
 
 	calculateApproxHitSpot(dx, dy, x, y, canvas)
 	{
@@ -173,10 +183,20 @@ export default class Player
 	  this.testValueDeleteLater_calculatedYforAI = "predictedY: " + predictedY + " ballDirY: " + ballDirY + " \ntimeToVerticalWall: " + timeToVerticalWall + " \nbally: " + bally + " ballRadius: " + ballRadius + " ";
 
 	}
-}
+	}
 
-	calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius)
+	calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius, mapObstacleSquares, powerupsOnMap, dartsFlying, otherPlayer, extrasAreOn)
 	{
+		if (otherPlayer.score - this.score > 2)
+		{
+			console.log("Other player is winning by 2 or more points. AI will now play more aggressively.");
+			console.log("AI score: " + this.score + " Other player score: " + otherPlayer.score + " Difference: " + (otherPlayer.score - this.score));
+			this.dangerZone = 0.3;
+		}
+		if(otherPlayer.score > 8 && this.score < 7)
+		{
+			this.dangerZone = 0.42;
+		}
 
 		if (this.ballTowardsUs * dx < 0)
 		{
