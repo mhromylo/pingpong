@@ -271,10 +271,11 @@ def another_game(request):
             })
     else:
         another_game = AnotherGame.objects.filter(player1=player1, status = 'not started').first()
+        all_another_games = AnotherGame.objects.all()
         if another_game:
-            return render(request, 'registration/another_game.html', {'player1': player1, 'another_game': another_game})
+            return render(request, 'registration/another_game.html', {'player1': player1, 'another_game': another_game, 'all_another_games': all_another_games})
         else:
-            return render(request, 'registration/another_game.html', {'player1': player1})
+            return render(request, 'registration/another_game.html', {'player1': player1, 'all_another_games': all_another_games})
 
 @login_required
 def tournament(request):

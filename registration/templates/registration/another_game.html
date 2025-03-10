@@ -108,7 +108,28 @@
             </div>
         </div>
     </div>
-    
+    <div class="card p-3">
+        <h4 class="text-center mb-3">{% trans "Game History" %}</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>{% trans "Players" %}</th>
+                    <th>{% trans "Scores" %}</th>
+                    <th>{% trans "Date" %}</th>
+                </tr>{% trans "Game History" %}
+            </thead>
+            <tbody id="game_table">
+                {% for game in all_another_games %}
+                <tr>
+                    <td>{{ game.player1.display_name }} VS {{ game.player2.display_name }}</td>
+                    <td>{{ game.player1_score }} - {{ game.player2_score }}</td>
+                    <td>{{ game.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
     
     
 </div>

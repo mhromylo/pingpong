@@ -530,7 +530,6 @@ $(document).ready(function () {
 
     function handleBeginGameClick(event) {
       setupCanvas();
-      console.log("beginGame button clicked!");
       disableButtons();
 
       const game_id = event.target.getAttribute('data-game-id');
@@ -548,7 +547,7 @@ $(document).ready(function () {
     }
 
     function handleRunButtonClick(event) {
-      console.log("RunButton button clicked!");
+
       setupCanvas();
       const player1Type = document.getElementById("player1Type").value;
       const player1Colour = document.getElementById("player1Colour").value;
@@ -557,17 +556,11 @@ $(document).ready(function () {
       const chosenMap = document.getElementById("chosenMap").value;
       const extrasOnOff = document.getElementById("extrasAreOn").value;
 
-      console.log("Game Starting...");
-      console.log("Player 1 Type:", player1Type);
-      console.log("Player 1 Colour:", player1Colour);
-      console.log("Player 2 Colour:", player2Colour);
-      console.log("Player 2 Type:", player2Type);
 
       startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 0, 0, 0);
     }
     function handleStartTournamentGameClick(event) {
 
-      console.log("startTournamentGame button clicked!");
       setupCanvas();
       disableButtons();
 
@@ -601,13 +594,6 @@ $(document).ready(function () {
       const chosenMap = document.getElementById("chosenMap").value;
       const extrasOnOff = document.getElementById("extrasAreOn").value;
 
-      console.log("Game Starting...");
-      console.log("Player 1 Type:", player1Type);
-      console.log("Player 1 Colour:", player1Colour);
-      console.log("Player 2 Colour:", player2Colour);
-      console.log("Player 2 Type:", player2Type);
-      console.log("chosenMap:", chosenMap);
-      console.log("extrasAreOn", extrasOnOff);
 
       
 
@@ -675,15 +661,6 @@ function getCSRFToken() {
 function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_score) {
   const csrfToken = getCSRFToken();
 
-  const payload = {
-    game_id: game_id,
-    player1_id: player1_id,
-    player2_id: player2_id,
-    player1_score: player1_score,
-    player2_score: player2_score,
-  };
-
-  console.log('Payload:', payload); // Log the payload
 
   fetch('/save_game_result/', {
     method: 'POST',
@@ -706,7 +683,7 @@ function saveGameResult(game_id, player1_id, player2_id, player1_score, player2_
           fetchNewCSRFToken();
           loadPage(data.redirect_url); // Dynamically load the login page
         }
-        console.log('Game result saved:', data.message);
+
       } else {
         console.error('Error saving game result:', data.message);
       }

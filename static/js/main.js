@@ -1,9 +1,7 @@
 async function checkAuth() {
     try {
         let response = await fetch("/check-auth/");
-        console.log(response);
         let data = await response.json();
-        console.log(data);
         if (data.authenticated) {
             document.getElementById("auth-nav").style.display = "flex";
             document.getElementById("guest-nav").style.display = "none";
@@ -496,7 +494,6 @@ function renderWinLossChart() {
             event.preventDefault();
             const formData = new FormData(form);
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            console.log('Form Data:', Object.fromEntries(formData));
             fetch(endpoint, {
                 method: 'POST',
                 headers: {
@@ -508,7 +505,6 @@ function renderWinLossChart() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        console.log('Response:', data);
                         alert(data.message);
                         updatePlayerProfile(playerNumber, data);
                     } else {
@@ -524,7 +520,6 @@ function renderWinLossChart() {
     $(document).on("change", "#language-select", function () {
         let selectedLanguage = this.value;
         let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        console.log(selectedLanguage);
         fetch("/set_language/", {
             method: 'POST',
             headers: {
@@ -538,7 +533,6 @@ function renderWinLossChart() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             if (data.success) {
                 loadNavbar("/layout/", selectedLanguage)
                 loadPage(data.redirect_url);
