@@ -212,7 +212,7 @@ $(document).ready(function () {
         player2.score++;
         updateScores(player1.score, player2.score);
         resetBall();
-        if (player2.score >= 12) {
+        if (player2.score >= 3) {
           gameRunning = false;
           enableButtons();
           alert("GAME OVER\n\nPLAYER 2 WINS");
@@ -223,7 +223,7 @@ $(document).ready(function () {
         player1.score++;
         updateScores(player1.score, player2.score);
         resetBall();
-        if (player1.score >= 12) {
+        if (player1.score >= 3) {
           gameRunning = false;
           enableButtons();
           alert("GAME OVER\n\nPLAYER 1 WINS");
@@ -273,12 +273,7 @@ $(document).ready(function () {
       x = canvas.width / 2;
       y = canvas.height / 2;
       dx = -dx;
-	 if (Math.abs(dx) < 5.5 && Math.abs(dy) < 5.5)
-	 {
-	    dx *= 1.25;
-	    dy *= 1.25;
-	 }	
-		 
+
       if (currentMap === "box")
         y = 100;
     }
@@ -420,7 +415,7 @@ $(document).ready(function () {
       if (player1.isAI) {
 
         if (performance.now() - executeAIlogicInterval_player_1 >= AI_INTERVAL) {
-          player1.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius, mapObstacleSquares, powerupsOnMap, dartsFlying, player2, extrasAreOn);
+          player1.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius);
           executeAIlogicInterval_player_1 = performance.now();
         }
         player1.moveAIpaddle(ctx);
@@ -430,7 +425,7 @@ $(document).ready(function () {
 
       if (player2.isAI) {
         if (performance.now() - executeAIlogicInterval_player_2 >= AI_INTERVAL) {
-          player2.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius, mapObstacleSquares, powerupsOnMap, dartsFlying, player1, extrasAreOn);
+          player2.calculateWhereAIshouldMove(dx, dy, x, y, canvas, ballRadius);
           executeAIlogicInterval_player_2 = performance.now();
         }
         player2.moveAIpaddle(ctx);
