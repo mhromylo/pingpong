@@ -1,0 +1,118 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div id="content">
+    {% load i18n %}
+    
+    <!-- Game Canvas Section -->
+
+    <div class="game-canvas">
+        <canvas id="newGameCanwas" width="1200" height="480"></canvas>
+    </div>
+    <h1>{% trans "Another Game" %}</h1>
+    <div class="row d-flex justify-content-between align-items-center mb-4">
+        <!-- Player 1 (Left Side) -->
+        <div class="col-md-4">
+            <div id="player1-profile" class="card p-3">
+                <h5 class="card-title">{% trans "Player 1:" %}</h5>
+                <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar rounded-circle mb-3 mx-auto d-block" width="100" height="100">
+                <p id="display_name"><strong>{% trans "Display Name:" %}</strong> {{ user.profile.display_name }}</p>
+    
+                <div class="card p-3 mt-3">
+                    <h4 class="text-center">{% trans "Player 1 Settings" %}</h4>
+                    
+                    <label for="player1Colour" class="form-label mt-2">{% trans "Colour:" %}</label>
+                    <select id="player1Colour" class="form-select">
+                        <option value="red">{% trans "Red" %}</option>
+                        <option value="green">{% trans "Green" %}</option>
+                        <option value="blue">{% trans "Blue" %}</option>
+                        <option value="orange">{% trans "Orange" %}</option>
+                        <option value="purple">{% trans "Purple" %}</option>
+                        <option value="gold">{% trans "Gold" %}</option>
+                        <option value="black">{% trans "Black" %}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Game Customization Column (Center) -->
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+    
+                <!-- Game Start Button -->
+                {% if request.session.player2 and not another_game %}
+                <form id="create-game-form" method="POST" action="/another_game/">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-lg mt-3">{% trans "Play Another Game" %}</button>
+                </form>
+            {% endif %}
+            {% if another_game and request.session.player2 %}
+            <h5 class="mt-3">{% trans "Another Game:" %} {{ another_game.status }}</h5>
+                <button id="newRunButton" class="runButton btn btn-primary mt-2"
+                                    data-another_game-id = "{{ another_game.id}}"
+                                    data-player1-id="{{ player1.id }}" 
+                                    data-player2-id="{{ request.session.player2.id }}">
+                        {% trans "Start Game" %}
+                    </button>
+                    {% endif %}
+            </div>
+        </div>
+    
+        <!-- Player 2 (Right Side) -->
+        <div class="col-md-4">
+            <div id="player2-profile" class="card p-3">
+                <h5 class="card-title">{% trans "Player 2:" %}</h5>
+                {% if request.session.player2 %}
+                    <img id="player2-avatar" src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar rounded-circle mb-3 mx-auto d-block" width="100" height="100">
+                    <p id="player2-display-name"><strong>{% trans "Display Name:" %}</strong> {{ request.session.player2.display_name }}</p>
+                {% endif %}
+    
+                <div class="card p-3 mt-3">
+                    <h4 class="text-center">{% trans "Player 2 Settings" %}</h4>
+
+    
+                    <label for="player2Colour" class="form-label mt-2">{% trans "Colour:" %}</label>
+                    <select id="player2Colour" class="form-select">
+                        <option value="green">{% trans "Green" %}</option>
+                        <option value="red">{% trans "Red" %}</option>
+                        <option value="blue">{% trans "Blue" %}</option>
+                        <option value="orange">{% trans "Orange" %}</option>
+                        <option value="purple">{% trans "Purple" %}</option>
+                        <option value="gold">{% trans "Gold" %}</option>
+                        <option value="black">{% trans "Black" %}</option>
+                    </select>
+                </div>
+    
+                <!-- Login Form for Player 2 -->
+                {% if not request.session.player2 %}
+                    <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mt-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">{% trans "Player 2 Username:" %}</label>
+                            <input type="text" id="username" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{% trans "Player 2 Password:" %}</label>
+                            <input type="password" id="password" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 2" %}</button>
+                    </form>
+                {% endif %}
+    
+                {% if request.session.player2 %}
+                    <form action="/logout_game_setup/" method="post" id="logout-tournament-form" class="mt-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100">{% trans "Log Out" %}</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    
+    
+</div>
+
+<script type="module" src="/static/js/newGame.js"></script>
+
+{% endblock %}

@@ -30,10 +30,17 @@
     </ul>
     
     <h2>{% trans "Add Friend" %}</h2>
-    <form method="post" action="{% url 'add_friend' %}">
+    <form id="add_friend_form" action="/add_friend/" method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">{% trans "Add Friend" %}</button>
+        <div class="mb-4">
+            <label for="player_filter">{% trans "Add Friend" %}</label>
+            <select id="player_filter" name="player" class="form-control">
+                {% for player in players %}
+                <option value="{{ player.id }}">{{ player.display_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Apply Filter</button>
     </form>
 </div>
 {% endblock %}
