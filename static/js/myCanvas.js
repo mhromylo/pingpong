@@ -523,7 +523,6 @@ $(document).ready(function ()
 
 	 // Main draw loop
 	 function draw() {
-		console.log("Mycanvas drawing");
 
 	   ctx.clearRect(0, 0, canvas.width, canvas.height);
 	   createPowerups();
@@ -701,11 +700,6 @@ $(document).ready(function ()
 	   const chosenMap = document.getElementById("chosenMap").value;
 	   const extrasOnOff = document.getElementById("extrasAreOn").value;
 	 
-	   console.log("Game Starting...");
-	   console.log("Player 1 Type:", player1Type);
-	   console.log("Player 1 Colour:", player1Colour);
-	   console.log("Player 2 Colour:", player2Colour);
-	   console.log("Player 2 Type:", player2Type);
 	 
 	   if (window.location.href === "https://localhost/game_setup/")
 	   	startGame(player1Type, player1Colour, player2Type, player2Colour, "human", "red", "human", "red", chosenMap, extrasOnOff);

@@ -419,14 +419,7 @@ $(document).ready(function ()
         const player2_id = event.target.getAttribute('data-player2-id');
 
         disableButtons();
-        console.log("Another Game Starting...");
-        console.log("another_game_id:", another_game_id);
-        console.log("player1_id:", player1_id);
-        console.log("player2_id:", player2_id);
-        console.log("Player 1 Type:", player1Type);
-        console.log("Player 1 Colour:", player1Colour);
-        console.log("Player 2 Colour:", player2Colour);
-        console.log("Player 2 Type:", player2Type);
+
 
       
         startGame(player1Type, player1Colour, player2Type, player2Colour, another_game_id, player1_id, player2_id);
@@ -452,15 +445,7 @@ function getCSRFToken() {
 function saveAnotherGameResult(another_game_id, player1_id, player2_id, player1_score, player2_score) {
   const csrfToken = getCSRFToken();
 
-  const payload = {
-    another_game_id: another_game_id,
-    player1_id: player1_id,
-    player2_id: player2_id,
-    player1_score: player1_score,
-    player2_score: player2_score,
-  };
 
-  console.log('Payload:', payload); // Log the payload
 
   fetch('/save_another_game_result/', {
     method: 'POST',
@@ -483,7 +468,6 @@ function saveAnotherGameResult(another_game_id, player1_id, player2_id, player1_
           fetchNewCSRFToken();
           loadPage(data.redirect_url); // Dynamically load the login page
         }
-        console.log('Game result saved:', data.message);
       } else {
         console.error('Error saving game result:', data.message);
       }
