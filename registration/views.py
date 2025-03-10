@@ -915,11 +915,13 @@ def save_another_game_result(request):
             
             with transaction.atomic():  
                 if player1_score > player2_score:
-                    player1.update_stats(won=1)
-                    player2.update_stats(won=0)
+                    player1.update_another_stats(won=1)
+                    player2.update_another_stats(won=0)
                     another_game.winner = player1
                     another_game.loser = player2
                 else:
+                    player1.update_another_stats(won=0)
+                    player2.update_another_stats(won=1)
                     another_game.winner = player2
                     another_game.loser = player1
                 another_game.player1_score = player1_score

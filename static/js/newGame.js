@@ -2,6 +2,8 @@ import Player from "./Player_new_game.js";
 import { MapObstacleSquare, Dart, PowerUp, BallOfPoints } from "./powersAndMaps_new_game.js";
 import { enableButtons } from './tournament.js';
 import { disableButtons } from './tournament.js';
+import { loadPage } from './main.js';
+import { fetchNewCSRFToken } from './main.js';
 
 var canvas = document.getElementById("newGameCanwas");
 var ctx;
@@ -233,7 +235,7 @@ $(document).ready(function ()
 				ctx.fillStyle = player1.paddleColour;
 				ctx.fill();
 				alert("Player 1 wins!");
-                saveAnotherGameResult(another_game_id, player1.player_id, player2.player_id, player1_score, player2_score );
+                saveAnotherGameResult(player1.another_game_id, player1.player_id, player2.player_id, player1.score, player2.score );
 			}
 			else if (player2.score > player1.score)
 			{
@@ -244,7 +246,7 @@ $(document).ready(function ()
 				ctx.fillStyle = player2.paddleColour;
 				ctx.fill();
 				alert("Player 2 wins!");
-                saveAnotherGameResult(another_game_id, player1.player_id, player2.player_id, player1_score, player2_score );
+                saveAnotherGameResult(player1.another_game_id, player1.player_id, player2.player_id, player1.score, player2.score );
 			}
 			else
 			{
@@ -371,7 +373,7 @@ $(document).ready(function ()
       }
 
       // Start the game
-      function startGame(player1Type, player1Colour, player2Type, player2Colour) {
+      function startGame(player1Type, player1Colour, player2Type, player2Colour, another_game_id, player1_id, player2_id) {
 
         if (interval)
         {
@@ -398,8 +400,8 @@ $(document).ready(function ()
 
 
 	createInitialBalls();
-        player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width,  "r");
-        player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "l");
+        player1 = new Player("Player 1", player1Type === "human" ? false : true, player1Colour, paddleWidth, paddleHeight, 7, 0, (canvas.height - paddleHeight) / 2, "w", "s", canvas.height, canvas.width,  "r", another_game_id, player1_id);
+        player2 = new Player("Player 2", player2Type === "human" ? false : true, player2Colour, paddleWidth, paddleHeight, 7, canvas.width - paddleWidth, (canvas.height - paddleHeight) / 2, "ArrowUp", "ArrowDown", canvas.height, canvas.width, "l", another_game_id, player2_id);
 
         // Start game loop
         interval = setInterval(draw, 10);
@@ -417,14 +419,6 @@ $(document).ready(function ()
         const player2_id = event.target.getAttribute('data-player2-id');
 
         disableButtons();
-        console.log("Another Game Starting...");
-        console.log("another_game_id:", another_game_id);
-        console.log("player1_id:", player1_id);
-        console.log("player2_id:", player2_id);
-        console.log("Player 1 Type:", player1Type);
-        console.log("Player 1 Colour:", player1Colour);
-        console.log("Player 2 Colour:", player2Colour);
-        console.log("Player 2 Type:", player2Type);
 
       
         startGame(player1Type, player1Colour, player2Type, player2Colour, another_game_id, player1_id, player2_id);
@@ -447,28 +441,20 @@ function getCSRFToken() {
   return csrfToken;
 }
 
-function saveAnotherGameResult(game_id, player1_id, player2_id, player1_score, player2_score) {
+function saveAnotherGameResult(another_game_id, player1_id, player2_id, player1_score, player2_score) {
   const csrfToken = getCSRFToken();
 
-  const payload = {
-    game_id: game_id,
-    player1_id: player1_id,
-    player2_id: player2_id,
-    player1_score: player1_score,
-    player2_score: player2_score,
-  };
 
-  console.log('Payload:', payload); // Log the payload
 
-  fetch('/save_game_result/', {
+  fetch('/save_another_game_result/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': csrfToken,
     },
     body: JSON.stringify({
-      game_id: game_id,
-      player1_id: player1_id,
+    another_game_id: another_game_id,
+    player1_id: player1_id,
       player2_id: player2_id,
       player1_score: player1_score,
       player2_score: player2_score,

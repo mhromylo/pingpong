@@ -34,6 +34,13 @@ class Profile(models.Model):
             self.losses += 1
         self.save()
 
+    def update_another_stats(self, won):
+        if won:
+            self.another_wins += 1
+        else:
+            self.another_losses += 1
+        self.save()
+
     def update_tournament_stats(self, won):
         if won:
             self.tournament_wins += 1

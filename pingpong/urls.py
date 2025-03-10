@@ -53,6 +53,8 @@ urlpatterns = [
 
     path('another_game/', views.another_game, name='another_game'),
 
+    path('save_another_game_result/', views.save_another_game_result, name='save_another_game_result'),
+
     path('logout_game_setup/', views.logout_game_setup, name='logout_game_setup'),
     path('save_game_result/', views.save_game_result, name='save_game_result'),
     path('tournament/', views.tournament, name='tournament'),
