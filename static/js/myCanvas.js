@@ -22,7 +22,6 @@ let  camera, renderer, ball3D;
 function setupCanvas() {
   canvas = document.getElementById("myCanvas");
   if (!canvas) {
-      console.error("Canvas not found!");
       return;
   }
   ctx = canvas.getContext("2d");

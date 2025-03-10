@@ -21,7 +21,6 @@ let gameRunning = false;
 function setupCanvas() {
   canvas = document.getElementById("newGameCanwas");
   if (!canvas) {
-      console.error("Canvas not found!");
       return;
   }
   ctx = canvas.getContext("2d");

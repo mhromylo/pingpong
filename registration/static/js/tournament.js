@@ -28,7 +28,6 @@ let dartMeshes = [];
 function setupCanvas() {
   canvas = document.getElementById("myCanvas");
   if (!canvas) {
-    console.error("Canvas not found!");
     return;
   }
   ctx = canvas.getContext("2d");
@@ -121,6 +120,10 @@ function initThreeJS() {
 
 $(document).ready(function () {
 
+    function updateScores(player1Score, player2Score) {
+        document.getElementById('player1Score').textContent = player1Score;
+        document.getElementById('player2Score').textContent = player2Score;
+      }
 
   if (canvas) {
     ctx = canvas.getContext("2d");
@@ -207,6 +210,7 @@ $(document).ready(function () {
         dx = -dx;
       } else if (x - ballRadius < 0) {
         player2.score++;
+        updateScores(player1.score, player2.score);
         resetBall();
         if (player2.score >= 3) {
           gameRunning = false;
@@ -217,6 +221,7 @@ $(document).ready(function () {
         }
       } else if (x + ballRadius > canvas.width) {
         player1.score++;
+        updateScores(player1.score, player2.score);
         resetBall();
         if (player1.score >= 3) {
           gameRunning = false;
@@ -603,6 +608,8 @@ $(document).ready(function () {
       console.log("Player 2 Type:", player2Type);
       console.log("chosenMap:", chosenMap);
       console.log("extrasAreOn", extrasOnOff);
+
+      
 
       if (window.location.href === "https://localhost/game_setup/")
         startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 0, 0, 0);
