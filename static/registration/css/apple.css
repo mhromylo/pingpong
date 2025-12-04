@@ -1,0 +1,404 @@
+/* 1. Global Reset and Typography */
+body {
+    /* Use system fonts for an authentic feel (San Francisco / SF Pro Display) */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: #f5f5f7; /* Very light grey/off-white background */
+    color: #1d1d1f; /* Dark text for contrast */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600; /* Semi-bold for headings */
+}
+
+/* 2. Navigation Bar (Navbar) Styling */
+.navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e3e3e3;
+    padding: 10px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* --- 2. Navigation Bar (Navbar) Styling (FIX APPLIED) --- */
+
+/* ... (Existing .navbar styling) ... */
+
+.navbar-brand,
+.nav-link {
+    /* Existing styles... */
+    color: #1d1d1f !important;
+    /* ... Existing styles... */
+}
+
+/* FIX: Target the collapsed menu items which often inherit the wrong color in Bootstrap */
+.navbar-toggler-icon,
+.navbar-nav {
+    /* Bootstrap 5 already sets this to flex, but ensuring items align centrally */
+    align-items: center; 
+}
+.nav-link, 
+.navbar-brand {
+    color: #1d1d1f !important; /* Ensure all text elements are dark */
+}
+
+/* FIX: Ensure links inside the collapsed menu are also dark */
+.navbar-collapse a.nav-link {
+    color: #1d1d1f !important;
+}
+
+.nav-link:hover,
+.navbar-brand:hover {
+    color: #007aff !important;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-radius: 6px;
+}
+
+/* Language Selector styling for a cleaner look */
+#logout-form {
+    margin: 0 !important; /* Remove any default form margins */
+    display: flex;
+    align-items: center;
+}
+#logout-form button.btn-danger {
+    margin-left: 10px; 
+    margin-top: 0; /* Remove top margin that might be pushing it down */
+    margin-bottom: 0; /* Remove bottom margin */
+}
+
+/* Language Selector styling */
+#language-select {
+    border: 1px solid #d2d2d7; /* Add a subtle border */
+    background-color: #f8f8f8; /* Light background */
+    color: #1d1d1f;
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+#language-select:focus {
+    box-shadow: none;
+    outline: none;
+}
+.navbar-nav .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+
+/* 3. Main Content Container */
+.main-container {
+    padding-top: 40px; /* Generous top padding */
+    max-width: 900px; /* Restrict width for better readability/focus */
+}
+
+/* 4. Cards and Containers (Card/Profile Info) */
+.card,
+.profile-info {
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #ffffff; /* White background for elements */
+    border-radius: 12px; /* Soft, pronounced rounded corners */
+    border: none; /* Remove default Bootstrap border */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05); /* Distinct, soft shadow */
+    padding: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+/* 5. Forms and Inputs */
+.form-control,
+.form-select {
+    border-radius: 8px; /* Slightly rounded input fields */
+    border: 1px solid #d2d2d7; /* Light grey border */
+    padding: 10px 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #007aff; /* Apple Blue border on focus */
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); /* Subtle blue glow */
+}
+
+/* 6. Buttons */
+.btn {
+    border-radius: 8px; /* Consistent rounded corners */
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    border: none; /* Ensure no visible border */
+}
+
+/* Primary Button (Blue) */
+.btn-primary {
+    background-color: #007aff; /* Apple Blue */
+    color: #ffffff;
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+    background-color: #005bb5 !important; /* Darker blue on interaction */
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+/* Danger Button (Red) */
+.btn-danger {
+    background-color: #ff3b30; /* Apple Red (System Red) */
+    color: #ffffff;
+}
+.btn-danger:hover, .btn-danger:active, .btn-danger:focus {
+    background-color: #d93026 !important; /* Darker red on interaction */
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+/* Success Button (Green) */
+.btn-success {
+    background-color: #34c759; /* Apple Green (System Green) */
+    color: #ffffff;
+}
+.btn-success:hover, .btn-success:active, .btn-success:focus {
+    background-color: #2da44e !important; /* Darker green on interaction */
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+.btn-sm {
+    /* Reduce padding significantly */
+    padding: 6px 10px;
+    /* Reduce font size */
+    font-size: 14px; 
+    border-radius: 6px; /* Slightly smaller radius for smaller size */
+}
+
+/* Make the small danger button less aggressive for secondary actions like Quit */
+.btn-sm.btn-danger {
+    background-color: #f7f7f7; /* Very light background */
+    color: #ff3b30; /* Keep the Apple Red text */
+    border: 1px solid #ff3b30; /* Red border */
+}
+
+.btn-sm.btn-danger:hover {
+    background-color: #ff3b30; /* Go red on hover */
+    color: #ffffff;
+}
+
+/* Adjust Join Tournament button (which is currently standard size, but needs specific margin adjustment) */
+.btn-primary.mb-2 {
+    margin-bottom: 0 !important; /* Remove excessive margin if you want to stack elements tighter */
+}
+
+/* 7. Avatars */
+.avatar {
+    /* Ensure all avatars are circular and have a slight border/shadow */
+    border-radius: 50%; 
+    border: 2px solid #ffffff; /* White inner border */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    object-fit: cover;
+    width: 100px;
+    height: 100px;
+}
+
+/* 8. Messages/Alerts (Bootstrap's `.alert` classes are better, but we'll style your list) */
+.messages {
+    list-style: none;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #e6f7ff; /* Light blue background for info/success */
+    border: 1px solid #91d5ff;
+    color: #1890ff;
+}
+
+.messages li {
+    padding: 5px 0;
+}
+.messages .error, .messages .danger {
+    background-color: #fff1f0;
+    border-color: #ffccc7;
+    color: #f5222d;
+}
+/* --- 6. Friends List and Utility Pages --- */
+
+/* Friend List Styling */
+#friend-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+#friend-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    background-color: #ffffff; /* White background for each list item */
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03); /* Subtle card-like feel */
+}
+
+.friend-name {
+    font-weight: 600;
+    color: #1d1d1f;
+    flex-grow: 1; /* Allow name to take up space */
+}
+
+/* Status Indicator Dots/Pills */
+.status-indicator {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 14px; /* Pill shape */
+    margin-right: 15px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.status-indicator.online {
+    background-color: #e6ffed; /* Light green background */
+    color: #34c759; /* Apple Green text */
+}
+
+.status-indicator.offline {
+    background-color: #f7f7f7; /* Light grey background */
+    color: #8e8e93; /* System grey text */
+}
+
+/* Delete Button on List */
+.delete-button {
+    /* Make the delete button look like a subtle, actionable link */
+    background: none;
+    border: none;
+    color: #ff3b30; /* Apple Red */
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    padding: 0;
+}
+
+.delete-button:hover {
+    opacity: 0.7;
+}
+
+/* Styling for the Add Friend Form's label and select */
+#add_friend_form label {
+    font-weight: 500;
+    color: #4a4a4f;
+    display: block;
+    margin-bottom: 5px;
+}
+/* --- 7. Generic Form Styling (Change Password / Update Profile) --- */
+/* --- 7. Generic Form Styling (FIX APPLIED) --- */
+
+/* Targets the main form container to give it structure */
+form {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05); 
+}
+
+/* Styles the <p> tags generated by {{ form.as_p }} */
+form p {
+    margin-bottom: 20px; /* Increase spacing between fields */
+}
+
+/* Styles the <label> tags inside the form */
+form label {
+    display: block;
+    font-weight: 500;
+    color: #1d1d1f; /* Darker label color */
+    margin-bottom: 8px; /* Space between label and input */
+}
+
+/* FIX: Explicitly target input and textarea when they are inside the <p> tag */
+form p input,
+form p textarea {
+    /* Since they already have .form-control, this primarily ensures full width */
+    width: 100%; 
+    box-sizing: border-box; 
+    /* The rest of the styling is covered by the existing .form-control block (Section 5) */
+}
+
+/* FIX: Explicitly target the button if it's placed right after the last form element */
+form .btn {
+    margin-top: 10px;
+}
+
+/* Increase vertical padding on the profile card bodies to add more internal whitespace */
+#player1-profile .card-body,
+#player2-profile .card-body,
+#player3-profile .card-body,
+#player4-profile .card-body {
+    padding: 25px 15px; /* More top/bottom padding */
+}
+
+/* Ensure spacing between input groups (username/password) within the small login forms */
+#second-player-form .mb-3,
+#third-player-form .mb-3,
+#forth-player-form .mb-3 {
+    margin-bottom: 12px !important; /* Slight increase in margin */
+}
+
+/* Adjust label styling for better alignment in small profile forms */
+#second-player-form label,
+#third-player-form label,
+#forth-player-form label {
+    font-size: 14px;
+    font-weight: 400; /* Lighter weight for labels */
+    margin-bottom: 4px;
+}
+
+/* Style the buttons inside the profile cards consistently */
+.col-md-3 form button.btn {
+    margin-top: 5px; /* Give space above buttons in profile forms */
+    margin-bottom: 5px; /* Give space below buttons in profile forms */
+}
+
+/* Make W-100 buttons slightly less bulky by reducing padding */
+.w-100.btn {
+    padding: 8px 12px;
+}
+#create-tournament-form {
+    margin-bottom: 30px; /* Generous space to separate the block-level form from the next element */
+    /* Also include the general form styling to make it look like a card */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05); 
+}
+.form-contained {
+    /* Set the maximum width for the form container (e.g., 700px or ~70% of the 900px main container) */
+    max-width: 650px; 
+    /* Center the block-level element */
+    margin-left: auto;
+    margin-right: auto;
+    /* Apply the card styling directly if the form is not already wrapped in a card */
+    padding: 30px; 
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05); 
+    margin-bottom: 20px;
+}
+
+.apple-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(200,200,200,0.3);
+}
+
+/* Canvas */
+.game-canvas, .threejs-canvas {
+    max-width: 100%;
+    border-radius: 12px;
+}
+
+/* Avatar */
+.avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}

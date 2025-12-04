@@ -3,6 +3,7 @@
 {% block content %}
 <div id="content">
     {% load i18n %}
+    <div class="form-contained">
     <h2>{% trans "Log In" %}</h2>
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
@@ -16,5 +17,6 @@
         </div>
         <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
     </form>
+    </div>
 </div>
 {% endblock %}
