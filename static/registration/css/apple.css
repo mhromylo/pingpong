@@ -402,3 +402,322 @@ form .btn {
     object-fit: cover;
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
+/* Add to your existing CSS */
+
+/* Ensure cards have consistent height */
+.d-flex.flex-column {
+    min-height: 0; /* Fix flexbox overflow issue */
+}
+
+/* Canvas container styling */
+.canvas-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Profile and Settings sections inside cards */
+.profile-section, .settings-section, .login-section {
+    min-height: 0; /* Allow flex-grow to work properly */
+}
+
+/* Card titles */
+.card-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .row.justify-content-center.align-items-stretch {
+        flex-direction: column;
+    }
+    
+    .col-md-3, .col-md-6 {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+    
+    .canvas-container > div {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 720 / 480;
+    }
+    
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* Button hover effects */
+.btn-primary, .btn-success {
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover, .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Form styling in settings */
+.form-select, .form-control {
+    border-radius: 8px;
+    border: 1px solid #d2d2d7;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: #007aff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+}
+
+/* Score display enhancement */
+#scoreContainer {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* Subtle animations */
+.apple-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.apple-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Game settings cards */
+.bg-light {
+    background-color: #f8f9fa !important;
+    border-radius: 10px;
+}
+
+/* 4-Player Specific CSS */
+
+/* Ensure all 4 cards have equal height */
+.row.justify-content-center.align-items-stretch {
+    display: flex;
+    flex-wrap: nowrap;
+    min-height: 500px; /* Minimum height for player cards */
+}
+
+.col-md-3.col-lg-3.mb-3.d-flex {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Different border colors for each player card */
+
+
+/* Color coding for player text */
+#player1-card .card-title {
+    color: #ff3b30 !important;
+}
+
+#player2-card .card-title {
+    color: #34c759 !important;
+}
+
+#player3-card .card-title {
+    color: #007aff !important;
+}
+
+#player4-card .card-title {
+    color: #ff9500 !important;
+}
+
+/* Canvas styling for 4-player game */
+.canvas-container {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Score display for 4 players */
+#scoreContainer {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 10px 20px;
+    width: auto;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#player1Score { color: #ff3b30; }
+#player2Score { color: #34c759; }
+#player3Score { color: #007aff; }
+#player4Score { color: #ff9500; }
+
+/* Responsive adjustments for 4 players */
+@media (max-width: 1200px) {
+    .row.justify-content-center.align-items-stretch {
+        flex-wrap: wrap;
+    }
+    
+    .col-md-3.col-lg-3.mb-3.d-flex {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .col-md-3.col-lg-3.mb-3.d-flex {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .row.justify-content-center.align-items-stretch {
+        flex-direction: column;
+        min-height: auto;
+    }
+    
+    /* Adjust canvas for mobile */
+    .canvas-container {
+        min-height: 300px;
+    }
+    
+    /* Adjust score display for mobile */
+    #scoreContainer {
+        font-size: 20px;
+        padding: 8px 15px;
+    }
+}
+
+/* Login form styling for all players */
+.login-section form {
+    background: rgba(248, 249, 250, 0.7);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+/* Avatar styling for all players */
+.avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 3px solid white;
+}
+
+/* Hover effects with player-specific colors */
+#player1-card:hover {
+    box-shadow: 0 12px 30px rgba(255, 59, 48, 0.15);
+}
+
+#player2-card:hover {
+    box-shadow: 0 12px 30px rgba(52, 199, 89, 0.15);
+}
+
+#player3-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 122, 255, 0.15);
+}
+
+#player4-card:hover {
+    box-shadow: 0 12px 30px rgba(255, 149, 0, 0.15);
+}
+
+/* Settings card styling */
+.bg-light {
+    background-color: #f8f9fa !important;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Form elements in player cards */
+.form-select-sm {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Button styling in player cards */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Game settings bottom row */
+.card.p-3.shadow-lg.apple-card {
+    border-top: 4px solid #5856d6; /* Purple for settings */
+}
+
+/* Warning message styling */
+.alert-warning {
+    background-color: rgba(255, 204, 0, 0.1);
+    border: 1px solid rgba(255, 204, 0, 0.3);
+    color: #996600;
+}
+
+/* Team mode indicator */
+#gameMode option[value="teams2v2"] {
+    font-weight: bold;
+    color: #5856d6;
+}
+
+/* Animation for player cards */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.player-logged-in {
+    animation: pulse 0.5s ease;
+}
+
+/* Status indicators */
+.player-status {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.status-online {
+    background-color: rgba(52, 199, 89, 0.1);
+    color: #34c759;
+}
+
+.status-offline {
+    background-color: rgba(142, 142, 147, 0.1);
+    color: #8e8e93;
+}
+
+/* Game control buttons */
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+    border-radius: 12px;
+}
+
+/* Ensure consistent spacing */
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mt-4 {
+    margin-top: 1.5rem !important;
+}
+
+/* Canvas aspect ratio preservation */
+.aspect-ratio-box {
+    position: relative;
+    width: 100%;
+    padding-top: 66.67%; /* 3:2 aspect ratio (480/720 = 0.6667) */
+}
+
+.aspect-ratio-box canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
