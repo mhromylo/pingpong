@@ -5,12 +5,12 @@
     {% load i18n %}
     
     <!-- TOP ROW: Player Cards + Canvas (3-6-3 layout) -->
-    <div class="row justify-content-center mb-4">
+    <div class="row justify-content-center align-items-stretch mb-4">
         
         <!-- Player 1 Card - Left Side -->
-        <div class="col-md-3 mb-3 d-flex">
+        <div class="col-md-4 mb-3 d-flex player-cardholder">
             <div id="player1-card" class="card p-3 shadow-lg h-100 apple-card d-flex flex-column">
-                <h4 class="card-title text-center mb-3 text-primary"> {{ user.profile.display_name }}</h4>
+                <h4 class="card-title text-center mb-3 text-primary"> {% trans "Player 1" %}</h4>
                 
                 <!-- Profile Section -->
                 <div class="profile-section flex-grow-1">
@@ -25,10 +25,10 @@
                     </p>
                 </div>
 
-                <hr class="mb-3">
+                <hr class="mb-2">
                 
                 <!-- Settings Section -->
-                <div class="settings-section">
+                <div class="settings-section d-none">
                     <div class="card p-3 bg-light border-0">
                         <label for="player1Type" class="form-label small">{% trans "Type:" %}</label>
                         <select id="player1Type" class="form-select form-select-sm mb-3">
@@ -52,7 +52,7 @@
         </div>
         
         <!-- Center Canvas Area -->
-        <div class="col-md-6 mb-3 d-flex">
+        <div class="col-md-8 mb-3 d-flex">
             <div class="card p-3 shadow-lg w-100 h-100 d-flex flex-column apple-card">
                 
                 <!-- Canvas Container -->
@@ -73,9 +73,9 @@
                                 style="position: absolute; top: 0; left: 0;"></canvas>
                     </div>
                 </div>
-                <div class="row g-2">
+                <div class="row g-2 d-none">
                 <!-- Map Selection -->
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <div class="card p-2 bg-light border-0">
                         <label for="chosenMap" class="form-label small mb-1">{% trans "Map:" %}</label>
                         <select id="chosenMap" class="form-select form-select-sm">
@@ -87,7 +87,7 @@
                 </div>
                 
                 <!-- Power-ups/Extras -->
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <div class="card p-2 bg-light border-0">
                         <label for="extrasAreOn" class="form-label small mb-1">{% trans "Power-ups:" %}</label>
                         <select id="extrasAreOn" class="form-select form-select-sm">
@@ -124,9 +124,9 @@
         </div>
         
         <!-- Player 2 Card - Right Side -->
-        <div class="col-md-3 mb-3 d-flex">
+        <div class="col-md-4 mb-3 d-flex player-cardholder">
             <div id="player2-card" class="card p-3 shadow-lg h-100 apple-card d-flex flex-column">
-                <h4 class="card-title text-center mb-3 text-primary">{{ request.session.player2.display_name|default:"Player 2" }}</h4>
+                <h4 class="card-title text-center mb-3 text-primary">{% trans "Player 2" %}</h4>
                 
                 {% if request.session.player2 %}
                     <!-- Profile Section -->
@@ -149,7 +149,7 @@
                     <hr class="mb-3">
 
                     <!-- Settings Section -->
-                    <div class="settings-section">
+                    <div class="settings-section d-none" >
                         <div class="card p-3 bg-light border-0">
                             <label for="player2Type" class="form-label small">{% trans "Type:" %}</label>
                             <select id="player2Type" class="form-select form-select-sm mb-3">
@@ -173,7 +173,7 @@
                     </div>
                 {% else %}
                     <!-- Login Form for Player 2 -->
-                    <div class="login-section flex-grow-1 d-flex flex-column justify-content-center">
+                    <div class="login-section d-flex flex-column justify-content-center h-100">
                         <img src="https://placehold.co/90x90/f0f0f0/cccccc?text=P2" 
                              alt="Player 2 Placeholder" 
                              class="avatar rounded-circle mb-3 mx-auto d-block border border-primary">

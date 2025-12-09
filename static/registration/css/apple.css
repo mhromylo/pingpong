@@ -89,8 +89,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* 4. Cards and Containers (Card/Profile Info) */
-.card,
-.profile-info {
+.card{
     max-width: 650px;
     margin-left: auto;
     margin-right: auto;
@@ -102,6 +101,19 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 20px;
     overflow: hidden;
 }
+.profile-info {
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #ffffff; /* White background for elements */
+    border-radius: 12px; /* Soft, pronounced rounded corners */
+    border: none; /* Remove default Bootstrap border */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05); /* Distinct, soft shadow */
+    padding: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    text-align: center;
+}
 
 /* 5. Forms and Inputs */
 .form-control,
@@ -109,7 +121,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 8px; /* Slightly rounded input fields */
     border: 1px solid #d2d2d7; /* Light grey border */
     padding: 10px 12px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    /* transition: border-color 0.2s, box-shadow 0.2s; */
 }
 
 .form-control:focus,
@@ -123,7 +135,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 8px; /* Consistent rounded corners */
     padding: 10px 20px;
     font-weight: 500;
-    transition: background-color 0.2s, box-shadow 0.2s;
+    /* transition: background-color 0.2s, box-shadow 0.2s; */
     border: none; /* Ensure no visible border */
 }
 
@@ -270,7 +282,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #ff3b30; /* Apple Red */
     font-weight: 500;
     cursor: pointer;
-    transition: opacity 0.2s;
+    /* transition: opacity 0.2s; */
     padding: 0;
 }
 
@@ -402,6 +414,13 @@ form .btn {
     object-fit: cover;
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
+.avatar_index {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
 /* Add to your existing CSS */
 
 /* Ensure cards have consistent height */
@@ -418,6 +437,7 @@ form .btn {
 
 /* Profile and Settings sections inside cards */
 .profile-section, .settings-section, .login-section {
+    width: 100%;
     min-height: 0; /* Allow flex-grow to work properly */
 }
 
@@ -428,7 +448,7 @@ form .btn {
 }
 
 /* Responsive adjustments */
-@media (max-width: 992px) {
+@media (max-width: 1292px) {
     .row.justify-content-center.align-items-stretch {
         flex-direction: column;
     }
@@ -452,9 +472,9 @@ form .btn {
 }
 
 /* Button hover effects */
-.btn-primary, .btn-success {
+/* .btn-primary, .btn-success {
     transition: all 0.3s ease;
-}
+} */
 
 .btn-primary:hover, .btn-success:hover {
     transform: translateY(-2px);
@@ -480,14 +500,14 @@ form .btn {
 }
 
 /* Subtle animations */
-.apple-card {
+/* .apple-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+} */
 
-.apple-card:hover {
+/* .apple-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-}
+} */
 
 /* Game settings cards */
 .bg-light {
@@ -511,7 +531,9 @@ form .btn {
 
 /* Different border colors for each player card */
 
-
+.player-cardholder {
+    height: 50%;
+}
 /* Color coding for player text */
 #player1-card .card-title {
     color: #ff3b30 !important;
@@ -609,7 +631,7 @@ form .btn {
 }
 
 /* Hover effects with player-specific colors */
-#player1-card:hover {
+/* #player1-card:hover {
     box-shadow: 0 12px 30px rgba(255, 59, 48, 0.15);
 }
 
@@ -623,7 +645,7 @@ form .btn {
 
 #player4-card:hover {
     box-shadow: 0 12px 30px rgba(255, 149, 0, 0.15);
-}
+} */
 
 /* Settings card styling */
 .bg-light {
@@ -721,3 +743,10 @@ form .btn {
     width: 100%;
     height: 100%;
 }
+
+.chart-container-fixed {
+    position: relative;
+    width: 100%;
+    height: 250px; /* fits Bootstrap card cleanly */
+}
+

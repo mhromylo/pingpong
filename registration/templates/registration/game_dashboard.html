@@ -4,74 +4,90 @@
 <div id="content" class="container mt-4">
     <h2 class="text-center mb-4">Game Dashboard</h2>
 
-    <!-- Player Filter Form -->
-    <form id="player_filter_form" action="/game_dashboard/" method="POST">
-        {% csrf_token %}
-        <div class="mb-4">
-            <label for="player_filter">Filter by Player:</label>
-            <select id="player_filter" name="player" class="form-control">
-                <option value="">All Players</option>
-                {% for player in players %}
-                <option value="{{ player.id }}">{{ player.display_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Apply Filter</button>
-    </form>
-
+    <!-- ROW 1 -->
     <div class="row">
-        <!-- Top 5 Winners Chart -->
         <div class="col-md-4">
-            <div class="card p-3 mb-4">
-                <h5 class="text-center">Top 5 Winners</h5>
-                <canvas id="topWinnersChart" width="400" height="200"></canvas>
-            </div>
-        </div>
 
-        <!-- Compare Wins Chart -->
-        <div class="col-md-4">
+            <!-- Player Filter -->
+            
+                
+            
             <div class="card p-3 mb-4">
-                <h5 class="text-center">Compare Wins</h5>
-                <div style="position: relative; height:200px; width:100%;">
-                <canvas id="gameStatsChart" ></canvas>
+                <div class="chart-container-fixed">
+                    <canvas id="gameStatsChart"></canvas>
+                </div>
+                <form id="player_filter_form" action="/game_dashboard/" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="player_filter">Filter by Player:</label>
+                        <select id="player_filter" name="player" class="form-control">
+                            <option value="">All Players</option>
+                            {% for player in players %}
+                            <option value="{{ player.id }}">{{ player.display_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Apply Filter</button>
+                </form>
+            </div>
+            
+           
+
+        </div> <!-- col-md-6 -->
+
+        <!-- GAME STATS (right side of row 1) -->
+        <div class="col-md-4">
+             <!-- Top Winners -->
+            <div class="card p-3 mb-4">
+                <div class="chart-container-fixed">
+                    <canvas id="topWinnersChart"></canvas>
+                </div>
+                
+            </div>
+            </div>
+            <div class="col-md-4">
+            <div class="card p-3 mb-4">
+                <div class="chart-container-fixed">
+                    <canvas id="typeChart"></canvas>
                 </div>
             </div>
-        </div>
-
-        <!-- Game Type Distribution Chart -->
-        <div class="col-md-4">
-            <div class="card p-3 mb-4">
-                <h5 class="text-center">Game Type Distribution</h5>
-                <canvas id="typeChart" width="400" height="200"></canvas>
             </div>
-        </div>
-    </div>
+        
 
-    <!-- Game History Table -->
-    <div class="card p-3">
-        <h4 class="text-center mb-3">Game History</h4>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Game Type</th>
-                    <th>Players</th>
-                    <th>Scores</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody id="game_table">
-                {% for game in games %}
-                <tr>
-                    <td>{{ game.get_game_type_display }}</td>
-                    <td>{{ game.player1.display_name }} VS {{ game.player2.display_name }}</td>
-                    <td>{{ game.player1_score }} - {{ game.player2_score }}</td>
-                    <td>{{ game.created_at|date:"Y-m-d H:i" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+    </div> <!-- row 1 -->
+
+
+    <!-- ROW 2 — FULL WIDTH TABLE -->
+   
+        
+            <div class="card p-4">
+                <h4 class="text-center mb-3">Game History</h4>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Game Type</th>
+                            <th>Players</th>
+                            <th>Scores</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="game_table">
+                        {% for game in games %}
+                        <tr>
+                            <td>{{ game.get_game_type_display }}</td>
+                            <td>{{ game.player1.display_name }} VS {{ game.player2.display_name }}</td>
+                            <td>{{ game.player1_score }} - {{ game.player2_score }}</td>
+                            <td>{{ game.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+
+</div> <!-- container -->
 
 <script>
     window.topWinnersData = {

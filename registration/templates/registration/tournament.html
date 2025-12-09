@@ -12,7 +12,7 @@
             <div class="d-flex flex-column gap-3 h-100">
                 <!-- Player 1 Card - WIDER -->
                 <div id="player1-card" class="card p-3 shadow-lg apple-card flex-fill">
-                    <h4 class="card-title text-center mb-3" style="color: #ff3b30;">{{ user.profile.display_name|default:user.username }}</h4>
+                    <h4 class="card-title text-center mb-3" style="color: #ff3b30;">{% trans "Player 1" %}</h4>
                     
                     <div class="profile-section text-center">
                         <!-- Safe avatar access -->
@@ -47,7 +47,7 @@
                 
                 <!-- Player 3 Card - WIDER -->
                 <div id="player3-card" class="card p-3 shadow-lg apple-card flex-fill">
-                    <h4 class="card-title text-center mb-3" style="color: #007aff;">{{ request.session.player3.display_name|default:"Player 3" }}</h4>
+                    <h4 class="card-title text-center mb-3" style="color: #007aff;">{% trans "Player 2" %}</h4>
                     
                     {% if request.session.player3 %}
                         <div class="profile-section text-center">
@@ -114,7 +114,7 @@
         </div>
         
         <!-- CENTER: Canvas Area - SMALLER -->
-        <div class="col-md-6 mb-3 d-flex">
+        <div class="col-md-8 mb-3 d-flex">
             <div class="card p-3 shadow-lg w-100 h-100 d-flex flex-column apple-card">
                 <!-- Score Display -->
                 <div id="scoreContainer" class="text-center mb-3">
@@ -141,7 +141,7 @@
             <div class="d-flex flex-column gap-3 h-100">
                 <!-- Player 2 Card - WIDER -->
                 <div id="player2-card" class="card p-3 shadow-lg apple-card flex-fill">
-                    <h4 class="card-title text-center mb-3" style="color: #34c759;">{{ request.session.player2.display_name|default:"Player 2" }}</h4>
+                    <h4 class="card-title text-center mb-3" style="color: #34c759;">{% trans "Player 2" %}</h4>
                     
                     {% if request.session.player2 %}
                         <div class="profile-section text-center">
@@ -207,7 +207,7 @@
                 
                 <!-- Player 4 Card - WIDER -->
                 <div id="player4-card" class="card p-3 shadow-lg apple-card flex-fill">
-                    <h4 class="card-title text-center mb-3" style="color: #ff9500;">{{ request.session.player4.display_name|default:"Player 4" }}</h4>
+                    <h4 class="card-title text-center mb-3" style="color: #ff9500;">{% trans "Player 4" %}</h4>
                     
                     {% if request.session.player4 %}
                         <div class="profile-section text-center">
