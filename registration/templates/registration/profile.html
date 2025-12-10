@@ -3,14 +3,12 @@
 {% block content %}
 <div id="content">
     {% load i18n %}
-     <div class="profile-contained">
     {% if user.is_authenticated %}
         <h2>{% blocktrans %}Welcome, {{ user.username }}{% endblocktrans %}</h2>
         <p><strong>{% trans "Display Name:" %}</strong> {{ user.profile.display_name }}</p>
         <p><strong>{% trans "Email:" %}</strong> {{ user.email }}</p>
         <p><strong>{% trans "Wins:" %}</strong> {{ user.profile.wins }}</p>
         <p><strong>{% trans "Losses:" %}</strong> {{ user.profile.losses }}</p>
-    </div>
     {% endif %}
 </div>
 {% endblock %}

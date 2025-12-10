@@ -5,57 +5,48 @@
     <h2 class="text-center mb-4">Game Dashboard</h2>
 
     <!-- Player Filter Form -->
-    <div class="card p-3 mb-4 mx-auto" style="max-width: 400px;">
-        <form id="player_filter_form" action="/game_dashboard/" method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="player_filter" class="form-label">Filter by Player:</label>
-                <select id="player_filter" name="player" class="form-select">
-                    <option value="">All Players</option>
-                    {% for player in players %}
-                    <option value="{{ player.id }}">{{ player.display_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
-        </form>
-    </div>
+    <form id="player_filter_form" action="/game_dashboard/" method="POST">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="player_filter">Filter by Player:</label>
+            <select id="player_filter" name="player" class="form-control">
+                <option value="">All Players</option>
+                {% for player in players %}
+                <option value="{{ player.id }}">{{ player.display_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Apply Filter</button>
+    </form>
 
-    <!-- Space between form and charts -->
-    <div class="mb-4"></div>
-
-    <!-- Charts -->
-    <div class="row g-3">
+    <div class="row">
+        <!-- Top 5 Winners Chart -->
         <div class="col-md-4">
-            <div class="card p-3 h-100">
-                <h5 class="text-center mb-2">Top 5 Winners</h5>
-                <div class="chart-container">
-                    <canvas id="topWinnersChart"></canvas>
-                </div>
+            <div class="card p-3 mb-4">
+                <h5 class="text-center">Top 5 Winners</h5>
+                <canvas id="topWinnersChart" width="400" height="200"></canvas>
             </div>
         </div>
 
+        <!-- Compare Wins Chart -->
         <div class="col-md-4">
-            <div class="card p-3 h-100">
-                <h5 class="text-center mb-2">Compare Wins</h5>
-                <div class="chart-container">
-                    <canvas id="gameStatsChart"></canvas>
-                </div>
+            <div class="card p-3 mb-4">
+                <h5 class="text-center">Compare Wins</h5>
+                <canvas id="gameStatsChart" width="400" height="200"></canvas>
             </div>
         </div>
 
+        <!-- Game Type Distribution Chart -->
         <div class="col-md-4">
-            <div class="card p-3 h-100">
-                <h5 class="text-center mb-2">Game Type Distribution</h5>
-                <div class="chart-container">
-                    <canvas id="typeChart"></canvas>
-                </div>
+            <div class="card p-3 mb-4">
+                <h5 class="text-center">Game Type Distribution</h5>
+                <canvas id="typeChart" width="400" height="200"></canvas>
             </div>
         </div>
     </div>
 
     <!-- Game History Table -->
-    <div class="card p-3 mt-4">
+    <div class="card p-3">
         <h4 class="text-center mb-3">Game History</h4>
         <table class="table table-striped">
             <thead>

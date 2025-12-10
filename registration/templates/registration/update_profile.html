@@ -3,7 +3,6 @@
 {% block content %}
 <div id="content">
     {% load i18n %}
-    <div class="form-contained">
     <h2>{% translate "Update profile" %}</h2>
     <form method="POST" action="{% url 'update_profile' %}" enctype="multipart/form-data">
         {% csrf_token %}
@@ -11,6 +10,5 @@
         {{ p_form.as_p }}
         <button type="submit" class="btn btn-primary">{% translate "Update" %}</button>
     </form>
-    </div>
 </div>
 {% endblock %}

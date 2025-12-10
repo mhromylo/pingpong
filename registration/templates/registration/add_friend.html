@@ -3,7 +3,6 @@
 {% block content %}
 <div id="content">
     {% load i18n %}
-    <div class="form-contained">
     <p>{% trans "Friends:" %}</p>
     <ul id="friend-list">
         {% for f in user.profile.friends.all %}
@@ -31,7 +30,6 @@
     </ul>
     
     <h2>{% trans "Add Friend" %}</h2>
-    
     <form id="add_friend_form" action="/add_friend/" method="POST">
         {% csrf_token %}
         <div class="mb-4">
@@ -44,6 +42,5 @@
         </div>
         <button type="submit" class="btn btn-primary">Apply Filter</button>
     </form>
-    </div>
 </div>
 {% endblock %}

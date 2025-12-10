@@ -1,642 +1,351 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div id="content" class="container-fluid mt-4">
-    {% load i18n %}
-    
-    <!-- MAIN ROW: Canvas in center, players on sides in row layout -->
-    <div class="row justify-content-center align-items-stretch mb-4">
-        
-        <!-- LEFT SIDE: Player 1 & Player 3 in HORIZONTAL ROW - WIDER -->
-        <div class="col-md-4 mb-3">
-            <div class="d-flex flex-column gap-3 h-100">
-                <!-- Player 1 Card - WIDER -->
-                <div id="player1-card" class="card p-3 shadow-lg apple-card flex-fill">
-                    <h4 class="card-title text-center mb-3" style="color: #ff3b30;">{% trans "Player 1" %}</h4>
-                    
-                    <div class="profile-section text-center">
-                        <!-- Safe avatar access -->
-                        {% if user.is_authenticated and user.profile and user.profile.avatar %}
-                        <img src="{{ user.profile.avatar.url }}" alt="User Avatar" 
-                             class="avatar rounded-circle mb-3 mx-auto d-block border" style="border-color: #ff3b30 !important;">
-                        {% else %}
-                        <div class="avatar-placeholder mb-3 mx-auto d-flex align-items-center justify-content-center" 
-                             style="width: 90px; height: 90px; background: #f0f0f0; border-radius: 50%; border: 2px solid #ff3b30;">
-                            <span style="color: #ff3b30;">P1</span>
-                        </div>
-                        {% endif %}
-                        
-                      
-                        <p class="small mb-1">
-                            <strong>{% trans "Wins:" %}</strong> {{ user.profile.wins|default:0 }}
-                        </p>
-                        <p class="small mb-3">
-                            <strong>{% trans "Losses:" %}</strong> {{ user.profile.losses|default:0 }}
-                        </p>
-                    </div>
 
-                    {% if tournament and tournament.status != "in_progress" %}
-                    <form id="first-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ user.profile.id }}/" class="mb-3">
+<div id="content" class="container mt-4">
+    {% load i18n %}
+
+    {% if  not tournament %}
+    <form id="create-tournament-form" method="POST" action="{% url 'create_tournament' %}">
+        {% csrf_token %}
+        {{ c_form.as_p }}  <!-- Display the form fields --> 
+        <button type="submit" class="btn btn-primary">{% trans "Create Tournament" %}</button>
+    </form>
+    {% endif %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <!-- Tournament Details (Left Side) -->
+                <div class="col-md-6 mb-4">
+                    <h2 class="card-title">{% trans "Tournament:" %} {{ tournament.name }}</h2>
+                    <p class="card-text" id="player-count"><strong>{% trans "Players:" %}</strong> {{ tournament.players.count }}/4</p>
+        
+                    {% if tournament.status == 'not_started' %}
+                    <form id="start-tournament-form" method="POST" action="/start_tournament/{{ tournament.id }}/">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-primary w-100">
-                            {% trans "Join" %}
-                        </button>
+                        <button type="submit" class="btn btn-success btn-lg">{% trans "Start Tournament" %}</button>
+                    </form>
+                    {% endif %}
+                    
+                    {% if tournament.status == 'in_progress' and tournament.winner and tournament.third %}
+                    <form id="finish-tournament-form" method="POST" action="/finish_tournament/{{ tournament.id }}/">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">{% trans "Finish Tournament" %}</button>
                     </form>
                     {% endif %}
                 </div>
                 
-                <!-- Player 3 Card - WIDER -->
-                <div id="player3-card" class="card p-3 shadow-lg apple-card flex-fill">
-                    <h4 class="card-title text-center mb-3" style="color: #007aff;">{% trans "Player 2" %}</h4>
-                    
-                    {% if request.session.player3 %}
-                        <div class="profile-section text-center">
-                            <!-- Safe avatar access -->
-                            {% if request.session.player3.avatar_url %}
-                            <img id="player3-avatar" src="{{ request.session.player3.avatar_url }}" 
-                                 alt="Player 3 Avatar" class="avatar rounded-circle mb-3 mx-auto d-block border" style="border-color: #007aff !important;">
-                            {% else %}
-                            <div class="avatar-placeholder mb-3 mx-auto d-flex align-items-center justify-content-center" 
-                                 style="width: 90px; height: 90px; background: #f0f0f0; border-radius: 50%; border: 2px solid #007aff;">
-                                <span style="color: #007aff;">P3</span>
-                            </div>
-                            {% endif %}
-                            
-                        
-                            <p id="player3-wins" class="small mb-1">
-                                <strong>{% trans "Wins:" %}</strong> {{ request.session.player3.wins|default:0 }}
-                            </p>
-                            <p id="player3-losses" class="small mb-3">
-                                <strong>{% trans "Losses:" %}</strong> {{ request.session.player3.losses|default:0 }}
-                            </p>
-                        </div>
-                        
-                        {% if tournament and tournament.status != "in_progress" %}
-                        <form id="third-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player3.id }}/" class="mb-3">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-primary w-100">
-                                {% trans "Join" %}
-                            </button>
-                        </form>
-                        {% endif %}
-                        
-                        <form action="/logout_tournament/3/" method="post" id="logout-tournament-form3">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">
-                                {% trans "Quit" %}
-                            </button>
-                        </form>
-                    {% else %}
-                        <div class="login-section d-flex flex-column justify-content-center h-100">
-                            <div class="avatar-placeholder mb-3 mx-auto d-flex align-items-center justify-content-center" 
-                                 style="width: 90px; height: 90px; background: #f0f0f0; border-radius: 50%; border: 2px solid #007aff;">
-                                <span style="color: #007aff;">P3</span>
-                            </div>
-                            
-                            <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label class="form-label small">{% trans "Username:" %}</label>
-                                    <input type="text" name="username" class="form-control form-control-sm" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label small">{% trans "Password:" %}</label>
-                                    <input type="password" name="password" class="form-control form-control-sm" required>
-                                </div>
-                                <button type="submit" class="btn btn-sm btn-primary w-100">
-                                    {% trans "Log in" %}
-                                </button>
-                            </form>
-                        </div>
-                    {% endif %}
+                <!-- Results (Right Side) -->
+                <div class="col-md-6 mb-4 text-center">
+                    <h5 class="mb-3">{% trans "Results:" %}</h5>
+                    <p class="card-text"> 🏆 {{ tournament.winner.display_name }}</p>
+                    <p class="card-text"> 🥈 {{ tournament.second.display_name }}</p>
+                    <p class="card-text"> 🥉 {{ tournament.third.display_name }}</p>
+                    <p class="card-text"> 🎖️ {{ tournament.fourth.display_name }}</p>
                 </div>
             </div>
-        </div>
-        
-        <!-- CENTER: Canvas Area - SMALLER -->
-        <div class="col-md-8 mb-3 d-flex">
-            <div class="card p-3 shadow-lg w-100 h-100 d-flex flex-column apple-card">
-                <!-- Score Display -->
-                <div id="scoreContainer" class="text-center mb-3">
-                    <span id="player1Score" class="fw-bold fs-3" style="color: #ff3b30;">0</span>
-                    <span class="mx-3 fs-3">-</span>
-                    <span id="player2Score" class="fw-bold fs-3" style="color: #34c759;">0</span>
+
+            <!-- List of Players -->
+            <div class="row">
+                <!-- Players List (Left Side) -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">{% trans "Players:" %}</h5>
+                    <ul id="players-list" class="list-group">
+                        {% for player in tournament.players.all %}
+                        <li id="player-{{ player.display_name }}" class="list-group-item d-flex justify-content-between align-items-center p-2">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ player.avatar.url }}" alt="{{ player.display_name }}" class="avatar rounded-circle me-2" width="30" height="30">
+                                <span class="player-name small">{{ player.display_name }}</span>
+                            </div>
+                            <form id="quit_tournament" method="POST" action="/quit_tournament/{{ tournament.id }}/{{ player.id }}/">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">{% trans "Quit Tournament" %}</button>
+                            </form>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </div>
                 
-                <!-- Canvas Container -->
-                <div class="canvas-container position-relative flex-grow-1 d-flex align-items-center justify-content-center">
-                    <div class="position-relative game-canvas-wrapper">
-                        <!-- Game Canvases (720x480) -->
-                        <canvas id="myCanvas" width="720" height="480"></canvas>
-                        <canvas id="threejsCanvas" class="threejs-canvas" width="720" height="480"></canvas>
+                <!-- Game Results (Right Side) -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">{% trans "Games:" %}</h5>
+                    <div id="games" class="p-3 border rounded bg-light">
+                        {% for game in tournament.games.all %}
+                        <p class="card-text">
+                            <strong>{{ game.get_game_type_display }}:</strong> {{ game.player1.display_name }} VS {{ game.player2.display_name }}
+                            <strong>{% trans "Scores:" %}</strong> {{ game.player1_score }} VS {{ game.player2_score }}
+                            {% if not game.winner %}
+                            <button class="startTournamentGame btn btn-primary mt-2"
+                                    data-game-id="{{ game.id }}" 
+                                    data-player1-id="{{ game.player1.id }}" 
+                                    data-player2-id="{{ game.player2.id }}">
+                                Start Game
+                            </button>
+                            {% endif %}
+                            {% if game.winner %}
+                            <p class="card-text mt-2" id="game-winner"><strong>Winner:</strong> {{ game.winner }}</p>
+                            {% endif %}
+                        </p>
+                        {% endfor %}
                     </div>
                 </div>
-                
-                <!-- Game Controls Below Canvas -->
             </div>
-        </div>
-        
-        <!-- RIGHT SIDE: Player 2 & Player 4 in HORIZONTAL ROW - WIDER -->
-        <div class="col-md-4 mb-3">
-            <div class="d-flex flex-column gap-3 h-100">
-                <!-- Player 2 Card - WIDER -->
-                <div id="player2-card" class="card p-3 shadow-lg apple-card flex-fill">
-                    <h4 class="card-title text-center mb-3" style="color: #34c759;">{% trans "Player 2" %}</h4>
-                    
-                    {% if request.session.player2 %}
-                        <div class="profile-section text-center">
-                            <!-- Safe avatar access -->
-                            {% if request.session.player2.avatar_url %}
-                            <img id="player2-avatar" src="{{ request.session.player2.avatar_url }}" 
-                                 alt="Player 2 Avatar" class="avatar rounded-circle mb-3 mx-auto d-block border" style="border-color: #34c759 !important;">
-                            {% else %}
-                            <div class="avatar-placeholder mb-3 mx-auto d-flex align-items-center justify-content-center" 
-                                 style="width: 90px; height: 90px; background: #f0f0f0; border-radius: 50%; border: 2px solid #34c759;">
-                                <span style="color: #34c759;">P2</span>
-                            </div>
-                            {% endif %}
-                            
-                            
-                            <p id="player2-wins" class="small mb-1">
-                                <strong>{% trans "Wins:" %}</strong> {{ request.session.player2.wins|default:0 }}
-                            </p>
-                            <p id="player2-losses" class="small mb-3">
-                                <strong>{% trans "Losses:" %}</strong> {{ request.session.player2.losses|default:0 }}
-                            </p>
-                        </div>
-                        
-                        {% if tournament and tournament.status != "in_progress" %}
-                        <form id="second-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player2.id }}/" class="mb-3">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-success w-100">
-                                {% trans "Join" %}
-                            </button>
-                        </form>
-                        {% endif %}
-                        
-                        <form action="/logout_tournament/2/" method="post" id="logout-tournament-form2">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">
-                                {% trans "Quit" %}
-                            </button>
-                        </form>
-                    {% else %}
-                        <div class="login-section d-flex flex-column justify-content-center h-100">
-                            <div class="avatar-placeholder mb-3 mx-auto d-flex align-items-center justify-content-center" 
-                                 style="width: 90px; height: 90px; background: #f0f0f0; border-radius: 50%; border: 2px solid #34c759;">
-                                <span style="color: #34c759;">P2</span>
-                            </div>
-                            
-                            <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label class="form-label small">{% trans "Username:" %}</label>
-                                    <input type="text" name="username" class="form-control form-control-sm" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label small">{% trans "Password:" %}</label>
-                                    <input type="password" name="password" class="form-control form-control-sm" required>
-                                </div>
-                                <button type="submit" class="btn btn-sm btn-success w-100">
-                                    {% trans "Log in" %}
-                                </button>
-                            </form>
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <!-- Player 4 Card - WIDER -->
-                <div id="player4-card" class="card p-3 shadow-lg apple-card flex-fill">
-                    <h4 class="card-title text-center mb-3" style="color: #ff9500;">{% trans "Player 4" %}</h4>
-                    
-                    {% if request.session.player4 %}
-                        <div class="profile-section text-center">
-                            <!-- Safe avatar access -->
-                            {% if request.session.player4.avatar_url %}
-                            <img id="player4-avatar" src="{{ request.session.player4.avatar_url }}" 
-                                 alt="Player 4 Avatar" class="avatar rounded-circle mb-3 mx-auto d-block border" style="border-color: #ff9500 !important;">
-                            {% else %}
-                            <div class="avatar-placeholder mb-3 mx-auto d-flex align-items-center justify-content-center" 
-                                 style="width: 90px; height: 90px; background: #f0f0f0; border-radius: 50%; border: 2px solid #ff9500;">
-                                <span style="color: #ff9500;">P4</span>
-                            </div>
-                            {% endif %}
-                            
-                           
-                            <p id="player4-wins" class="small mb-1">
-                                <strong>{% trans "Wins:" %}</strong> {{ request.session.player4.wins|default:0 }}
-                            </p>
-                            <p id="player4-losses" class="small mb-3">
-                                <strong>{% trans "Losses:" %}</strong> {{ request.session.player4.losses|default:0 }}
-                            </p>
-                        </div>
-                        
-                        {% if tournament and tournament.status != "in_progress" %}
-                        <form id="forth-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player4.id }}/" class="mb-3">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-warning w-100">
-                                {% trans "Join" %}
-                            </button>
-                        </form>
-                        {% endif %}
-                        
-                        <form action="/logout_tournament/4/" method="post" id="logout-tournament-form4">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">
-                                {% trans "Quit" %}
-                            </button>
-                        </form>
-                    {% else %}
-                        <div class="login-section d-flex flex-column justify-content-center h-100">
-                            <div class="avatar-placeholder mb-3 mx-auto d-flex align-items-center justify-content-center" 
-                                 style="width: 90px; height: 90px; background: #f0f0f0; border-radius: 50%; border: 2px solid #ff9500;">
-                                <span style="color: #ff9500;">P4</span>
-                            </div>
-                            
-                            <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label class="form-label small">{% trans "Username:" %}</label>
-                                    <input type="text" name="username" class="form-control form-control-sm" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label small">{% trans "Password:" %}</label>
-                                    <input type="password" name="password" class="form-control form-control-sm" required>
-                                </div>
-                                <button type="submit" class="btn btn-sm btn-warning w-100">
-                                    {% trans "Log in" %}
-                                </button>
-                            </form>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+            
         </div>
     </div>
-    
-    <!-- BOTTOM ROW: Tournament Info -->
-    {% if tournament or not tournament %}
-    <div class="row justify-content-center mb-4">
-        <div class="col-md-6">
-            <div class="card p-3 shadow-lg apple-card">
-                <h4 class="card-title text-center mb-3 text-primary">{% trans "Tournament Info" %}</h4>
-                
-                {% if not tournament %}
-                <div class="text-center py-4">
-                    <form id="create-tournament-form" method="POST" action="{% url 'create_tournament' %}">
+    {% if not tournament.status == "in_progress" %}
+    <!-- Profiles Section -->
+    <div class="row mb-4">
+        <!-- Player 1 Profile -->
+        <div class="col-md-3">
+            <div id="player1-profile" class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{% trans "Player 1:" %}</h5>
+                    <img src="{{ user.profile.avatar.url }}" alt="User Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
+                    <p id="display_name"><strong>{% trans "Display Name:" %}</strong> {{ user.profile.display_name }}</p>
+                    <p><strong>{% trans "Wins:" %}</strong> {{ user.profile.wins }}</p>
+                    <p><strong>{% trans "Losses:" %}</strong> {{ user.profile.losses }}</p>
+                    <!-- Update Display Name Form -->
+                    <form id="update-tournament-name" method="POST" action="/tournament_name_user/{{ user.profile.id }}/1/" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="id_name" class="form-label">{% trans "Tournament Name:" %}</label>
-                            {{ c_form.name }}
+                            <label for="display_name" class="form-label">{% trans "Player Display Name:" %}</label>
+                            <input type="text" id="display_name" name="display_name" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-trophy-fill me-2"></i>{% trans "Create Tournament" %}
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
+                    </form>
+                    {% if tournament %}
+                    <form id="first-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ user.profile.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">
+                            {% trans "Join Tournament" %}
                         </button>
                     </form>
-                </div>
-                {% else %}
-                <div class="tournament-details">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="mb-3">{% trans "Tournament:" %} {{ tournament.name }}</h5>
-                            <p class="mb-2"><strong>{% trans "Players:" %}</strong> {{ tournament.players.count }}/4</p>
-                            <p class="mb-2"><strong>{% trans "Status:" %}</strong> {{ tournament.status }}</p>
-                            
-                            {% if tournament.status == 'not_started' %}
-                            <form id="start-tournament-form" method="POST" action="/start_tournament/{{ tournament.id }}/" class="mb-3">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-success w-100" 
-                                        {% if tournament.players.count < 4 %}disabled{% endif %}>
-                                    {% trans "Start Tournament" %}
-                                </button>
-                            </form>
-                            {% endif %}
-                            
-                            {% if tournament.status == 'in_progress' and tournament.winner and tournament.third %}
-                            <form id="finish-tournament-form" method="POST" action="/finish_tournament/{{ tournament.id }}/" class="mb-3">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger w-100">
-                                    {% trans "Finish Tournament" %}
-                                </button>
-                            </form>
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Tournament Results -->
-                        <div class="col-md-6">
-                            {% if tournament.winner or tournament.second or tournament.third or tournament.fourth %}
-                            <div>
-                                <h6>{% trans "Results:" %}</h6>
-                                <div class="results-list">
-                                    {% if tournament.winner %}<p class="mb-1">🏆 {{ tournament.winner.display_name }}</p>{% endif %}
-                                    {% if tournament.second %}<p class="mb-1">🥈 {{ tournament.second.display_name }}</p>{% endif %}
-                                    {% if tournament.third %}<p class="mb-1">🥉 {{ tournament.third.display_name }}</p>{% endif %}
-                                    {% if tournament.fourth %}<p class="mb-1">🎖️ {{ tournament.fourth.display_name }}</p>{% endif %}
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <!-- Tournament Games -->
-                    {% if tournament.games.all %}
-                    <div class="mt-4">
-                        <h6>{% trans "Games:" %}</h6>
-                        <div id="games" class="small">
-                            {% for game in tournament.games.all %}
-                            <div class="game-item mb-2 p-2 bg-light rounded">
-                                <div><strong>{{ game.get_game_type_display }}:</strong> {{ game.player1.display_name }} VS {{ game.player2.display_name }}</div>
-                                {% if game.player1_score is not None and game.player2_score is not None %}
-                                <div><strong>{% trans "Scores:" %}</strong> {{ game.player1_score }} VS {{ game.player2_score }}</div>
-                                {% endif %}
-                                {% if not game.winner %}
-                                <button class="startTournamentGame btn btn-sm btn-primary mt-1"
-                                        data-game-id="{{ game.id }}" 
-                                        data-player1-id="{{ game.player1.id }}" 
-                                        data-player2-id="{{ game.player2.id }}">
-                                    {% trans "Start Game" %}
-                                </button>
-                                {% endif %}
-                                {% if game.winner %}
-                                <div class="text-success mt-1"><strong>{% trans "Winner:" %}</strong> {{ game.winner.display_name }}</div>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
                     {% endif %}
                 </div>
-                {% endif %}
+            </div>
+        </div>
+<!-- here -->
+
+        <!-- Player 2 Profile -->
+        <div class="col-md-3">
+            <div id="player2-profile" class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{% trans "Player 2:" %}</h5>
+                    {% if request.session.player2 %}
+                    <img id="player2-avatar" src="{{ request.session.player2.avatar_url }}" alt="Player 2 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
+                    <p id="player2-display-name"><strong>Display Name:</strong> {{ request.session.player2.display_name }}</p>
+                    <p id="player2-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player2.wins }}</p>
+                    <p id="player2-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player2.losses }}</p>
+                    {% endif %}
+                    <!-- Login Form for Player 2 -->
+                     {% if not request.session.player2 %}
+                    <form id="second-player-form" method="POST" action="{% url 'second_player_tournament' %}" class="mb-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">{% trans "Player 2 Username:" %}</label>
+                            <input type="text" id="username2" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{% trans "Player 2 Password:" %}</label>
+                            <input type="password" id="password2" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 2" %}</button>
+                    </form>
+                    {% endif %}
+
+                    <!-- Update Display Name Form for Player 2 -->
+                      {% if request.session.player2 %}
+                    <form id="update-tournament-name-user2" method="POST" action="/tournament_name_user/{{ request.session.player2.id }}/2/" class="mb-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="display_name" class="form-label">{% trans "Player Display Name:" %}</label>
+                            <input type="text" id="display_name2" name="display_name" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
+                    </form>
+                    {% endif %}
+                    {% if tournament %}
+                    <form id="second-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player2.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">
+                            {% trans "Join Tournament" %}
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% if request.session.player2%}
+                    <form action="/logout_tournament/2/" method="post" id="logout-tournament-form2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Player 3 and Player 4 Profiles -->
+        <div class="col-md-3">
+            <div id="player3-profile" class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{% trans "Player 3" %}</h5>
+                    {% if request.session.player3 %}
+                    <img id="player3-avatar" src="{{ request.session.player3.avatar_url }}" alt="Player 3 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
+                    <p id="player3-display-name"><strong>{% trans "Display Name:" %}</strong> {{ request.session.player3.display_name }}</p>
+                    <p id="player3-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player3.wins }}</p>
+                    <p id="player3-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player3.losses }}</p>
+                    {% endif %}
+                    <!-- Login Form for Player 3 -->
+                    {% if not request.session.player3 %}
+                    <form id="third-player-form" method="POST" action="{% url 'third_player_tournament' %}" class="mb-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">{% trans "Player 3 Username:" %}</label>
+                            <input type="text" id="username3" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{% trans "Player 3 Password:" %}</label>
+                            <input type="password" id="password3" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 3" %}</button>
+                    </form>
+                    {% endif %}
+                    <!-- Update Display Name Form for Player 2 -->
+                    {% if request.session.player3 %}
+                    <form id="update-tournament-name-user3" method="POST" action="/tournament_name_user/{{ request.session.player3.id }}/3/" class="mb-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="display_name" class="form-label">{% trans "Player 3 Display Name:" %}</label>
+                            <input type="text" id="display_name3" name="display_name" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
+                        
+                    </form>
+                    {% endif %}
+                    {% if tournament %}
+                    <form id="third-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player3.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">
+                            {% trans "Join Tournament" %}
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% if request.session.player3 %}
+                    <form action="/logout_tournament/3/" method="post" id="logout-tournament-form3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+ 
+
+        <div class="col-md-3"> 
+            <div id="player4-profile" class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{% trans "Player 4" %}</h5>
+                    {% if request.session.player4 %}
+                    <img id="player4-avatar" src="{{ request.session.player4.avatar_url }}" alt="Player 4 Avatar" class="avatar rounded-circle mb-3" width="100" height="100">
+                    <p id="player4-display-name"><strong>{% trans "Display Name:" %}</strong> {{ request.session.player4.display_name }}</p>
+                    <p id="player4-wins"><strong>{% trans "Wins:" %}</strong> {{ request.session.player4.wins }}</p>
+                    <p id="player4-losses"><strong>{% trans "Losses:" %}</strong> {{ request.session.player4.losses }}</p>
+                    {% endif %}
+                    {% if not request.session.player4 %}
+                    <form id="forth-player-form" method="POST" action="{% url 'forth_player_tournament' %}" class="mb-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">{% trans "Player 4 Username:" %}</label>
+                            <input type="text" id="username4" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{% trans "Player 4 Password:" %}</label>
+                            <input type="password" id="password4" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Log in Player 4" %}</button>
+                    </form>
+                    {% endif %}
+                    {% if request.session.player4 %}
+                    <!-- Update Display Name Form for Player 4 -->
+                    <form id="update-tournament-name-user4" method="POST" action="/tournament_name_user/{{ request.session.player4.id }}/4/" class="mb-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="display_name" class="form-label">{% trans "Player 4 Display Name:" %}</label>
+                            <input type="text" id="display_name4" name="display_name" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Update" %}</button>
+                       
+                    </form>
+                    {% endif %}
+                    {% if tournament %}
+                    <form id="forth-player-join" method="POST" action="/join_tournament/{{ tournament.id }}/{{ request.session.player4.id }}/" class="mb-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mb-2">
+                            {% trans "Join Tournament" %}
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% if request.session.player4 %}
+                    <form action="/logout_tournament/4/" method="post" id="logout-tournament-form4">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+                    </form>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-    {% endif %}
-</div>
+{% endif %}
 
-<!-- Load Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Game Canvas Section -->
+    <div class="game-canvas">
+        <div id="scoreContainer" style="position: absolute; top: 55px; width: 100%; text-align: center; color: black; font-size: 24px;">
+            <span id="player1Score">0</span> - <span id="player2Score">0</span>
+          </div>
+        <canvas id="myCanvas" width="720" height="480"></canvas>
+        <canvas id="threejsCanvas" class="threejs-canvas" width="720" height="480"></canvas>
+    </div>
 
-<style>
-/* Apple-style card */
-.apple-card {
-    background: #ffffff;
-    border-radius: 18px;
-    border: 1px solid rgba(200,200,200,0.3);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    backdrop-filter: blur(20px);
-}
-
-/* Player card colors with border-left */
-
-
-/* Avatar styling - back to normal size */
-.avatar {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.avatar-placeholder {
-    font-weight: bold;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Canvas container */
-.canvas-container {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #e0e0e0;
-    min-height: 450px;
-}
-
-/* Game canvas wrapper */
-.game-canvas-wrapper {
-    position: relative;
-    width: 720px;
-    height: 480px;
-    max-width: 100%;
-}
-
-/* 2D Canvas (game logic) */
-#myCanvas {
-    background: white;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    position: relative;
-    z-index: 1;
-    width: 720px;
-    height: 480px;
-    max-width: 100%;
-    max-height: 100%;
-}
-
-/* 3D Canvas (visualization) */
-.threejs-canvas {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    z-index: 2 !important;
-    pointer-events: none;
-    background: transparent !important;
-    border-radius: 8px;
-    width: 720px !important;
-    height: 480px !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-}
-
-/* Score display */
-#scoreContainer {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 10px 20px;
-    display: inline-block;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-    border: 1px solid #e0e0e0;
-}
-
-/* Game controls */
-.game-controls .btn-group {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.game-controls .btn {
-    padding: 6px 12px;
-    font-size: 0.875rem;
-}
-
-/* Column spacing for side cards - now in columns but wider */
-.col-md-4 .d-flex.flex-column.gap-3 {
-    gap: 15px !important;
-    height: 100%;
-}
-
-/* WIDER player cards */
-.col-md-4 .apple-card {
-    min-height: 280px;
-    display: flex;
-    flex-direction: column;
-    width: 100%; /* Full width of column */
-}
-
-/* Responsive adjustments for wider layout */
-@media (max-width: 1200px) {
-    .game-canvas-wrapper {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 720 / 480;
-    }
-    
-    #myCanvas, .threejs-canvas {
-        width: 100% !important;
-        height: 100% !important;
-    }
-    
-    .canvas-container {
-        min-height: 400px;
-    }
-    
-    .col-md-4 .apple-card {
-        min-height: 260px;
-    }
-}
-
-@media (max-width: 992px) {
-    .row.justify-content-center.align-items-stretch {
-        flex-direction: column;
-    }
-    
-    .col-md-4 {
-        width: 100% !important;
-        margin-bottom: 15px;
-    }
-    
-    /* On tablets, show side cards in a horizontal row */
-    .col-md-4 .d-flex.flex-column.gap-3 {
-        flex-direction: row !important;
-        gap: 15px !important;
-    }
-    
-    .col-md-4 .apple-card {
-        flex: 1 1 calc(50% - 15px);
-        min-height: 250px;
-    }
-    
-    .canvas-container {
-        min-height: 400px;
-        padding: 15px;
-    }
-    
-    /* Wider tournament info */
-    .col-md-10 {
-        max-width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    .col-md-4 .d-flex.flex-column.gap-3 {
-        flex-direction: column !important;
-    }
-    
-    .col-md-4 .apple-card {
-        flex: 1 1 100%;
-        min-height: 240px;
-    }
-    
-    .canvas-container {
-        min-height: 350px;
-        padding: 10px;
-    }
-    
-    #scoreContainer {
-        font-size: 1.25rem !important;
-        padding: 8px 15px;
-    }
-    
-    .tournament-details .row {
-        flex-direction: column;
-    }
-    
-    .avatar, .avatar-placeholder {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .avatar-placeholder {
-        font-size: 20px;
-    }
-}
-
-@media (max-width: 576px) {
-    .canvas-container {
-        min-height: 300px;
-        padding: 8px;
-    }
-    
-    .d-flex.flex-column.gap-3 {
-        gap: 10px !important;
-    }
-    
-    .avatar, .avatar-placeholder {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .avatar-placeholder {
-        font-size: 18px;
-    }
-    
-    .game-controls .btn {
-        padding: 4px 8px;
-        font-size: 0.75rem;
-    }
-}
-
-/* Tournament info styling */
-.tournament-details .results-list p {
-    margin-bottom: 0.25rem;
-    padding: 0.25rem 0;
-}
-
-.game-item {
-    transition: all 0.2s ease;
-    border-left: 3px solid #007aff;
-}
-
-.game-item:hover {
-    background-color: #f8f9fa;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-}
-
-/* Button styling for tournament games */
-.startTournamentGame {
-    transition: all 0.2s ease;
-}
-
-.startTournamentGame:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-</style>
+    </div>
 
 <script type="module" src="/static/js/tournament.js"></script>
 
+<!-- JavaScript -->
 <script>
-// Simple debug helper
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Tournament page loaded successfully - WIDER CARDS VERSION');
-    console.log('Player cards are now 2x wider (col-md-4 each side, col-md-4 center)');
-    console.log('Game canvases should be 720x480');
+    
+document.addEventListener("DOMContentLoaded", function () {
+    function getCSRFToken() {
+        const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        return tokenElement ? tokenElement.value : null;
+    }
+
+    function fetchTournamentData(tournamentId) {
+        fetch(`/get_tournament_data/${tournamentId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    const tournamentInfo = document.getElementById('tournament-info');
+                    if (!tournamentInfo) return;
+
+                    tournamentInfo.innerHTML = `
+                        <h2>${data.tournament_name}</h2>
+                        <h3>Players:</h3>
+                        <ul>
+                            ${data.players.map(player => `
+                                <li>
+                                    <img src="${player.avatar_url}" alt="${player.display_name}'s avatar" width="50" height="50">
+                                    ${player.display_name}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                }
+            })
+            .catch(error => console.error('Error fetching tournament data:', error));
+    }
+
 });
 </script>
+
 {% endblock %}
