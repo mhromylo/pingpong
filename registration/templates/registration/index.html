@@ -6,7 +6,7 @@
     {% if user.is_authenticated %}
         <div id="profile" class="profile-info">
             <h2>{% trans "Welcome," %} {{ user.username }}</h2>
-            <img src="{{ user.profile.avatar.url }}" alt="{% trans 'User Avatar' %}" class="avatar">
+            <img src="{{ user.profile.avatar.url }}" alt="{% trans 'User Avatar' %}" class="avatar_index">
             <p><strong>{% trans 'Display Name:' %}</strong> {{ user.profile.display_name }}</p>
             <p><strong>{% trans 'Email:' %}</strong> {{ user.email }}</p>
             <p><strong>{% trans 'Wins:' %}</strong> {{ user.profile.wins }}</p>

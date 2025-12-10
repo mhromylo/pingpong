@@ -106,24 +106,4 @@ canvas {
     display: none;
 }
 
-.game-container {
-    position: relative;
-    width: 720px;  /* Set the same width as your canvas */
-    height: 480px; /* Set the same height as your canvas */
-    margin: 0 auto;
-}
 
-#threejsCanvas {
-    display: block;  /* Ensures canvas is treated as a block element */
-    margin: 0 auto;
-}
-
-#scoreContainer {
-    position: absolute;
-    top: 60px;  /* Adjust the space to move it above the canvas */
-    left: 0;
-    right: 0;
-    text-align: center;
-    color: black;
-    font-size: 24px;
-}
