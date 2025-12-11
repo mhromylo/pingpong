@@ -155,6 +155,7 @@ export function fetchNewCSRFToken() {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true
@@ -204,6 +205,7 @@ export function fetchNewCSRFToken() {
             },
             options: {
                 responsive: true, // Make the chart responsive
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true // Start the y-axis at 0
@@ -281,6 +283,7 @@ function renderChart(player1, player2) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true
