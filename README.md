@@ -34,5 +34,14 @@
 <strong>docker-compose up --build</strong>
 <p>Then open your browser and go to:</p>
 <strong>http://localhost</strong>
+<p>Register one or preferably two users to test the 4-player tournament. After playing any 2-player game or a 4-player tournament, the statistics will update and be displayed accordingly.</p>
 
-<h2>📸 Screenshots</h2> <p align="center"> <img width="100%" alt="Gameplay Screenshot" src="https://github.com/user-attachments/assets/c0d28675-1848-49da-ae69-195449d1f1f9" /> <br/><br/> <img width="100%" alt="Dashboard Screenshot" src="https://github.com/user-attachments/assets/9521f589-e069-4f4d-ab91-3a1276ef1730" /> </p> <hr/> <p align="center"> 🏁 Built with ❤️ for the Pong Challenge </p> ```
+<h2>📸 Screenshots</h2> <p align="center"> <img width="2234" height="1977" alt="Game_Dashboard" src="https://github.com/user-attachments/assets/af55adc2-3266-4b83-9d9a-991371c902a3" /> <br/><br/> <img width="2234" height="1977" alt="User_Dashboard" src="https://github.com/user-attachments/assets/206fd019-1e0c-4d7d-aa17-8205ec1d4d51" /> </p> <hr/> <p align="center"> 🏁 
+<img width="2234" height="1977" alt="Welcome" src="https://github.com/user-attachments/assets/431283a0-27ea-4bab-b44f-613ddf31fb59" />
+<img width="2234" height="1977" alt="Game" src="https://github.com/user-attachments/assets/e619db8a-1051-4498-a6ba-b938c294a08b" />
+<img width="2234" height="1977" alt="Tournament" src="https://github.com/user-attachments/assets/e810db21-3c92-4642-a2ce-baa08a405995" />
+<img width="2234" height="1977" alt="Update_profile" src="https://github.com/user-attachments/assets/c0e01993-ef11-401f-a942-a32265ab5a0b" />
+<img width="2234" height="1977" alt="Friendlist" src="https://github.com/user-attachments/assets/7691ee79-d2ab-4b3e-b549-639fb517bde0" />
+
+Built with ❤️ for the Pong Challenge </p> ```
+
