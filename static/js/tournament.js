@@ -212,7 +212,7 @@ $(document).ready(function () {
         player2.score++;
         updateScores(player1.score, player2.score);
         resetBall();
-        if (player2.score >= 3) {
+        if (player2.score >= 11) {
           gameRunning = false;
           enableButtons();
           alert("GAME OVER\n\nPLAYER 2 WINS");
@@ -223,7 +223,7 @@ $(document).ready(function () {
         player1.score++;
         updateScores(player1.score, player2.score);
         resetBall();
-        if (player1.score >= 3) {
+        if (player1.score >= 11) {
           gameRunning = false;
           enableButtons();
           alert("GAME OVER\n\nPLAYER 1 WINS");
@@ -571,6 +571,7 @@ $(document).ready(function () {
 
       startGame("human", "blue", "human", "red", "normal", "OFF", game_id, player1_id, player2_id);
     }
+    $(document).ready(function() {
     $(document).on("click", ".beginGame", function (event) {
       handleBeginGameClick(event);
     });
@@ -599,6 +600,7 @@ $(document).ready(function () {
 
       if (window.location.href === "https://localhost/game_setup/")
         startGame(player1Type, player1Colour, player2Type, player2Colour, chosenMap, extrasOnOff, 0, 0, 0);
+    });
     });
 
 
