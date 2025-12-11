@@ -750,12 +750,7 @@ form .btn {
     height: 250px; /* fits Bootstrap card cleanly */
 }
 /* Limit chart height */
-.chart-container {
-    position: relative;
-    width: 100%;
-    height: 420px; /* large readable size */
-    padding: 10px;
-}
+
 
 .chart-container canvas {
     width: 100% !important;
@@ -783,9 +778,38 @@ form .btn {
     margin-bottom: 1.5rem !important;
 }
 
-
-
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 420px; /* large readable size */
+    padding: 10px;
+}
 
 .card {
     overflow: hidden; /* prevents canvas overflow */
+}
+
+/* --- FIX CHART CARDS AFTER ROLLBACK --- */
+
+/* Allow chart cards to fill column width */
+.row .card {
+    max-width: none !important;
+}
+
+/* Safe chart height */
+.chart-container {
+    position: relative;
+    height: 280px !important;
+}
+
+/* Ensure canvas fits container */
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#player_filter_form {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
 }

@@ -5,23 +5,7 @@
     <h2 class="text-center mb-4">Game Dashboard</h2>
 
     <!-- Player Filter Form -->
-    <form id="player_filter_form" action="/game_dashboard/" method="POST">
-        {% csrf_token %}
-        <div class="mb-4">
-            <label for="player_filter">Filter by Player:</label>
-            <select id="player_filter" name="player" class="form-control">
-                <option value="">All Players</option>
-                {% for player in players %}
-                <option value="{{ player.id }}">{{ player.display_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Apply Filter</button>
-    </form>
-
-    <div class="row">
-        <!-- Top 5 Winners Chart -->
-    <!-- <div class="card p-3 mb-4 mx-auto" style="max-width: 400px;"> -->
+    
         <form id="player_filter_form" action="/game_dashboard/" method="POST">
             {% csrf_token %}
             <div class="mb-3">
@@ -35,7 +19,7 @@
             </div>
             <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
         </form>
-    <!-- </div> -->
+   
 
     <!-- Space between form and charts -->
     <div class="mb-4"></div>
@@ -51,7 +35,6 @@
             </div>
         </div>
 
-        <!-- Compare Wins Chart -->
         <div class="col-md-4">
             <div class="card p-3 h-100">
                 
@@ -61,7 +44,6 @@
             </div>
         </div>
 
-        <!-- Game Type Distribution Chart -->
         <div class="col-md-4">
             <div class="card p-3 h-100">
                 
@@ -71,10 +53,9 @@
             </div>
         </div>
     </div>
-    <div class="mb-4"></div>
+
     <!-- Game History Table -->
-    <div class="card p-3">
-    <!-- <div class="card p-3 mt-4"> -->
+ 
         <h4 class="text-center mb-3">Game History</h4>
         <table class="table table-striped">
             <thead>
@@ -96,7 +77,7 @@
                 {% endfor %}
             </tbody>
         </table>
-    <!-- </div> -->
+   
 </div>
 
 <script>
